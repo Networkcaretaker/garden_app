@@ -9,5 +9,11 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "workspaces": ["packages/*", "apps/*"]
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }

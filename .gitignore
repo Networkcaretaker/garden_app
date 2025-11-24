@@ -20,6 +20,7 @@ desktop.ini
 /apps/backend/bin/
 /apps/backend/tmp/
 /apps/backend/server.exe
+/apps/backend/service-account.json
 
 # Editor
 .vscode/
