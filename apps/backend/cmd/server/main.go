@@ -10,7 +10,7 @@ import (
 
 	"github.com/networkcaretaker/garden_app/backend/internal/config"
 	"github.com/networkcaretaker/garden_app/backend/internal/db"
-	"github.com/networkcaretaker/garden_app/backend/internal/handlers" // Import handlers
+	"github.com/networkcaretaker/garden_app/backend/internal/handlers"
 	customMiddleware "github.com/networkcaretaker/garden_app/backend/internal/middleware"
 )
 
@@ -59,7 +59,7 @@ func main() {
 
 	// Admin Project Routes (Write)
 	adminGroup.POST("/projects", projectHandler.CreateProject)
-	// We will add Update/Delete here later
+	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject) // Added PUT route
 
 	adminGroup.GET("/me", func(c echo.Context) error {
 		uid := c.Get("uid").(string)
