@@ -18,8 +18,10 @@ export interface Project {
   location: string;
   completedDate: string;
   category: ProjectCategory;
-  coverImage: string; // References an image ID
-  images: ProjectImage[];
+  coverImage: string;
+  // Fix: Allow string[] (URLs) OR ProjectImage[] (Objects)
+  // The MVP uses string[], the future version might use ProjectImage[]
+  images: string[] | ProjectImage[]; 
   aiGenerated?: AIGeneratedContent;
   featured: boolean;
   published: boolean;
@@ -32,5 +34,5 @@ export interface ProjectCreateInput {
   description?: string;
   location: string;
   category: ProjectCategory;
-  images: string[]; // Array of image IDs uploaded previously
+  images: string[];
 }
