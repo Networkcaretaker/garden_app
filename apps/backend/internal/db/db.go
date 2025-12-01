@@ -6,59 +6,69 @@ import (
 	"path/filepath"
 
 	"cloud.google.com/go/firestore"
-	"firebase.google.com/go/v4/auth" // Import the auth package
 	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
+	"firebase.google.com/go/v4/storage" // Import storage
 	"google.golang.org/api/option"
 )
 
-// Client holds the database and auth connection logic
+// Client holds the database, auth, and storage connection logic
 type Client struct {
 	Firestore *firestore.Client
-	Auth      *auth.Client // Add Auth Client here
+	Auth      *auth.Client
+	Storage   *storage.Client // Add Storage client
 }
 
-// NewClient initializes a new Firebase app with Firestore and Auth
+// NewClient initializes a new Firebase app with Firestore, Auth, and Storage
 func NewClient(ctx context.Context, credentialsFile string, projectID string) (*Client, error) {
-	// 1. Validate inputs
 	if credentialsFile == "" {
 		return nil, fmt.Errorf("credentials file path is empty")
 	}
 
-	// 2. Resolve absolute path
 	absPath, err := filepath.Abs(credentialsFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve absolute path: %v", err)
 	}
 
-	// 3. Initialize Firebase App
+	// Initialize Firebase App
+	// We need to specify the Storage Bucket here if we want to use DefaultBucket()
+	// For now, we will pass it via config or environment variables later, 
+	// but the Admin SDK can often infer it if configured in the Service Account or we pass it explicitly.
 	opt := option.WithCredentialsFile(absPath)
-	conf := &firebase.Config{ProjectID: projectID}
+	conf := &firebase.Config{
+		ProjectID: projectID,
+		// If you know your bucket name, you can add it here:
+		// StorageBucket: "garden-projects.appspot.com",
+	}
 
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing firebase app: %v", err)
 	}
 
-	// 4. Create Firestore Client
 	firestoreClient, err := app.Firestore(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing firestore client: %v", err)
 	}
 
-	// 5. Create Auth Client (New Step)
 	authClient, err := app.Auth(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing auth client: %v", err)
 	}
 
+	// Initialize Storage Client
+	storageClient, err := app.Storage(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing storage client: %v", err)
+	}
+
 	return &Client{
 		Firestore: firestoreClient,
 		Auth:      authClient,
+		Storage:   storageClient,
 	}, nil
 }
 
-// Close safely closes the database connection
 func (c *Client) Close() error {
 	return c.Firestore.Close()
-	// Auth client doesn't need explicit closing in the Go SDK
 }

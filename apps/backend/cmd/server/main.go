@@ -32,6 +32,7 @@ func main() {
 
 	// 3. Initialize Handlers
 	projectHandler := handlers.NewProjectHandler(services)
+	// UploadHandler removed - logic moved to client-side PWA
 
 	// 4. Initialize Echo
 	e := echo.New()
@@ -59,7 +60,7 @@ func main() {
 
 	// Admin Project Routes (Write)
 	adminGroup.POST("/projects", projectHandler.CreateProject)
-	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject) // Added PUT route
+	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject)
 
 	adminGroup.GET("/me", func(c echo.Context) error {
 		uid := c.Get("uid").(string)
