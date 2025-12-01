@@ -8,8 +8,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	// Remember to use your lowercase module name here!
 	"github.com/networkcaretaker/garden_app/backend/internal/config"
 	"github.com/networkcaretaker/garden_app/backend/internal/db"
+	customMiddleware "github.com/networkcaretaker/garden_app/backend/internal/middleware"
 )
 
 func main() {
@@ -19,35 +21,47 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	// 2. Initialize Database Connection
-	// We use context.Background() because this is the startup phase
+	// 2. Initialize Database & Auth
 	ctx := context.Background()
-	database, err := db.NewClient(ctx, cfg.FirebaseCredentialsFile, cfg.FirebaseProjectID)
+	// Note: variable name changed from 'database' to 'services' to reflect it holds both DB and Auth
+	services, err := db.NewClient(ctx, cfg.FirebaseCredentialsFile, cfg.FirebaseProjectID)
 	if err != nil {
-		log.Fatalf("Failed to connect to Firestore: %v", err)
+		log.Fatalf("Failed to connect to Firebase: %v", err)
 	}
-	// Defer closing the database until the main function exits
-	defer database.Close()
-	log.Println("✅ Connected to Firestore successfully")
+	defer services.Close()
+	log.Println("✅ Connected to Firestore & Auth successfully")
 
 	// 3. Initialize Echo
 	e := echo.New()
 
-	// Middleware
+	// Global Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	// Routes
+	// --- Public Routes ---
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello! Backend is connected to Firestore. 🌿")
+		return c.String(http.StatusOK, "Garden App API is running 🌿")
 	})
 
 	e.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "healthy"})
+	})
+
+	// --- Protected Routes (Admin Only) ---
+	// Create a group for routes that require login
+	adminGroup := e.Group("/admin")
+	
+	// Apply our custom Auth middleware to this group
+	adminGroup.Use(customMiddleware.AuthMiddleware(services.Auth))
+
+	// Test endpoint to verify auth works
+	adminGroup.GET("/me", func(c echo.Context) error {
+		// Retrieve the UID we stored in the middleware
+		uid := c.Get("uid").(string)
 		return c.JSON(http.StatusOK, map[string]string{
-			"status": "healthy",
-			"db":     "connected",
-			"env":    cfg.Env,
+			"message": "You are authenticated!",
+			"uid":     uid,
 		})
 	})
 

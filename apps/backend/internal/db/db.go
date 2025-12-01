@@ -6,24 +6,25 @@ import (
 	"path/filepath"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/v4/auth" // Import the auth package
 	firebase "firebase.google.com/go/v4"
 	"google.golang.org/api/option"
 )
 
-// Client holds the database connection logic
+// Client holds the database and auth connection logic
 type Client struct {
 	Firestore *firestore.Client
+	Auth      *auth.Client // Add Auth Client here
 }
 
-// NewClient initializes a new Firestore client
+// NewClient initializes a new Firebase app with Firestore and Auth
 func NewClient(ctx context.Context, credentialsFile string, projectID string) (*Client, error) {
 	// 1. Validate inputs
 	if credentialsFile == "" {
 		return nil, fmt.Errorf("credentials file path is empty")
 	}
 
-	// 2. Resolve absolute path to the service account file
-	// This ensures it works whether we run 'go run' from root or inside subfolders
+	// 2. Resolve absolute path
 	absPath, err := filepath.Abs(credentialsFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve absolute path: %v", err)
@@ -44,10 +45,20 @@ func NewClient(ctx context.Context, credentialsFile string, projectID string) (*
 		return nil, fmt.Errorf("error initializing firestore client: %v", err)
 	}
 
-	return &Client{Firestore: firestoreClient}, nil
+	// 5. Create Auth Client (New Step)
+	authClient, err := app.Auth(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing auth client: %v", err)
+	}
+
+	return &Client{
+		Firestore: firestoreClient,
+		Auth:      authClient,
+	}, nil
 }
 
 // Close safely closes the database connection
 func (c *Client) Close() error {
 	return c.Firestore.Close()
+	// Auth client doesn't need explicit closing in the Go SDK
 }
