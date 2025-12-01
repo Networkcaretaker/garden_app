@@ -1,7 +1,6 @@
 module github.com/networkcaretaker/garden_app/backend
 
 go 1.25.4
-
 require (
 	cel.dev/expr v0.23.1 // indirect
 	cloud.google.com/go v0.121.0 // indirect
