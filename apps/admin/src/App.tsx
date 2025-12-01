@@ -1,10 +1,10 @@
-import React from 'react'; // Added import for types
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
 import Login from './pages/Login';
+import { AppShell } from './components/layout/AppShell';
 
 // 1. Protected Route Wrapper
-// Fix: Changed JSX.Element to React.ReactNode
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuthStore();
 
@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>; // Wrap children in a fragment to satisfy strict type returns
+  return <>{children}</>;
 };
 
 // 2. Main App Component
@@ -31,19 +31,23 @@ function App() {
         {/* Public Route */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes wrapped in AppShell */}
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              {/* Placeholder Dashboard for now */}
-              <div className="p-8">
-                <h1 className="text-2xl font-bold">Dashboard</h1>
-                <p>Welcome! You are logged in.</p>
-              </div>
+              <AppShell />
             </ProtectedRoute>
           }
-        />
+        >
+          {/* Index Route (Dashboard) */}
+          <Route index element={<h1 className="text-2xl font-bold">Dashboard Overview</h1>} />
+          
+          {/* Project Routes */}
+          <Route path="projects" element={<h1 className="text-2xl font-bold">Project List</h1>} />
+          <Route path="plants" element={<h1 className="text-2xl font-bold">Plant Encyclopedia</h1>} />
+          <Route path="settings" element={<h1 className="text-2xl font-bold">Settings</h1>} />
+        </Route>
         
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
