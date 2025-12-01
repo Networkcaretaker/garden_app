@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'; // Added import for types
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from './stores/authStore';
+import Login from './pages/Login';
 
+// 1. Protected Route Wrapper
+// Fix: Changed JSX.Element to React.ReactNode
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuthStore();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>; // Wrap children in a fragment to satisfy strict type returns
+};
+
+// 2. Main App Component
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              {/* Placeholder Dashboard for now */}
+              <div className="p-8">
+                <h1 className="text-2xl font-bold">Dashboard</h1>
+                <p>Welcome! You are logged in.</p>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Catch all - redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
