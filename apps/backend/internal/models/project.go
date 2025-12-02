@@ -2,15 +2,15 @@ package models
 
 import "time"
 
-// ProjectImage represents a single image with metadata
 type ProjectImage struct {
-	ID        string `json:"id" firestore:"id"`
-	URL       string `json:"url" firestore:"url"`
-	Thumbnail string `json:"thumbnail,omitempty" firestore:"thumbnail,omitempty"`
-	Caption   string `json:"caption,omitempty" firestore:"caption,omitempty"`
-	Alt       string `json:"alt,omitempty" firestore:"alt,omitempty"`
-	Width     int    `json:"width,omitempty" firestore:"width,omitempty"`
-	Height    int    `json:"height,omitempty" firestore:"height,omitempty"`
+	ID          string `json:"id" firestore:"id"`
+	URL         string `json:"url" firestore:"url"`
+	StoragePath string `json:"storagePath" firestore:"storagePath"` // Added this field
+	Thumbnail   string `json:"thumbnail,omitempty" firestore:"thumbnail,omitempty"`
+	Caption     string `json:"caption,omitempty" firestore:"caption,omitempty"`
+	Alt         string `json:"alt,omitempty" firestore:"alt,omitempty"`
+	Width       int    `json:"width,omitempty" firestore:"width,omitempty"`
+	Height      int    `json:"height,omitempty" firestore:"height,omitempty"`
 }
 
 // Project represents the data structure for a gardening project
@@ -22,20 +22,18 @@ type Project struct {
 	CompletedDate string         `json:"completedDate" firestore:"completedDate"`
 	Category      string         `json:"category" firestore:"category"`
 	CoverImage    string         `json:"coverImage" firestore:"coverImage"`
-	// Changed from []string to []ProjectImage
-	Images        []ProjectImage `json:"images" firestore:"images"` 
+	Images        []ProjectImage `json:"images" firestore:"images"`
 	Featured      bool           `json:"featured" firestore:"featured"`
 	Published     bool           `json:"published" firestore:"published"`
 	CreatedAt     time.Time      `json:"createdAt" firestore:"createdAt"`
 	UpdatedAt     time.Time      `json:"updatedAt" firestore:"updatedAt"`
 }
 
-// CreateProjectRequest defines what we expect the frontend to send
 type CreateProjectRequest struct {
+	ID          string         `json:"id"`
 	Title       string         `json:"title"`
 	Description string         `json:"description"`
 	Location    string         `json:"location"`
 	Category    string         `json:"category"`
-	// Update this to match the new structure
-	Images      []ProjectImage `json:"images"` 
+	Images      []ProjectImage `json:"images"`
 }

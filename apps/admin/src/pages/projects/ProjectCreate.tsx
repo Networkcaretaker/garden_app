@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, Loader2 } from 'lucide-react';
+import { doc, collection } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize';
 import { uploadImage } from '../../services/storage';
@@ -19,7 +21,6 @@ export default function ProjectCreate() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
-  // Handle File Selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
@@ -41,33 +42,33 @@ export default function ProjectCreate() {
     setError('');
 
     try {
-      // 1. Resize and Upload Images
+      const newDocRef = doc(collection(db, 'projects'));
+      const newProjectId = newDocRef.id;
+
       const projectImages: ProjectImage[] = [];
+      const uploadPath = `project-images/${newProjectId}`;
       
       for (const file of selectedImages) {
-        // Resize to max 1200px width
         const resizedBlob = await resizeImage(file, 1200);
-        // Upload to Firebase
-        const url = await uploadImage(resizedBlob, 'project-images');
+        // Destructure response to get url AND path
+        const { url, path } = await uploadImage(resizedBlob, uploadPath);
         
-        // Construct the ProjectImage object
-        // Note: ID generation usually happens on backend or we use a temp ID here
-        // We'll use a simple timestamp-based ID for now
         projectImages.push({
           id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: url,
-          caption: '', // Default empty
-          alt: '',     // Default empty
+          storagePath: path, // Save the path
+          caption: '',
+          alt: '',
         });
       }
 
-      // 2. Send Data to Go Backend
       await api.post('/admin/projects', {
+        id: newProjectId,
         title,
         description,
         category,
         location,
-        images: projectImages, // Now sending objects!
+        images: projectImages,
       });
 
       navigate('/projects');
@@ -92,8 +93,6 @@ export default function ProjectCreate() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
-        
-        {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
           <input
@@ -106,7 +105,6 @@ export default function ProjectCreate() {
           />
         </div>
 
-        {/* Category & Location */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -133,7 +131,6 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
@@ -145,7 +142,6 @@ export default function ProjectCreate() {
           />
         </div>
 
-        {/* Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>
           
@@ -177,7 +173,6 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="pt-4">
           <button
             type="submit"

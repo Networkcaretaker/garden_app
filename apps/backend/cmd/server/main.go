@@ -31,7 +31,7 @@ func main() {
 	log.Println("✅ Connected to Firestore & Auth successfully")
 
 	// 3. Initialize Handlers
-	projectHandler := handlers.NewProjectHandler(services)
+	projectHandler := handlers.NewProjectHandler(services, cfg)
 	// UploadHandler removed - logic moved to client-side PWA
 
 	// 4. Initialize Echo

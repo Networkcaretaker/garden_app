@@ -1,13 +1,17 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from './firebase';
 
-export const uploadImage = async (file: Blob, folder: string = 'uploads'): Promise<string> => {
-  // Create a unique filename: timestamp-random.webp
+// Update return type to include path
+export const uploadImage = async (file: Blob, folder: string = 'uploads'): Promise<{ url: string; path: string }> => {
   const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.webp`;
-  const storageRef = ref(storage, `${folder}/${filename}`);
+  // Construct the full path (e.g. project-images/123/abc.webp)
+  const fullPath = `${folder}/${filename}`;
+  
+  const storageRef = ref(storage, fullPath);
 
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
   
-  return url;
+  // Return both
+  return { url, path: fullPath };
 };

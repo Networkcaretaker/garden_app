@@ -13,6 +13,7 @@ type Config struct {
 	Env                     string
 	FirebaseCredentialsFile string
 	FirebaseProjectID       string
+	FirebaseStorageBucket   string
 }
 
 // Load reads the .env file and populates the Config struct
@@ -27,6 +28,7 @@ func Load() (*Config, error) {
 		Env:                     getEnv("ENV", "development"),
 		FirebaseCredentialsFile: getEnv("FIREBASE_CREDENTIALS_FILE", ""),
 		FirebaseProjectID:       getEnv("FIREBASE_PROJECT_ID", ""),
+		FirebaseStorageBucket:   getEnv("FIREBASE_STORAGE_BUCKET", ""),
 	}
 
 	// Validate required variables

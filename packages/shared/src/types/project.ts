@@ -6,12 +6,14 @@ export interface AIGeneratedContent {
 }
 
 export interface ProjectImage {
-  id: string;          // Unique ID (e.g. timestamp-random)
-  url: string;         // The full storage URL
-  thumbnail?: string;  // Optional: distinct thumbnail URL if we generate one later
-  caption?: string;    // "View of the patio from the south"
-  alt?: string;        // Accessibility text
-  width?: number;      // Useful for Next.js Image component to prevent layout shift
+  id: string;
+  url: string;
+  // New field: store the internal path for deletion
+  storagePath: string; 
+  thumbnail?: string;
+  caption?: string;
+  alt?: string;
+  width?: number;
   height?: number;
 }
 
@@ -22,10 +24,8 @@ export interface Project {
   location: string;
   completedDate: string;
   category: ProjectCategory;
-  // We keep coverImage as a string ID or URL for quick lookup
-  coverImage: string; 
-  // Now strictly an array of objects
-  images: ProjectImage[]; 
+  coverImage: string;
+  images: ProjectImage[];
   aiGenerated?: AIGeneratedContent;
   featured: boolean;
   published: boolean;
@@ -33,11 +33,10 @@ export interface Project {
   updatedAt: string;
 }
 
-// Update the Input type so the API knows to expect objects
 export interface ProjectCreateInput {
   title: string;
   description?: string;
   location: string;
   category: ProjectCategory;
-  images: ProjectImage[]; 
+  images: ProjectImage[];
 }

@@ -20,22 +20,11 @@ export default function ProjectEdit() {
   const [category, setCategory] = useState<ProjectCategory>('residential');
   const [location, setLocation] = useState('');
   
-  // Image State
-  // existingImages: Objects already saved on server
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
-  
-  // newFiles: Files selected from computer but not uploaded yet
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
 
-  // 1. Fetch Data on Load
   useEffect(() => {
-    // Ideally we'd have a specific GET /projects/:id endpoint
-    // For MVP we can reuse the list or fetch all. 
-    // Let's assume we implement GET /projects/:id or filter client side.
-    // Since our backend currently only has GET /projects (all), we'll use that and find by ID.
-    // *Optimization Note: In production, add a specific GET endpoint.*
-    
     const loadProject = async () => {
       try {
         const projects: Project[] = await api.get('/projects');
@@ -63,7 +52,6 @@ export default function ProjectEdit() {
     loadProject();
   }, [id]);
 
-  // 2. Handle New File Selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -74,7 +62,6 @@ export default function ProjectEdit() {
     }
   };
 
-  // 3. Remove Images
   const removeExistingImage = (imageId: string) => {
     setExistingImages((prev) => prev.filter(img => img.id !== imageId));
   };
@@ -84,32 +71,31 @@ export default function ProjectEdit() {
     setNewPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 4. Submit Updates
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     setError('');
 
     try {
-      // A. Upload ANY new files first
       const newUploadedImages: ProjectImage[] = [];
+      const uploadPath = `project-images/${id}`;
       
       for (const file of newFiles) {
         const resizedBlob = await resizeImage(file, 1200);
-        const url = await uploadImage(resizedBlob, 'project-images');
+        // Destructure response
+        const { url, path } = await uploadImage(resizedBlob, uploadPath);
         
         newUploadedImages.push({
           id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: url,
+          storagePath: path, // Save the path
           caption: '',
           alt: '',
         });
       }
 
-      // B. Combine Existing + New
       const finalImages = [...existingImages, ...newUploadedImages];
 
-      // C. Send PUT request
       await api.put(`/admin/projects/${id}`, {
         title,
         description,
@@ -157,7 +143,6 @@ export default function ProjectEdit() {
 
       <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm">
         
-        {/* Basic Info Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
@@ -205,13 +190,11 @@ export default function ProjectEdit() {
           </div>
         </div>
 
-        {/* Image Management Section */}
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             
-            {/* 1. Existing Images */}
             {existingImages.map((img) => (
               <div key={img.id} className="relative aspect-square group">
                 <img 
@@ -233,7 +216,6 @@ export default function ProjectEdit() {
               </div>
             ))}
 
-            {/* 2. New Previews */}
             {newPreviews.map((src, index) => (
               <div key={`new-${index}`} className="relative aspect-square group">
                 <img 
@@ -254,7 +236,6 @@ export default function ProjectEdit() {
               </div>
             ))}
 
-            {/* 3. Upload Button */}
             <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
               <Upload className="h-6 w-6 text-gray-400 mb-2" />
               <span className="text-sm text-gray-500">Add More</span>
@@ -269,7 +250,6 @@ export default function ProjectEdit() {
           </div>
         </div>
 
-        {/* Footer Actions */}
         <div className="flex justify-end pt-4 border-t border-gray-100">
           <button
             type="submit"
