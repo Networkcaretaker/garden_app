@@ -1,4 +1,4 @@
-export type ProjectCategory = 'residential' | 'commercial' | 'landscape';
+export type ProjectCategory = 'residential' | 'commercial' | 'landscape' | 'collection';
 
 export interface AIGeneratedContent {
   description: boolean;

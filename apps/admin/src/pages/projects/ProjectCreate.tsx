@@ -116,6 +116,7 @@ export default function ProjectCreate() {
               <option value="residential">Residential</option>
               <option value="commercial">Commercial</option>
               <option value="landscape">Landscape</option>
+              <option value="collection">Collection</option>
             </select>
           </div>
           <div>
