@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"cloud.google.com/go/firestore" // Make sure this import is here
+	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
 	"github.com/networkcaretaker/garden_app/backend/internal/db"
 	"github.com/networkcaretaker/garden_app/backend/internal/models"
@@ -24,34 +24,34 @@ func NewProjectHandler(client *db.Client) *ProjectHandler {
 
 // CreateProject handles POST /projects
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
-	// 1. Bind the incoming JSON to our Request struct
 	req := new(models.CreateProjectRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
 	}
 
-	// 2. Prepare the data for Firestore
 	now := time.Now()
 	newProject := models.Project{
 		Title:       req.Title,
 		Description: req.Description,
 		Location:    req.Location,
 		Category:    req.Category,
-		Images:      req.Images,
-		Published:   false, // Draft by default
+		Images:      req.Images, // Direct assignment now works because both are []ProjectImage
+		Published:   false, 
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}
 
-	// 3. Save to Firestore
-	// We use .Add() to let Firestore generate a unique ID
+	// Auto-set cover image to the first image if not specified (optional logic)
+	if len(newProject.Images) > 0 {
+		newProject.CoverImage = newProject.Images[0].URL
+	}
+
 	ctx := context.Background()
 	ref, _, err := h.Client.Firestore.Collection("projects").Add(ctx, newProject)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to save project"})
 	}
 
-	// 4. Return the ID and data
 	newProject.ID = ref.ID
 	return c.JSON(http.StatusCreated, newProject)
 }
@@ -61,11 +61,10 @@ func (h *ProjectHandler) GetProjects(c echo.Context) error {
 	ctx := context.Background()
 	var projects []models.Project
 
-	// 1. Query Firestore
-	iter := h.Client.Firestore.Collection("projects").Documents(ctx)
+	// Order by CreatedAt desc (newest first)
+	iter := h.Client.Firestore.Collection("projects").OrderBy("createdAt", firestore.Desc).Documents(ctx)
 	defer iter.Stop()
 
-	// 2. Iterate through results
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -76,11 +75,9 @@ func (h *ProjectHandler) GetProjects(c echo.Context) error {
 		}
 
 		var p models.Project
-		// Map Firestore document to struct
 		if err := doc.DataTo(&p); err != nil {
-			continue // Skip bad data
+			continue 
 		}
-		// Manually set ID because it's stored in the document ref, not the data
 		p.ID = doc.Ref.ID
 		projects = append(projects, p)
 	}
@@ -90,36 +87,36 @@ func (h *ProjectHandler) GetProjects(c echo.Context) error {
 
 // UpdateProject handles PUT /projects/:id
 func (h *ProjectHandler) UpdateProject(c echo.Context) error {
-	// 1. Get the ID from the URL
 	id := c.Param("id")
 	if id == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing project ID"})
 	}
 
-	// 2. Bind the incoming JSON
+	// We bind to the Request struct, but in a real app you might want a specific Update struct
+	// to allow partial updates. For now, we assume the frontend sends the full object.
 	req := new(models.CreateProjectRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
 	}
 
 	ctx := context.Background()
-
-	// 3. Define the updates
-	// We use firestore.Update structs to be explicit about what changes
+	
 	updates := []firestore.Update{
 		{Path: "title", Value: req.Title},
 		{Path: "description", Value: req.Description},
 		{Path: "location", Value: req.Location},
 		{Path: "category", Value: req.Category},
-		{Path: "images", Value: req.Images},
+		{Path: "images", Value: req.Images}, // Updates the complex image array
 		{Path: "updatedAt", Value: time.Now()},
 	}
 
-	// 4. Execute Update
-	// This will fail automatically if the document does not exist
+	// Update Cover Image if images changed
+	if len(req.Images) > 0 {
+		updates = append(updates, firestore.Update{Path: "coverImage", Value: req.Images[0].URL})
+	}
+
 	_, err := h.Client.Firestore.Collection("projects").Doc(id).Update(ctx, updates)
 	if err != nil {
-		// We could check status codes here (e.g., NotFound), but for MVP 500 is okay
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update project"})
 	}
 

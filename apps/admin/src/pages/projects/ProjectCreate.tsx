@@ -4,8 +4,7 @@ import { Upload, X, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize';
 import { uploadImage } from '../../services/storage';
-// Fix: Added 'type' keyword here
-import type { ProjectCategory } from '@garden/shared';
+import type { ProjectCategory, ProjectImage } from '@garden/shared';
 
 export default function ProjectCreate() {
   const navigate = useNavigate();
@@ -26,7 +25,6 @@ export default function ProjectCreate() {
       const newFiles = Array.from(e.target.files);
       setSelectedImages((prev) => [...prev, ...newFiles]);
 
-      // Create local preview URLs
       const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
       setPreviews((prev) => [...prev, ...newPreviews]);
     }
@@ -44,14 +42,23 @@ export default function ProjectCreate() {
 
     try {
       // 1. Resize and Upload Images
-      const imageUrls: string[] = [];
+      const projectImages: ProjectImage[] = [];
       
       for (const file of selectedImages) {
         // Resize to max 1200px width
         const resizedBlob = await resizeImage(file, 1200);
         // Upload to Firebase
         const url = await uploadImage(resizedBlob, 'project-images');
-        imageUrls.push(url);
+        
+        // Construct the ProjectImage object
+        // Note: ID generation usually happens on backend or we use a temp ID here
+        // We'll use a simple timestamp-based ID for now
+        projectImages.push({
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          url: url,
+          caption: '', // Default empty
+          alt: '',     // Default empty
+        });
       }
 
       // 2. Send Data to Go Backend
@@ -60,10 +67,9 @@ export default function ProjectCreate() {
         description,
         category,
         location,
-        images: imageUrls,
+        images: projectImages, // Now sending objects!
       });
 
-      // 3. Success! Redirect to list
       navigate('/projects');
       
     } catch (err: unknown) {

@@ -4,10 +4,10 @@ import { useAuthStore } from './stores/authStore';
 import Login from './pages/Login';
 import { AppShell } from './components/layout/AppShell';
 import ProjectCreate from './pages/projects/ProjectCreate';
-import ProjectList from './pages/projects/ProjectList'; // Import the new list
+import ProjectList from './pages/projects/ProjectList';
+import ProjectEdit from './pages/projects/ProjectEdit'; // Import Edit Page
 
 // ... ProtectedRoute component ...
-// (Keep ProtectedRoute as is)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuthStore();
 
@@ -43,9 +43,9 @@ function App() {
           <Route index element={<h1 className="text-2xl font-bold">Dashboard Overview</h1>} />
           
           <Route path="projects">
-             {/* Use the new List component here */}
              <Route index element={<ProjectList />} />
              <Route path="new" element={<ProjectCreate />} />
+             <Route path=":id" element={<ProjectEdit />} /> {/* New Dynamic Route */}
           </Route>
 
           <Route path="plants" element={<h1 className="text-2xl font-bold">Plant Encyclopedia</h1>} />

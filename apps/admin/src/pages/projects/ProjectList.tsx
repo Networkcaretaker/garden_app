@@ -15,7 +15,6 @@ export default function ProjectList() {
 
   const fetchProjects = async () => {
     try {
-      // The backend returns a JSON array of projects
       const data = await api.get('/projects');
       setProjects(data || []);
     } catch (err: unknown) {
@@ -76,8 +75,9 @@ export default function ProjectList() {
               <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {project.images && project.images.length > 0 ? (
                   <img
-                    src={project.images[0]}
-                    alt={project.title}
+                    // Update: Access .url property of the object
+                    src={project.images[0].url}
+                    alt={project.images[0].alt || project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
@@ -85,7 +85,6 @@ export default function ProjectList() {
                     No Image
                   </div>
                 )}
-                {/* Category Badge */}
                 <span className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2 py-1 rounded-full uppercase tracking-wider">
                   {project.category}
                 </span>
