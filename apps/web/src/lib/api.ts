@@ -1,15 +1,16 @@
 import { Project } from '@garden/shared';
 
+// Ensure this environment variable is available at build time!
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Simple fetch wrapper for Server Components
 export async function getProjects(): Promise<Project[]> {
-  // 'no-store' means it fetches fresh data on every request (good for development)
-  // In production, we might want 'force-cache' or revalidate time.
-  const res = await fetch(`${API_URL}/projects`, { cache: 'no-store' });
+  // FIX: Change 'no-store' to revalidation.
+  // This allows the build to succeed by treating it as static data that refreshes.
+  const res = await fetch(`${API_URL}/projects`, { 
+    next: { revalidate: 60 } 
+  });
 
   if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch projects');
   }
 
@@ -17,8 +18,8 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project | undefined> {
-  // Since our backend currently only has a "List All" endpoint,
-  // we fetch all and filter. In Phase 2, we should add GET /projects/:id to backend.
+  // We can also cache the single project fetch if we had a specific endpoint
+  // For now, since we filter the list, the list caching above handles it.
   const projects = await getProjects();
   return projects.find((p) => p.id === id);
 }

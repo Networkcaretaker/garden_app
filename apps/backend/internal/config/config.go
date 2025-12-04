@@ -20,7 +20,8 @@ type Config struct {
 func Load() (*Config, error) {
 	// Load .env file if it exists (it might not exist in production/Cloud Run)
 	if err := godotenv.Load(); err != nil {
-		fmt.Println("No .env file found, relying on system environment variables")
+		// This is expected in production, so we just log a message or ignore
+		// fmt.Println("No .env file found, relying on system environment variables")
 	}
 
 	cfg := &Config{
@@ -32,14 +33,17 @@ func Load() (*Config, error) {
 	}
 
 	// Validate required variables
-	if cfg.FirebaseCredentialsFile == "" {
-		return nil, fmt.Errorf("FIREBASE_CREDENTIALS_FILE is required")
+	// Note: We NO LONGER check for FirebaseCredentialsFile here
+	if cfg.FirebaseProjectID == "" {
+		return nil, fmt.Errorf("FIREBASE_PROJECT_ID is required")
+	}
+	if cfg.FirebaseStorageBucket == "" {
+		return nil, fmt.Errorf("FIREBASE_STORAGE_BUCKET is required")
 	}
 
 	return cfg, nil
 }
 
-// Helper function to get env var with a fallback default
 func getEnv(key, fallback string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value

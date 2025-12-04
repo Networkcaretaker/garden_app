@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "garden-projects"
+  },
+  "targets": {
+    "garden-projects": {
+      "hosting": {
+        "admin": [
+          "garden-projects-admin"
+        ],
+        "web": [
+          "garden-projects"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
