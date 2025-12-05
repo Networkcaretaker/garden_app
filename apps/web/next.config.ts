@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export",
+  output: 'standalone',
+  transpilePackages: ['@garden/shared'],
   images: {
     unoptimized: true,
     remotePatterns: [

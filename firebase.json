@@ -2,10 +2,14 @@
   "hosting": [
     {
       "target": "web",
-      "public": "apps/web/out",
+      "public": "apps/website/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "cleanUrls": true,
-      "trailingSlash": false
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     },
     {
       "target": "admin",
