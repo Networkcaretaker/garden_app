@@ -66,6 +66,7 @@ func main() {
 	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject)
 	// Admin Settings Routes (Write)
 	adminGroup.PUT("/settings/website", settingsHandler.UpdateWebsiteSettings)
+	adminGroup.POST("/settings/website/publish", settingsHandler.PublishWebsiteData)
 
 	adminGroup.GET("/me", func(c echo.Context) error {
 		uid := c.Get("uid").(string)

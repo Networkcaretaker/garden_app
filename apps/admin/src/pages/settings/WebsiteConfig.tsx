@@ -1,22 +1,30 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook } from 'lucide-react';
 import { api } from '../../services/api';
 import type { WebsiteSettings } from '@garden/shared';
 
 export default function WebsiteConfig() {
   const [websiteURL, setWebsiteURL] = useState('');
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState('');
+  const [publishSuccess, setPublishSuccess] = useState('');
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         setIsLoading(true);
         const data: WebsiteSettings = await api.get('/settings/website');
-        setWebsiteURL(data.websiteURL || '');
+        setWebsiteURL(data.websiteURL || ''); 
+        if (data.updatedAt) {
+          // The backend sends a string, so we convert it to a Date object
+          setUpdatedAt(new Date(data.updatedAt as unknown as string));
+        }
       } catch (err) {
         console.error(err);
         setError('Failed to load website settings.');
@@ -37,6 +45,7 @@ export default function WebsiteConfig() {
     try {
       await api.put('/admin/settings/website', { websiteURL });
       setSuccess('Website URL updated successfully!');
+      setUpdatedAt(new Date()); // Update the date in the UI immediately
     } catch (err) {
       console.error(err);
       const message = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -45,6 +54,25 @@ export default function WebsiteConfig() {
       setIsSaving(false);
       // Hide success message after a few seconds
       setTimeout(() => setSuccess(''), 3000);
+    }
+  };
+
+  const handlePublish = async () => {
+    setIsPublishing(true);
+    setPublishError('');
+    setPublishSuccess('');
+
+    try {
+      await api.post('/admin/settings/website/publish', {});
+      setPublishSuccess('Website data published successfully!');
+    } catch (err) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'An unknown error occurred.';
+      setPublishError(`Failed to publish data: ${message}`);
+    } finally {
+      setIsPublishing(false);
+      // Hide success message after a few seconds
+      setTimeout(() => setPublishSuccess(''), 3000);
     }
   };
 
@@ -75,14 +103,40 @@ export default function WebsiteConfig() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
               placeholder="https://www.example.com"
             />
-            <p className="text-xs text-gray-500 mt-1">This is the primary URL for your public website.</p>
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-gray-500 mt-1">This is the primary URL for your public website.</p>
+              {updatedAt && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Last updated: {updatedAt.toLocaleString()}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="flex justify-end items-center pt-6 mt-6 border-t border-gray-100">
           {success && <span className="text-sm text-green-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {success}</span>}
+          {publishSuccess && <span className="text-sm text-blue-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {publishSuccess}</span>}
           {error && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {error}</span>}
-          
+          {publishError && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {publishError}</span>}
+          <button
+            type="button"
+            onClick={handlePublish}
+            disabled={isSaving || isPublishing}
+            className="flex items-center gap-2 bg-orange-600 text-white py-2 px-5 rounded-lg hover:bg-orange-700 disabled:opacity-50 font-medium mx-4"
+          >
+            {isPublishing ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <Webhook className="h-5 w-5" />
+                Update Website
+              </>
+            )}
+          </button>
           <button
             type="submit"
             disabled={isSaving}

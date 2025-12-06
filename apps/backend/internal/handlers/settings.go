@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/networkcaretaker/garden_app/backend/internal/config"
 	"github.com/networkcaretaker/garden_app/backend/internal/db"
+	"github.com/networkcaretaker/garden_app/backend/internal/models"
+	"google.golang.org/api/iterator"
 )
 
 // SettingsHandler holds the database connection
@@ -73,4 +76,65 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "success"})
+}
+
+// PublishWebsiteData handles POST /admin/settings/website/publish
+func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
+	ctx := context.Background()
+
+	// 1. Fetch all 'active' projects
+	var projects []models.Project
+	iter := h.Client.Firestore.Collection("projects").
+		Where("status", "==", "active").
+		OrderBy("createdAt", firestore.Desc).
+		Documents(ctx)
+	defer iter.Stop()
+
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			c.Logger().Errorf("Failed to iterate projects: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch projects"})
+		}
+
+		var p models.Project
+		if err := doc.DataTo(&p); err != nil {
+			c.Logger().Warnf("Failed to parse project %s: %v", doc.Ref.ID, err)
+			continue
+		}
+		p.ID = doc.Ref.ID
+		projects = append(projects, p)
+	}
+
+	// 2. Serialize projects to JSON
+	jsonData, err := json.MarshalIndent(projects, "", "  ")
+	if err != nil {
+		c.Logger().Errorf("Failed to marshal projects to JSON: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate JSON data"})
+	}
+
+	// 3. Upload JSON to Firebase Storage
+	bucket, err := h.Client.Storage.Bucket(h.Config.FirebaseStorageBucket)
+	if err != nil {
+		c.Logger().Errorf("Failed to get storage bucket: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to access storage bucket"})
+	}
+
+	objectPath := "website/projects.json"
+	wc := bucket.Object(objectPath).NewWriter(ctx)
+	wc.ContentType = "application/json"
+	if _, err := wc.Write(jsonData); err != nil {
+		c.Logger().Errorf("Failed to write JSON to storage: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload JSON file"})
+	}
+	if err := wc.Close(); err != nil {
+		c.Logger().Errorf("Failed to close storage writer: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to finalize JSON upload"})
+	}
+
+	c.Logger().Infof("Successfully published website data to %s", objectPath)
+	return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Website data published successfully"})
 }
