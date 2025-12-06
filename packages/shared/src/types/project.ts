@@ -31,6 +31,7 @@ export interface Project {
   published: boolean;
   createdAt: string;
   updatedAt: string;
+  status: 'active' | 'inactive';
 }
 
 export interface ProjectCreateInput {

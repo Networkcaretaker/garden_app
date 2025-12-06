@@ -25,6 +25,7 @@ type Project struct {
 	Images        []ProjectImage `json:"images" firestore:"images"`
 	Featured      bool           `json:"featured" firestore:"featured"`
 	Published     bool           `json:"published" firestore:"published"`
+	Status        string         `json:"status" firestore:"status,omitempty"`
 	CreatedAt     time.Time      `json:"createdAt" firestore:"createdAt"`
 	UpdatedAt     time.Time      `json:"updatedAt" firestore:"updatedAt"`
 }
