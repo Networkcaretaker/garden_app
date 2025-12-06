@@ -88,6 +88,12 @@ export default function ProjectList() {
                 <span className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2 py-1 rounded-full uppercase tracking-wider">
                   {project.category}
                 </span>
+                <span className={`absolute top-2 left-2 text-white text-xs font-medium px-2.5 py-1 rounded-full ${
+                  project.status === 'active' ? 'bg-green-500' : 'bg-gray-500'
+                }`}
+                >
+                  {project.status === 'active' ? 'Active' : 'Inactive'}
+                </span>
               </div>
 
               {/* Content */}

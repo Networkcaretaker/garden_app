@@ -32,6 +32,7 @@ func main() {
 
 	// 3. Initialize Handlers
 	projectHandler := handlers.NewProjectHandler(services, cfg)
+	settingsHandler := handlers.NewSettingsHandler(services, cfg)
 	// UploadHandler removed - logic moved to client-side PWA
 
 	// 4. Initialize Echo
@@ -53,6 +54,8 @@ func main() {
 
 	// Public Project Routes (Read-only)
 	e.GET("/projects", projectHandler.GetProjects)
+	// Public Settings Routes (Read-only)
+	e.GET("/settings/website", settingsHandler.GetWebsiteSettings)
 
 	// --- Protected Routes (Admin Only) ---
 	adminGroup := e.Group("/admin")
@@ -61,6 +64,8 @@ func main() {
 	// Admin Project Routes (Write)
 	adminGroup.POST("/projects", projectHandler.CreateProject)
 	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject)
+	// Admin Settings Routes (Write)
+	adminGroup.PUT("/settings/website", settingsHandler.UpdateWebsiteSettings)
 
 	adminGroup.GET("/me", func(c echo.Context) error {
 		uid := c.Get("uid").(string)

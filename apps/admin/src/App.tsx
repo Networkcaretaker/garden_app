@@ -6,6 +6,7 @@ import { AppShell } from './components/layout/AppShell';
 import ProjectCreate from './pages/projects/ProjectCreate';
 import ProjectList from './pages/projects/ProjectList';
 import ProjectEdit from './pages/projects/ProjectEdit'; // Import Edit Page
+import SettingsPage from './pages/settings/SettingsPage';
 
 // ... ProtectedRoute component ...
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -49,7 +50,7 @@ function App() {
           </Route>
 
           <Route path="plants" element={<h1 className="text-2xl font-bold">Plant Encyclopedia</h1>} />
-          <Route path="settings" element={<h1 className="text-2xl font-bold">Settings</h1>} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
