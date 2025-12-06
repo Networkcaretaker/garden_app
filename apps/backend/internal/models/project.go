@@ -36,5 +36,6 @@ type CreateProjectRequest struct {
 	Description string         `json:"description"`
 	Location    string         `json:"location"`
 	Category    string         `json:"category"`
+	Status    	string         `json:"status"`
 	Images      []ProjectImage `json:"images"`
 }

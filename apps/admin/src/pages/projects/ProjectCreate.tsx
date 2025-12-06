@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, Loader2 } from 'lucide-react';
-import { doc, collection } from 'firebase/firestore';
+import { doc, collection } from "firebase/firestore";
 import { db } from '../../services/firebase';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize';
@@ -18,6 +18,7 @@ export default function ProjectCreate() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<ProjectCategory>('residential');
   const [location, setLocation] = useState('');
+  const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
@@ -68,6 +69,7 @@ export default function ProjectCreate() {
         description,
         category,
         location,
+        status,
         images: projectImages,
       });
 
@@ -130,6 +132,23 @@ export default function ProjectCreate() {
               placeholder="e.g. Palma, Mallorca"
             />
           </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <label htmlFor="status" className="text-sm font-medium text-gray-700">
+            Project Status
+            <span className="block text-xs text-gray-500">'Active' projects are visible on the public website.</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
+            className={`${
+              status === 'active' ? 'bg-green-600' : 'bg-gray-200'
+            } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+            role="switch"
+            aria-checked={status === 'active'}>
+            <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+          </button>
         </div>
 
         <div>

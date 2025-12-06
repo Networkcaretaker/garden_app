@@ -40,6 +40,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		Description:   req.Description,
 		Location:      req.Location,
 		Category:      req.Category,
+		Status:        req.Status,
 		Images:        req.Images,
 		Published:     false,
 		CreatedAt:     now,
@@ -195,6 +196,7 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		{Path: "description", Value: req.Description},
 		{Path: "location", Value: req.Location},
 		{Path: "category", Value: req.Category},
+		{Path: "status", Value: req.Status},
 		{Path: "images", Value: req.Images},
 		{Path: "updatedAt", Value: time.Now()},
 	}

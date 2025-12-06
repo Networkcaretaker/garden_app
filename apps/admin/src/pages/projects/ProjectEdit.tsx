@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, X, Loader2, Save, ArrowLeft, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
-import { resizeImage } from '../../utils/imageResize';
+import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
 import type { Project, ProjectCategory, ProjectImage } from '@garden/shared';
 
@@ -19,6 +19,7 @@ export default function ProjectEdit() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<ProjectCategory>('residential');
   const [location, setLocation] = useState('');
+  const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -40,6 +41,7 @@ export default function ProjectEdit() {
         setCategory(project.category);
         setLocation(project.location);
         setExistingImages(project.images || []);
+        setStatus(project.status || 'inactive');
         
       } catch (err) {
         console.error(err);
@@ -101,6 +103,7 @@ export default function ProjectEdit() {
         description,
         category,
         location,
+        status,
         images: finalImages,
       });
 
@@ -178,6 +181,23 @@ export default function ProjectEdit() {
               onChange={(e) => setLocation(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             />
+          </div>
+
+          <div className="md:col-span-2 flex items-center justify-between">
+            <label htmlFor="status" className="text-sm font-medium text-gray-700">
+              Project Status
+              <span className="block text-xs text-gray-500">
+                'Active' projects are visible on the public website.
+              </span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
+              className={`${status === 'active' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+              role="switch"
+              aria-checked={status === 'active'}>
+              <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+            </button>
           </div>
 
           <div className="md:col-span-2">
