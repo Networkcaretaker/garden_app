@@ -1,24 +1,12 @@
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-  ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  parser: '@typescript-eslint/parser',
+  extends: ["@repo/eslint-config/react-internal.js"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    // This is the key change to fix the error
+    // This setting is required to tell ESLint where to find the tsconfig.json
+    // for your app.
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-  },
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    project: ["./tsconfig.json"],
   },
 };
