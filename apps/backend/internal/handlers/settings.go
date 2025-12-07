@@ -36,7 +36,11 @@ func (h *SettingsHandler) GetWebsiteSettings(c echo.Context) error {
 	if err != nil {
 		// If the document doesn't exist, return default/empty values
 		if strings.Contains(err.Error(), "NotFound") {
-			return c.JSON(http.StatusOK, map[string]string{"websiteURL": ""})
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"websiteURL": "",
+				"title":      "",
+				"tagline":    "",
+			})
 		}
 		c.Logger().Errorf("Failed to fetch website settings: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch website settings"})
@@ -53,8 +57,22 @@ func (h *SettingsHandler) GetWebsiteSettings(c echo.Context) error {
 
 // UpdateWebsiteSettings handles PUT /admin/settings/website
 func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
+	// Define structs to match the Typescript interfaces
+	type SocialLinks struct {
+		Facebook  string `json:"facebook"`
+		Instagram string `json:"instagram"`
+		Linkedin  string `json:"linkedin"`
+		Whatsapp  string `json:"whatsapp"`
+	}
+
 	var req struct {
-		WebsiteURL string `json:"websiteURL"`
+		Title       string      `json:"title"`
+		WebsiteURL  string      `json:"websiteURL"`
+		Tagline     string      `json:"tagline"`
+		Description string      `json:"description"`
+		Excerpt     string      `json:"excerpt"`
+		Social      SocialLinks `json:"social"`
+		SEO         []string    `json:"seo"`
 	}
 
 	if err := c.Bind(&req); err != nil {
@@ -64,11 +82,26 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	ctx := context.Background()
 	docRef := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument)
 
-	// Use Set with MergeAll to create the document if it doesn't exist
-	_, err := docRef.Set(ctx, map[string]interface{}{
-		"websiteURL": req.WebsiteURL,
-		"updatedAt":  time.Now(),
-	}, firestore.MergeAll)
+	// Construct the map to save. 
+	// We map the struct fields explicitly to ensure only valid data is saved.
+	data := map[string]interface{}{
+		"title":       req.Title,
+		"websiteURL":  req.WebsiteURL,
+		"tagline":     req.Tagline,
+		"description": req.Description,
+		"excerpt":     req.Excerpt,
+		"social": map[string]string{
+			"facebook":  req.Social.Facebook,
+			"instagram": req.Social.Instagram,
+			"linkedin":  req.Social.Linkedin,
+			"whatsapp":  req.Social.Whatsapp,
+		},
+		"seo":       req.SEO,
+		"updatedAt": time.Now(),
+	}
+
+	// Use Set with MergeAll to create the document if it doesn't exist or update existing fields
+	_, err := docRef.Set(ctx, data, firestore.MergeAll)
 
 	if err != nil {
 		c.Logger().Errorf("Failed to update website settings: %v", err)
@@ -81,6 +114,30 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 // PublishWebsiteData handles POST /admin/settings/website/publish
 func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 	ctx := context.Background()
+	
+	// Get bucket handle once for both operations
+	bucket, err := h.Client.Storage.Bucket(h.Config.FirebaseStorageBucket)
+	if err != nil {
+		c.Logger().Errorf("Failed to get storage bucket: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to access storage bucket"})
+	}
+
+	// Helper function to upload JSON to a specific path
+	uploadJSON := func(objectPath string, data interface{}) error {
+		jsonData, err := json.MarshalIndent(data, "", "  ")
+		if err != nil {
+			return err
+		}
+		
+		wc := bucket.Object(objectPath).NewWriter(ctx)
+		wc.ContentType = "application/json"
+		if _, err := wc.Write(jsonData); err != nil {
+			return err
+		}
+		return wc.Close()
+	}
+
+	// --- OPERATION 1: PROJECTS JSON ---
 
 	// 1. Fetch all 'active' projects
 	var projects []models.Project
@@ -109,32 +166,36 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 		projects = append(projects, p)
 	}
 
-	// 2. Serialize projects to JSON
-	jsonData, err := json.MarshalIndent(projects, "", "  ")
+	if err := uploadJSON("website/projects.json", projects); err != nil {
+		c.Logger().Errorf("Failed to upload projects JSON: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload projects data"})
+	}
+
+	// --- OPERATION 2: SETTINGS JSON ---
+
+	// 1. Fetch website settings
+	settingsDoc, err := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Get(ctx)
 	if err != nil {
-		c.Logger().Errorf("Failed to marshal projects to JSON: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate JSON data"})
+		c.Logger().Errorf("Failed to fetch settings for publish: %v", err)
+		// We continue even if settings fail? Or return error? 
+		// Usually safer to fail so state isn't partial.
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch website settings"})
 	}
 
-	// 3. Upload JSON to Firebase Storage
-	bucket, err := h.Client.Storage.Bucket(h.Config.FirebaseStorageBucket)
-	if err != nil {
-		c.Logger().Errorf("Failed to get storage bucket: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to access storage bucket"})
+	var settingsData map[string]interface{}
+	if err := settingsDoc.DataTo(&settingsData); err != nil {
+		c.Logger().Errorf("Failed to parse settings for publish: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to parse website settings"})
 	}
 
-	objectPath := "website/projects.json"
-	wc := bucket.Object(objectPath).NewWriter(ctx)
-	wc.ContentType = "application/json"
-	if _, err := wc.Write(jsonData); err != nil {
-		c.Logger().Errorf("Failed to write JSON to storage: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload JSON file"})
-	}
-	if err := wc.Close(); err != nil {
-		c.Logger().Errorf("Failed to close storage writer: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to finalize JSON upload"})
+	if err := uploadJSON("website/websiteConfig.json", settingsData); err != nil {
+		c.Logger().Errorf("Failed to upload settings JSON: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload settings data"})
 	}
 
-	c.Logger().Infof("Successfully published website data to %s", objectPath)
-	return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Website data published successfully"})
+	c.Logger().Info("Successfully published website data (projects.json and websiteConfig.json)")
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "success", 
+		"message": "Website data and configuration published successfully",
+	})
 }

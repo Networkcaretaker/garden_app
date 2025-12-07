@@ -1,22 +1,66 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
+
+interface WebsiteData {
+  title: string;
+  tagline: string;
+}
+
 export default function Home() {
+  // Initialize with your existing hardcoded values as a fallback
+  const [websiteData, setWebsiteData] = useState<WebsiteData>({
+    title: 'Mallorca Gardens',
+    tagline: 'Mallorcas Premier Gardening & Landscaping Experts'
+  });
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      // If the URL isn't set, we just stick to the defaults
+      if (!VITE_WEBSITE_CONFIG_URL) {
+        console.warn('VITE_WEBSITE_CONFIG_URL is not defined in .env');
+        return;
+      }
+
+      try {
+        const response = await fetch(VITE_WEBSITE_CONFIG_URL);
+        if (!response.ok) {
+          throw new Error('Failed to fetch website config');
+        }
+        const data = await response.json();
+        
+        // Update state with the fetched data
+        // We use prev state spread to ensure we don't lose defaults if fields are missing
+        setWebsiteData(prev => ({
+          ...prev,
+          title: data.title || prev.title,
+          tagline: data.tagline || prev.tagline
+        }));
+      } catch (error) {
+        console.error('Error loading website config:', error);
+      }
+    };
+
+    fetchConfig();
+  }, []);
+
   return (
     <main className="bg-white text-gray-800">
       {/* Hero Section */}
       <section className="relative flex h-[60vh] min-h-[400px] items-center justify-center text-center text-white">
         <img
           src="/rose-garden.webp"
-          alt="A beautiful, lush garden created by Acrollam Gardens"
+          alt={`A beautiful, lush garden created by ${websiteData.title}`}
           className="absolute z-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
           <h1 className="text-4xl font-bold text-white md:text-6xl">
-            Mallorca Gardens
+            {websiteData.title}
           </h1>
           <p className="mt-4 text-lg font-light text-green-100 md:text-2xl">
-            Mallorcas Premier Gardening & Landscaping Experts
+            {websiteData.tagline}
           </p>
           <Link
             to="/contact"
