@@ -64,10 +64,10 @@ export default function Home() {
             {websiteData.tagline}
           </p>
           <Link
-            to="/contact"
-            className="mt-8 inline-block rounded-full bg-green-600 px-8 py-3 font-bold text-white transition-colors hover:bg-green-700"
+            to="/projects"
+            className="mt-8 inline-block rounded-full bg-white border-2 border-green-600 px-8 py-3 font-bold text-green-600 transition-colors hover:bg-green-600 hover:text-white"
           >
-            Get a Free Quote
+            View Our Projects
           </Link>
         </div>
       </section>
@@ -81,6 +81,24 @@ export default function Home() {
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
             Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialize in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with us.
           </p>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="relative flex h-[80vh] min-h-[600px] items-center justify-center text-center text-white">
+        <img
+          src="/team.jpg"
+          alt={`Meet the team`}
+          className="absolute z-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50" />
+        <div className="relative z-10 p-4">
+          <Link
+            to="/contact"
+            className="mt-8 inline-block rounded-full bg-green-600 px-8 py-3 font-bold text-white transition-colors hover:bg-green-700"
+          >
+            Get a Free Quote
+          </Link>
         </div>
       </section>
       
@@ -182,9 +200,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Map Section */}
+      <section className="relative flex h-[90vh] min-h-[800px] items-center justify-center text-center text-white">
+        <img
+          src="/map.png"
+          alt={`A map of Mallorca`}
+          className="absolute z-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50" />
+        
+        <div className="relative z-10 p-4">
+          <h1 className="text-4xl font-bold text-white md:text-4xl">
+            Serving All of Mallorca
+          </h1>
+          <p className="mt-4 text-lg font-light text-green-100 md:text-2xl">
+            No matter where your property is located on the island, our professional gardening team is ready to help.<br></br> We provide complete island-wide coverage for maintenance and landscaping.
+          </p>
+          <Link
+            to="/contact"
+            className="mt-8 inline-block rounded-full bg-green-600 px-8 py-3 font-bold text-white transition-colors hover:bg-green-700"
+          >
+            Get a Free Quote
+          </Link>
+        </div>
+      </section>
+
       {/* Why Us Section */}
       <section className="bg-gray-50 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
+          
           <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
             Why choose Mallorca Gardens
           </h2>
@@ -194,6 +238,7 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
             {/* why 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/clip-1.png" alt="Clip 1" className="rounded-lg" />
               <h3 className="text-xl font-bold text-green-700">
                 Personalized Garden Designs
               </h3>
@@ -203,6 +248,7 @@ export default function Home() {
             </div>
             {/* why 2 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/clip-2.png" alt="Clip 2" className="rounded-lg" />
               <h3 className="text-xl font-bold text-green-700">
                 Professional Garden Maintenance
               </h3>
@@ -212,6 +258,7 @@ export default function Home() {
             </div>
             {/* why 3 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/clip-3.png" alt="Clip 3" className="rounded-lg" />
               <h3 className="text-xl font-bold text-green-700">
                 Creating Stunning and Sustainable Landscapes
               </h3>
@@ -221,6 +268,7 @@ export default function Home() {
             </div>
             {/* why 4 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/clip-4.png" alt="Clip 4" className="rounded-lg" />
               <h3 className="text-xl font-bold text-green-700">
                 Customer Happiness Guarantee
               </h3>

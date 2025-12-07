@@ -39,7 +39,9 @@ export default function ProjectsPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold text-center mb-2">Our Work</h1>
+      <Link to={`/`}>
+        <h1 className="text-4xl font-bold text-center mb-2">Mallorca Gardens</h1>
+      </Link>
       <p className="text-lg text-gray-600 text-center mb-12">A showcase of our recent projects.</p>
 
       {projects.length === 0 ? (
