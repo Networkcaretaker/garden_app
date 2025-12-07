@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Project } from '@garden/shared';
 
-const PROJECTS_URL = 'https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fprojects.json?alt=media&token=98cc611f-d64a-4610-b4de-c0f9294dac6b';
+const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);

@@ -20,3 +20,6 @@ TO DO
 5. Create projects page in new website app
 6. Create a project page to display a single project.
 7. Connect Website to firebase storage and use the projects.json file to load project
+
+
+The next task I would like you to do is to add some new feilds to the website settings. I have already added the data to the firebase database and I have updated the shared types settings.ts. I need you to update the backend with the new feilds in the settings.go file and then add the feilds to the WebsiteConfig.tsx so they can be edited

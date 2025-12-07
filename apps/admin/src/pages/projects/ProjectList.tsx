@@ -48,14 +48,14 @@ export default function ProjectList() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1">Manage your gardening portfolio</p>
+          <p className="text-gray-500 mt-1">Manage your portfolio</p>
         </div>
         <Link
           to="/projects/new"
           className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
         >
           <Plus className="h-5 w-5" />
-          <span>New Project</span>
+          <span>New</span>
         </Link>
       </div>
 
@@ -74,12 +74,14 @@ export default function ProjectList() {
               {/* Image Aspect Ratio Container */}
               <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {project.images && project.images.length > 0 ? (
+                  <a href={`/projects/${project.id}`}>
                   <img
                     // Update: Access .url property of the object
                     src={project.images[0].url}
                     alt={project.images[0].alt || project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  </a>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     No Image

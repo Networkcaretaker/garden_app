@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe } from 'lucide-react';
 import { api } from '../../services/api';
 import type { WebsiteSettings } from '@garden/shared';
 
@@ -119,6 +119,16 @@ export default function WebsiteConfig() {
           {publishSuccess && <span className="text-sm text-blue-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {publishSuccess}</span>}
           {error && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {error}</span>}
           {publishError && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {publishError}</span>}
+          <a
+            href={websiteURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open website URL in a new tab"
+            className={`flex items-center gap-2 bg-blue-600 text-white py-2 px-5 rounded-lg hover:bg-blue-700 font-medium ${!websiteURL ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={(e) => !websiteURL && e.preventDefault()}
+          >
+            <Globe className="h-5 w-5" />
+          </a>
           <button
             type="button"
             onClick={handlePublish}
@@ -133,7 +143,7 @@ export default function WebsiteConfig() {
             ) : (
               <>
                 <Webhook className="h-5 w-5" />
-                Update Website
+                Update
               </>
             )}
           </button>
@@ -150,7 +160,7 @@ export default function WebsiteConfig() {
             ) : (
               <>
                 <Save className="h-5 w-5" />
-                Save Settings
+                Save
               </>
             )}
           </button>

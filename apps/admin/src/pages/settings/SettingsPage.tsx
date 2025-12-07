@@ -12,11 +12,12 @@ function GeneralSettingsPlaceholder() {
 }
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'website' | 'general'>('website');
+  const [activeTab, setActiveTab] = useState<'general' | 'website'>('general');
 
   const tabs = [
-    { id: 'website', name: 'Website' },
     { id: 'general', name: 'General' },
+    { id: 'website', name: 'Website' },
+
   ];
 
   return (
@@ -32,7 +33,7 @@ export default function SettingsPage() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'website' | 'general')}
+                onClick={() => setActiveTab(tab.id as 'general' | 'website')}
                 className={`${
                   activeTab === tab.id
                     ? 'border-green-500 text-green-600'
@@ -48,8 +49,8 @@ export default function SettingsPage() {
 
         {/* Tab Content */}
         <div>
-          {activeTab === 'website' && <WebsiteConfig />}
           {activeTab === 'general' && <GeneralSettingsPlaceholder />}
+          {activeTab === 'website' && <WebsiteConfig />}
         </div>
       </div>
     </div>
