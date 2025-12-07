@@ -3,23 +3,26 @@ firebase target:apply hosting web garden-projects
 
 firebase deploy --only hosting
 
-website setup
-
-I have created a new website app for the project using only React because the next.js web project just wasnt working. I have decided to simplify the website for opimum performance.
-The new website will not connect to the Go backend and will not connect directly to the firebase database. Instead we will just use a json file.
-I want the admin app to create a JSON file for active projects from those saved in the firebase storage. I then want to use this JSON file to display data on the website.
-
-Before you help me with and coding can you confirm that you understand what I want to achive.
-
-TO DO
-
-1. Add active/disable to projects in backend functions and admin (also shared types will need updating)
-2. Create a function in apps/backend to create a JSON file with the projects data from the firebase database.
-3. In Admin settings add a button to run the new function that will create a JSON file with the active projects.
-4. Save JSON in firebase storage "website/projects.json"
-5. Create projects page in new website app
-6. Create a project page to display a single project.
-7. Connect Website to firebase storage and use the projects.json file to load project
-
-
-The next task I would like you to do is to add some new feilds to the website settings. I have already added the data to the firebase database and I have updated the shared types settings.ts. I need you to update the backend with the new feilds in the settings.go file and then add the feilds to the WebsiteConfig.tsx so they can be edited
+Next Tasks
+1. Delete projects (including project images) in admin and backend
+2. Header with navigation on website project and projects pages
+3. Project settings page with editible Catagories and Tags (include remove function)
+4. Create pop up on create and edit projects page to add new category or tag
+5. Add testimonials to homepage
+6. Create website footer with contact and social links
+7. Add Groups to images and group type (collection, slider)
+    - Groups should have editable title and description fields
+    - Collection groups will have an option for small or large image layouts
+    - Slider groups can only have 2 images in group
+    - Slider groups have two editable label fields (Before / After)
+7. Add image reordering inside groups
+8. Add option to set feature image for projects
+9. Add image split before and after
+10. Sort image size and rotation. Add thumbnail images
+11. Create Preview page for projects in Admin, Use same layout as website Project page 
+    - Website Project page will have Header and Footer
+    - Admin ProjectPreview Page will have options to edit project and edit images
+12. Create EditImage page to admin to edit image metadata
+13. Add About, Services and Why US to website
+14. Add social links to website
+15. Add contact details to website

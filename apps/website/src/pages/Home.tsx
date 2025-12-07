@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { BeforeAfterSlider } from '../components/ImageSlider';
 
 const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
 
@@ -71,6 +72,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section className="bg-white py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+            A Passionate Team of Expert Gardeners
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+            Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialize in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with us.
+          </p>
+        </div>
+      </section>
+      
       {/* Services Section */}
       <section className="bg-gray-50 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
@@ -113,6 +126,35 @@ export default function Home() {
               </p>
             </div>
           </div>
+          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {/* Service 4 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Comprehensive Palm Tree and Shrub Care
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Specialized tree and shrub care for vibrant, flourishing landscapes.
+              </p>
+            </div>
+            {/* Service 5 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Build and Maintain Pools
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Your Pool, Our Passion. Design, build, and maintain your Mallorca dream pool.
+              </p>
+            </div>
+            {/* Service 6 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Matting and Gravelling Services
+              </h3>
+              <p className="mt-2 text-gray-600">
+                We offer expert matting and gravelling services to transform your outdoor spaces into long-lasting, eye-catching areas.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -140,12 +182,82 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Us Section */}
+      <section className="bg-gray-50 py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+            Why choose Mallorca Gardens
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+            Transform your outdoor spaces with Mallorca Gardens
+          </p>
+          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
+            {/* why 1 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Personalized Garden Designs
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Custom garden designs tailored to your style and preferences. We bring your vision to life.
+              </p>
+            </div>
+            {/* why 2 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Professional Garden Maintenance
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Our expert gardeners provide year-round maintenance to ensure your garden flourishes and remains vibrant.
+              </p>
+            </div>
+            {/* why 3 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Creating Stunning and Sustainable Landscapes
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Transform your outdoor space into an eco-friendly haven that will leave your neighbors in awe.
+              </p>
+            </div>
+            {/* why 4 */}
+            <div className="rounded-lg bg-white p-8 shadow-md">
+              <h3 className="text-xl font-bold text-green-700">
+                Customer Happiness Guarantee
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Customer satisfaction is our top priority. We go the extra mile to fulfill your gardening dreams.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial Section */}
+      <section className="bg-white py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+          <BeforeAfterSlider 
+              // Using distinct placeholder images to simulate before/after
+              // Ideally these would be the same dimensions.
+              beforeImage="/project-4.webp"
+              afterImage="/project-3.webp"
+              altText="Reform Project"
+            />
+          <h2 className="text-2xl font-light text-green-800 md:text-4xl mt-4">
+            <i>"What a fantastic team, thank you Mallorca Gardens"</i>
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+            <b>John Dow</b> - Mallorca Resident
+          </p>
+        </div>
+      </section>
+
       {/* Footer CTA */}
       <footer className="bg-green-800 py-16 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold">Ready to transform your garden?</h2>
+          <h2 className="text-3xl font-bold">Get in Touch with Our Skilled Gardeners for a Free Consultation</h2>
           <p className="mt-4 text-lg text-green-100">
-            Contact us today for a free, no-obligation consultation.
+            Our expert team specializes in custom and sustainable gardening solutions across beautiful Mallorca.<br></br>
+            Contact us for a free consultation and let us bring your unique vision to life.
           </p>
           <Link to="/contact" className="mt-8 inline-block rounded-full bg-white px-8 py-3 font-bold text-green-800 transition-transform hover:scale-105">
             Get in Touch
