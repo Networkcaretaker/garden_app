@@ -5,6 +5,7 @@ import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
 import type { Project, ProjectCategory, ProjectImage } from '@garden/shared';
+import DeleteProject from '../../components/popup/DeleteProject';
 
 export default function ProjectEdit() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,10 @@ export default function ProjectEdit() {
   const [isFetching, setIsFetching] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Delete State
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -115,6 +120,26 @@ export default function ProjectEdit() {
       setError(message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent form submission
+    setShowDeletePopup(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/admin/projects/${id}`);
+      navigate('/projects');
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Failed to delete project';
+      setError(message);
+      setShowDeletePopup(false); // Close popup so user can see error
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -273,6 +298,13 @@ export default function ProjectEdit() {
 
         <div className="flex justify-end pt-4 border-t border-gray-100">
           <button
+            onClick={handleDeleteClick}
+            className="flex items-center gap-2 bg-red-600 text-white py-2.5 px-6 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium mr-4"
+          >
+            <Trash2 className="h-5 w-5" />
+            Delete Project
+          </button>
+          <button
             type="submit"
             disabled={isSaving}
             className="flex items-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
@@ -292,6 +324,14 @@ export default function ProjectEdit() {
         </div>
 
       </form>
+
+      <DeleteProject
+        isOpen={showDeletePopup}
+        onClose={() => setShowDeletePopup(false)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        projectTitle={title}
+      />
     </div>
   );
 }

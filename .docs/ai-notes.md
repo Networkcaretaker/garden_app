@@ -17,7 +17,7 @@ Next Tasks
     - Slider groups have two editable label fields (Before / After)
 7. Add image reordering inside groups
 8. Add option to set feature image for projects
-9. Add image split before and after
+9. Add image split before and after **DONE**
 10. Sort image size and rotation. Add thumbnail images
 11. Create Preview page for projects in Admin, Use same layout as website Project page 
     - Website Project page will have Header and Footer
@@ -26,4 +26,4 @@ Next Tasks
 13. Add About, Services and Why US to website **DONE**
 14. Add social links to website
 15. Add contact details to website
-16. Accordian setting on mobile
+16. Accordian setting on mobile **DONE**

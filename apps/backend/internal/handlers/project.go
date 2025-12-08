@@ -216,3 +216,79 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		"message": "Project updated successfully",
 	})
 }
+
+// DeleteProject handles DELETE /projects/:id
+func (h *ProjectHandler) DeleteProject(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing project ID"})
+	}
+
+	ctx := context.Background()
+
+	// 1. Fetch the project first so we know which images to delete
+	docRef := h.Client.Firestore.Collection("projects").Doc(id)
+	docSnap, err := docRef.Get(ctx)
+	if err != nil {
+		if strings.Contains(err.Error(), "NotFound") {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "Project not found"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch project details"})
+	}
+
+	var project models.Project
+	if err := docSnap.DataTo(&project); err != nil {
+		c.Logger().Errorf("Failed to parse project data for deletion: %v", err)
+		// We continue even if parsing fails, to at least try deleting the document
+	}
+
+	// 2. Delete images from Storage
+	// We do this asynchronously or simply iterate. Since it's a delete op, best effort is usually acceptable.
+	bucketName := h.Config.FirebaseStorageBucket
+	bucket, err := h.Client.Storage.Bucket(bucketName)
+
+	if err == nil && len(project.Images) > 0 {
+		for _, img := range project.Images {
+			// Use StoragePath if available, otherwise try to parse URL
+			var objectPath string
+			if img.StoragePath != "" {
+				objectPath = img.StoragePath
+			} else {
+				// Parse URL logic (fallback)
+				parsedURL, parseErr := url.Parse(img.URL)
+				if parseErr == nil {
+					parts := strings.Split(parsedURL.Path, "/o/")
+					if len(parts) > 1 {
+						decodedPath, decodeErr := url.QueryUnescape(parts[1])
+						if decodeErr == nil {
+							objectPath = decodedPath
+						}
+					}
+				}
+			}
+
+			if objectPath != "" {
+				// Run deletes in background to keep response fast
+				go func(p string) {
+					if err := bucket.Object(p).Delete(context.Background()); err != nil {
+						c.Logger().Warnf("Failed to delete image during project cleanup: %s. Error: %v", p, err)
+					}
+				}(objectPath)
+			}
+		}
+	} else if err != nil {
+		c.Logger().Errorf("Failed to access storage bucket: %v", err)
+	}
+
+	// 3. Delete the Firestore Document
+	if _, err := docRef.Delete(ctx); err != nil {
+		c.Logger().Errorf("Failed to delete project document: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete project document"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"id":      id,
+		"status":  "deleted",
+		"message": "Project and associated resources deleted successfully",
+	})
+}

@@ -64,6 +64,8 @@ func main() {
 	// Admin Project Routes (Write)
 	adminGroup.POST("/projects", projectHandler.CreateProject)
 	adminGroup.PUT("/projects/:id", projectHandler.UpdateProject)
+	adminGroup.DELETE("/projects/:id", projectHandler.DeleteProject)
+	
 	// Admin Settings Routes (Write)
 	adminGroup.PUT("/settings/website", settingsHandler.UpdateWebsiteSettings)
 	adminGroup.POST("/settings/website/publish", settingsHandler.PublishWebsiteData)
