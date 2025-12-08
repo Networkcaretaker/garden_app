@@ -4,7 +4,7 @@ firebase target:apply hosting web garden-projects
 firebase deploy --only hosting
 
 Next Tasks
-1. Delete projects (including project images) in admin and backend
+1. Delete projects (including project images) in admin and backend **DONE**
 2. Header with navigation on website project and projects pages
 3. Project settings page with editible Catagories and Tags (include remove function)
 4. Create pop up on create and edit projects page to add new category or tag
@@ -27,3 +27,5 @@ Next Tasks
 14. Add social links to website
 15. Add contact details to website
 16. Accordian setting on mobile **DONE**
+17. Add contact details to website Config
+

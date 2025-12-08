@@ -7,7 +7,8 @@ import ProjectCreate from './pages/projects/ProjectCreate';
 import DashboardPage from './pages/DashboardPage';
 import PlantsPage from './pages/plants/PlantsPage';
 import ProjectList from './pages/projects/ProjectList';
-import ProjectEdit from './pages/projects/ProjectEdit'; // Import Edit Page
+import ProjectEdit from './pages/projects/ProjectEdit';
+import ProjectPreview from './pages/projects/ProjectPreview';
 import SettingsPage from './pages/settings/SettingsPage';
 
 // ... ProtectedRoute component ...
@@ -48,7 +49,8 @@ function App() {
           <Route path="projects">
              <Route index element={<ProjectList />} />
              <Route path="new" element={<ProjectCreate />} />
-             <Route path=":id" element={<ProjectEdit />} /> {/* New Dynamic Route */}
+             <Route path=":id" element={<ProjectPreview />} />
+             <Route path=":id/edit" element={<ProjectEdit />} />
           </Route>
           <Route path="plants" element={<PlantsPage />} />
           <Route path="settings" element={<SettingsPage />} />
