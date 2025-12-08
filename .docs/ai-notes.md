@@ -26,3 +26,4 @@ Next Tasks
 13. Add About, Services and Why US to website **DONE**
 14. Add social links to website
 15. Add contact details to website
+16. Accordian setting on mobile

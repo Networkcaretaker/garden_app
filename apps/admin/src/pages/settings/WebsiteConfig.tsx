@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown } from 'lucide-react';
 import { api } from '../../services/api';
 import type { WebsiteSettings, SocialLinks } from '@garden/shared';
 
@@ -34,6 +34,21 @@ export default function WebsiteConfig() {
 
   // Helper to handle SEO keywords input (comma separated string <-> array)
   const [seoInput, setSeoInput] = useState('');
+
+  // Accordion state: Track which sections are open
+  // We default 'general' to true so the first section is open on mobile load
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    general: true,
+    seo: false,
+    social: false,
+  });
+
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -163,135 +178,173 @@ export default function WebsiteConfig() {
       <form onSubmit={handleSave} className="space-y-6">
         
         {/* General Settings */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Globe className="h-5 w-5 text-blue-500" /> General Info
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Website Title</label>
-                    <input
-                        type="text"
-                        value={settings.title || ''}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="My Awesome Garden"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Public URL</label>
-                    <input
-                        type="url"
-                        value={settings.websiteURL || ''}
-                        onChange={(e) => handleInputChange('websiteURL', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="https://www.example.com"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                    <input
-                        type="text"
-                        value={settings.tagline || ''}
-                        onChange={(e) => handleInputChange('tagline', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="Growing the future, one plant at a time"
-                    />
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <button 
+                type="button"
+                onClick={() => toggleSection('general')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-blue-500" /> General Info
+                </h2>
+                {/* Chevron only visible on mobile */}
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['general'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+            
+            {/* Content hidden on mobile if not expanded, always block on md+ */}
+            <div className={`px-6 pb-6 ${expandedSections['general'] ? 'block' : 'hidden'} md:block`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Website Title</label>
+                        <input
+                            type="text"
+                            value={settings.title || ''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="My Awesome Garden"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Public URL</label>
+                        <input
+                            type="url"
+                            value={settings.websiteURL || ''}
+                            onChange={(e) => handleInputChange('websiteURL', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="https://www.example.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                        <input
+                            type="text"
+                            value={settings.tagline || ''}
+                            onChange={(e) => handleInputChange('tagline', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="Growing the future, one plant at a time"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
 
         {/* Content & SEO */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Search className="h-5 w-5 text-purple-500" /> Content & SEO
-            </h2>
-            <div className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-                    <textarea
-                        rows={3}
-                        value={settings.description || ''}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="A brief description of your website for search engines."
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Footer Excerpt</label>
-                    <textarea
-                        rows={2}
-                        value={settings.excerpt || ''}
-                        onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="Short text shown in the footer or intro cards."
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Keywords (Comma separated)</label>
-                    <input
-                        type="text"
-                        value={seoInput}
-                        onChange={(e) => handleSeoChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="garden, plants, nursery, organic"
-                    />
-                    <div className="flex flex-wrap gap-1 mt-2">
-                        {settings.seo?.map((t, i) => (
-                          <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            {t}
-                          </span>
-                        ))}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('seo')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Search className="h-5 w-5 text-purple-500" /> Content & SEO
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['seo'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+                        <textarea
+                            rows={3}
+                            value={settings.description || ''}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A brief description of your website for search engines."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Footer Excerpt</label>
+                        <textarea
+                            rows={2}
+                            value={settings.excerpt || ''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="Short text shown in the footer or intro cards."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Keywords (Comma separated)</label>
+                        <input
+                            type="text"
+                            value={seoInput}
+                            onChange={(e) => handleSeoChange(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="garden, plants, nursery, organic"
+                        />
+                        <div className="flex flex-wrap gap-1 mt-2">
+                            {settings.seo?.map((t, i) => (
+                            <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                {t}
+                            </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         {/* Social Media */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Share2 className="h-5 w-5 text-orange-500" /> Social Media
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-                    <input
-                        type="url"
-                        value={settings.social?.facebook || ''}
-                        onChange={(e) => handleSocialChange('facebook', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="https://facebook.com/..."
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-                    <input
-                        type="url"
-                        value={settings.social?.instagram || ''}
-                        onChange={(e) => handleSocialChange('instagram', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="https://instagram.com/..."
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-                    <input
-                        type="url"
-                        value={settings.social?.linkedin || ''}
-                        onChange={(e) => handleSocialChange('linkedin', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="https://linkedin.com/in/..."
-                    />
-                </div>
-                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
-                    <input
-                        type="text"
-                        value={settings.social?.whatsapp || ''}
-                        onChange={(e) => handleSocialChange('whatsapp', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                        placeholder="+34 600 000 000"
-                    />
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('social')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Share2 className="h-5 w-5 text-orange-500" /> Social Media
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['social'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['social'] ? 'block' : 'hidden'} md:block`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
+                        <input
+                            type="url"
+                            value={settings.social?.facebook || ''}
+                            onChange={(e) => handleSocialChange('facebook', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="https://facebook.com/..."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
+                        <input
+                            type="url"
+                            value={settings.social?.instagram || ''}
+                            onChange={(e) => handleSocialChange('instagram', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="https://instagram.com/..."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
+                        <input
+                            type="url"
+                            value={settings.social?.linkedin || ''}
+                            onChange={(e) => handleSocialChange('linkedin', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="https://linkedin.com/in/..."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                        <input
+                            type="text"
+                            value={settings.social?.whatsapp || ''}
+                            onChange={(e) => handleSocialChange('whatsapp', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="+34 600 000 000"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
