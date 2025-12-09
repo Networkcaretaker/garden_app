@@ -36,6 +36,7 @@ type CreateProjectRequest struct {
 	Description string         `json:"description"`
 	Location    string         `json:"location"`
 	Category    string         `json:"category"`
-	Status    	string         `json:"status"`
+	Status      string         `json:"status"`
+	CoverImage  string         `json:"coverImage"` // Added required field
 	Images      []ProjectImage `json:"images"`
 }

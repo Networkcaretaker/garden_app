@@ -92,11 +92,6 @@ const ProjectPreview: React.FC = () => {
             </button>
             
             <div className="flex items-center gap-3">
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                project.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-              }`}>
-                {project.published ? 'Published' : 'Draft'}
-              </span>
               <Link
                 to={`/projects/${project.id}/edit`}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -109,7 +104,7 @@ const ProjectPreview: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto  py-8">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
           
           {/* Cover Image Hero */}
@@ -128,7 +123,7 @@ const ProjectPreview: React.FC = () => {
             
             {/* Overlay Gradient for Text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-              <div className="p-6 md:p-8 w-full">
+              <div className="p-6 md:p-6 w-full">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{project.title}</h1>
                 <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm md:text-base">
                   <div className="flex items-center">
@@ -155,12 +150,12 @@ const ProjectPreview: React.FC = () => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6 md:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 md:p-6">
             
             {/* Left Column: Description & Metadata */}
-            <div className="lg:col-span-1 space-y-8">
+            <div className="lg:col-span-1 space-y-6">
               {/* Status Card */}
-              <div className="bg-gray-50 rounded-lg p-5 border border-gray-100">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
                   Project Details
                 </h3>
@@ -203,7 +198,7 @@ const ProjectPreview: React.FC = () => {
 
               {/* AI Details (Conditional) */}
               {project.aiGenerated && (
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
                   <div className="flex items-start gap-3">
                     <Cpu className="w-5 h-5 text-blue-600 mt-0.5" />
                     <div>
@@ -239,9 +234,9 @@ const ProjectPreview: React.FC = () => {
               </h3>
               
               {project.images.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {project.images.map((img) => (
-                    <div key={img.id} className="group relative break-inside-avoid mb-4">
+                    <div key={img.id} className="group relative break-inside-avoid">
                       <div className="aspect-w-4 aspect-h-3 w-full overflow-hidden rounded-lg bg-gray-100 border border-gray-200">
                         <img
                           src={img.url}

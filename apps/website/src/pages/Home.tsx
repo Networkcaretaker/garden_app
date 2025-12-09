@@ -201,7 +201,7 @@ export default function Home() {
       </section>
 
       {/* Map Section */}
-      <section className="relative flex h-[90vh] min-h-[800px] items-center justify-center text-center text-white">
+      <section className="relative flex h-[70vh] min-h-[600px] items-center justify-center text-center text-white">
         <img
           src="/map.png"
           alt={`A map of Mallorca`}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, X, Loader2, Save, ArrowLeft, Trash2 } from 'lucide-react';
+import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
@@ -25,6 +25,7 @@ export default function ProjectEdit() {
   const [category, setCategory] = useState<ProjectCategory>('residential');
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
+  const [coverImage, setCoverImage] = useState(''); // New state for cover image
   
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -47,6 +48,7 @@ export default function ProjectEdit() {
         setLocation(project.location);
         setExistingImages(project.images || []);
         setStatus(project.status || 'inactive');
+        setCoverImage(project.coverImage || ''); // Load existing cover image
         
       } catch (err) {
         console.error(err);
@@ -70,12 +72,25 @@ export default function ProjectEdit() {
   };
 
   const removeExistingImage = (imageId: string) => {
+    const imageToRemove = existingImages.find(img => img.id === imageId);
     setExistingImages((prev) => prev.filter(img => img.id !== imageId));
+    
+    // If the removed image was the cover, clear the cover selection
+    if (imageToRemove && imageToRemove.url === coverImage) {
+      setCoverImage('');
+    }
   };
 
   const removeNewFile = (index: number) => {
+    const previewToRemove = newPreviews[index];
+    
     setNewFiles((prev) => prev.filter((_, i) => i !== index));
     setNewPreviews((prev) => prev.filter((_, i) => i !== index));
+    
+    // If the removed file was selected as cover, clear the selection
+    if (previewToRemove === coverImage) {
+      setCoverImage('');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,21 +102,35 @@ export default function ProjectEdit() {
       const newUploadedImages: ProjectImage[] = [];
       const uploadPath = `project-images/${id}`;
       
-      for (const file of newFiles) {
+      let finalCoverImage = coverImage;
+
+      // Upload new files
+      for (let i = 0; i < newFiles.length; i++) {
+        const file = newFiles[i];
+        const previewUrl = newPreviews[i]; // This is the blob URL currently in state if selected
+
         const resizedBlob = await resizeImage(file, 1200);
-        // Destructure response
         const { url, path } = await uploadImage(resizedBlob, uploadPath);
         
+        // Check if this specific new file was selected as the cover image
+        if (coverImage === previewUrl) {
+          finalCoverImage = url; // Update to the real remote URL
+        }
+
         newUploadedImages.push({
           id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: url,
-          storagePath: path, // Save the path
+          storagePath: path,
           caption: '',
           alt: '',
         });
       }
 
-      const finalImages = [...existingImages, ...newUploadedImages];
+      // If no cover image is selected, default to the first available image
+      const allImages = [...existingImages, ...newUploadedImages];
+      if (!finalCoverImage && allImages.length > 0) {
+        finalCoverImage = allImages[0].url;
+      }
 
       await api.put(`/admin/projects/${id}`, {
         title,
@@ -109,7 +138,8 @@ export default function ProjectEdit() {
         category,
         location,
         status,
-        images: finalImages,
+        coverImage: finalCoverImage,
+        images: allImages,
       });
 
       navigate('/projects');
@@ -124,7 +154,7 @@ export default function ProjectEdit() {
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault(); 
     setShowDeletePopup(true);
   };
 
@@ -137,7 +167,7 @@ export default function ProjectEdit() {
       console.error(err);
       const message = err instanceof Error ? err.message : 'Failed to delete project';
       setError(message);
-      setShowDeletePopup(false); // Close popup so user can see error
+      setShowDeletePopup(false); 
     } finally {
       setIsDeleting(false);
     }
@@ -152,16 +182,41 @@ export default function ProjectEdit() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <button 
-        onClick={() => navigate('/projects')}
-        className="flex items-center text-gray-500 hover:text-gray-700 mb-6 text-sm"
-      >
-        <ArrowLeft className="h-4 w-4 mr-1" />
-        Back to Projects
-      </button>
-
-      <h1 className="text-2xl font-bold mb-6">Edit Project</h1>
+    <div className="min-h-screen bg-white pb-20">
+      {/* Navigation Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Saving Changes...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-5 w-5" />
+                    Save Changes
+                  </>
+                )}
+            </button> 
+            </div>
+          </div>
+        </div>
+      </div>
 
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
@@ -238,45 +293,77 @@ export default function ProjectEdit() {
 
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
+          <p className="text-sm text-gray-500 mb-4">Click the star icon to set the cover image for the project.</p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             
+            {/* EXISTING IMAGES */}
             {existingImages.map((img) => (
               <div key={img.id} className="relative aspect-square group">
                 <img 
                   src={img.url} 
                   alt="Existing" 
-                  className="w-full h-full object-cover rounded-lg border border-gray-200" 
+                  className={`w-full h-full object-cover rounded-lg border ${img.url === coverImage ? 'border-yellow-400 ring-2 ring-yellow-400' : 'border-gray-200'}`} 
                 />
+                
+                {/* Star / Cover Image Button */}
+                <button
+                  type="button"
+                  onClick={() => setCoverImage(img.url)}
+                  className="absolute top-2 left-2 p-1 rounded-full shadow-sm transition-all hover:bg-white/80"
+                  title={img.url === coverImage ? "Cover Image" : "Set as Cover"}
+                >
+                  <Star 
+                    className={`h-5 w-5 ${img.url === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400'}`} 
+                  />
+                </button>
+
                 <button
                   type="button"
                   onClick={() => removeExistingImage(img.id)}
-                  className="absolute top-1 right-1 bg-white text-red-600 p-1.5 rounded-full shadow-sm hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-2 bg-white text-red-600 p-1 rounded-full shadow-sm hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Remove Image"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-5 w-5" />
                 </button>
-                <span className="absolute bottom-1 left-1 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
+                <span className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
                   Saved
+                </span>
+                <span className="absolute bottom-2 right-2 bg-green-600 hover:bg-green-700 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  Edit
                 </span>
               </div>
             ))}
 
+            {/* NEW UPLOADS */}
             {newPreviews.map((src, index) => (
               <div key={`new-${index}`} className="relative aspect-square group">
                 <img 
                   src={src} 
                   alt="New Upload" 
-                  className="w-full h-full object-cover rounded-lg border-2 border-green-500/50" 
+                  className={`w-full h-full object-cover rounded-lg border-2 ${src === coverImage ? 'border-yellow-400 ring-2 ring-yellow-400' : 'border-green-500/50'}`} 
                 />
+                
+                {/* Star / Cover Image Button for New Uploads */}
+                <button
+                  type="button"
+                  onClick={() => setCoverImage(src)}
+                  className="absolute top-2 left-2 p-1 rounded-full shadow-sm transition-all hover:bg-white/80"
+                  title={src === coverImage ? "Cover Image" : "Set as Cover"}
+                >
+                  <Star 
+                    className={`h-5 w-5 ${src === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400'}`} 
+                  />
+                </button>
+
                 <button
                   type="button"
                   onClick={() => removeNewFile(index)}
-                  className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
-                <span className="absolute bottom-1 left-1 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded">
+                <span className="absolute bottom-2 left-2 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded">
                   New
                 </span>
               </div>
@@ -296,31 +383,40 @@ export default function ProjectEdit() {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-gray-100">
-          <button
-            onClick={handleDeleteClick}
-            className="flex items-center gap-2 bg-red-600 text-white py-2.5 px-6 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium mr-4"
-          >
-            <Trash2 className="h-5 w-5" />
-            Delete Project
-          </button>
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="flex items-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Saving Changes...
-              </>
-            ) : (
-              <>
-                <Save className="h-5 w-5" />
-                Save Changes
-              </>
-            )}
-          </button>
+        <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <a
+                href={`/projects/${id}`}
+                className={`flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2 px-5 rounded-lg hover:bg-gray-50 font-medium `}
+            >
+                <Eye className="h-5 w-5" />
+                <span className="inline">Project Preview</span>
+            </a>
+            <button
+              onClick={handleDeleteClick}
+              className="flex items-center justify-center gap-2 bg-red-600 text-white py-2.5 px-6 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"
+            >
+              <Trash2 className="h-5 w-5" />
+              Delete Project
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
       </form>

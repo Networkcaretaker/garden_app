@@ -2,11 +2,13 @@ firebase target:apply hosting admin garden-projects-admin
 firebase target:apply hosting web garden-projects
 
 firebase deploy --only hosting
+gcloud builds submit --tag gcr.io/garden-projects/backend
+gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
 
 Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
 2. Header with navigation on website project and projects pages
-3. Project settings page with editible Catagories and Tags (include remove function)
+3. Project settings page (taxonomies) with editible Catagories and Tags (include remove function)
 4. Create pop up on create and edit projects page to add new category or tag
 5. Add testimonials to homepage **DONE**
 6. Create website footer with contact and social links
@@ -21,7 +23,8 @@ Next Tasks
 10. Sort image size and rotation. Add thumbnail images
 11. Create Preview page for projects in Admin, Use same layout as website Project page 
     - Website Project page will have Header and Footer
-    - Admin ProjectPreview Page will have options to edit project and edit images
+    - Admin ProjectPreview Page will have options to edit project and edit images **DONE**
+    - Add edit image page
 12. Create EditImage page to admin to edit image metadata
 13. Add About, Services and Why US to website **DONE**
 14. Add social links to website

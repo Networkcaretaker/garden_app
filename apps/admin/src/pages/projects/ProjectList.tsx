@@ -77,8 +77,8 @@ export default function ProjectList() {
                   <a href={`/projects/${project.id}`}>
                   <img
                     // Update: Access .url property of the object
-                    src={project.images[0].url}
-                    alt={project.images[0].alt || project.title}
+                    src={project.coverImage}
+                    alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   </a>
@@ -117,7 +117,7 @@ export default function ProjectList() {
 
                 <div className="pt-3 border-t border-gray-100 flex justify-end">
                    <Link 
-                     to={`/projects/${project.id}`}
+                     to={`/projects/${project.id}/edit`}
                      className="text-sm font-medium text-green-600 hover:text-green-700"
                    >
                      Edit Details &rarr;

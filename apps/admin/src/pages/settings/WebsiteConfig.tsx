@@ -38,7 +38,7 @@ export default function WebsiteConfig() {
   // Accordion state: Track which sections are open
   // We default 'general' to true so the first section is open on mobile load
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    general: true,
+    general: false,
     seo: false,
     social: false,
   });

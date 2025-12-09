@@ -42,12 +42,14 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		Category:      req.Category,
 		Status:        req.Status,
 		Images:        req.Images,
+		CoverImage:    req.CoverImage, // Use the provided cover image
 		Published:     false,
 		CreatedAt:     now,
 		UpdatedAt:     now,
 	}
 
-	if len(newProject.Images) > 0 {
+	// Fallback: If no cover image is explicitly set, but there are images, use the first one
+	if newProject.CoverImage == "" && len(newProject.Images) > 0 {
 		newProject.CoverImage = newProject.Images[0].URL
 	}
 
@@ -191,6 +193,13 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	}
 
 	// 3. Perform the Database Update
+	
+	// Determine correct cover image
+	finalCoverImage := req.CoverImage
+	if finalCoverImage == "" && len(req.Images) > 0 {
+		finalCoverImage = req.Images[0].URL
+	}
+
 	updates := []firestore.Update{
 		{Path: "title", Value: req.Title},
 		{Path: "description", Value: req.Description},
@@ -198,11 +207,8 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		{Path: "category", Value: req.Category},
 		{Path: "status", Value: req.Status},
 		{Path: "images", Value: req.Images},
+		{Path: "coverImage", Value: finalCoverImage}, // Use calculated cover image
 		{Path: "updatedAt", Value: time.Now()},
-	}
-
-	if len(req.Images) > 0 {
-		updates = append(updates, firestore.Update{Path: "coverImage", Value: req.Images[0].URL})
 	}
 
 	_, err = docRef.Update(ctx, updates)
