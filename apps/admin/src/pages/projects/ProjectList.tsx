@@ -1,29 +1,18 @@
-import { useEffect, useState } from 'react';
+//import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, MapPin, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '../../services/api';
+import { useQuery } from '@tanstack/react-query';
 import type { Project } from '@garden/shared';
 
 export default function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
+  const { data: projects = [], isLoading, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
       const data = await api.get('/projects');
-      setProjects(data || []);
-    } catch (err: unknown) {
-      console.error(err);
-      setError('Failed to load projects');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return (data || []) as Project[];
+    },
+  });
 
   if (isLoading) {
     return (
@@ -37,7 +26,7 @@ export default function ProjectList() {
     return (
       <div className="flex items-center justify-center h-64 text-red-600 gap-2">
         <AlertCircle className="h-5 w-5" />
-        <span>{error}</span>
+        <span>{error.message || 'Failed to load projects'}</span>
       </div>
     );
   }

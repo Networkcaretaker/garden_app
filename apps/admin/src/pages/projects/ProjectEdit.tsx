@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Project, ProjectCategory, ProjectImage } from '@garden/shared';
 import DeleteProject from '../../components/popup/DeleteProject';
 
 export default function ProjectEdit() {
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  const [isFetching, setIsFetching] = useState(true);
+  const dataLoaded = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,35 +33,38 @@ export default function ProjectEdit() {
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
 
+  // Use useQuery to fetch data (uses cache if available)
+  const { data: projects, isLoading: isFetching } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const data = await api.get('/projects');
+      return (data || []) as Project[];
+    },
+  });
+
   useEffect(() => {
-    const loadProject = async () => {
-      try {
-        const projects: Project[] = await api.get('/projects');
-        const project = projects.find(p => p.id === id);
-        
-        if (!project) {
-          setError('Project not found');
-          return;
-        }
-
-        setTitle(project.title);
-        setDescription(project.description);
-        setCategory(project.category);
-        setLocation(project.location);
-        setExistingImages(project.images || []);
-        setStatus(project.status || 'inactive');
-        setCoverImage(project.coverImage || ''); // Load existing cover image
-        
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load project details');
-      } finally {
-        setIsFetching(false);
+    if (projects && id && !dataLoaded.current) {
+      const project = projects.find(p => p.id === id);
+      
+      if (!project) {
+        setError('Project not found');
+        return;
       }
-    };
 
-    loadProject();
-  }, [id]);
+      setTitle(project.title);
+      setDescription(project.description);
+      setCategory(project.category);
+      setLocation(project.location);
+      setExistingImages(project.images || []);
+      setStatus(project.status || 'inactive');
+      setCoverImage(project.coverImage || '');
+      
+      // Mark as loaded so we don't overwrite user edits if background refetch happens
+      dataLoaded.current = true;
+    }
+  }, [projects, id]);
+
+
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -142,6 +147,7 @@ export default function ProjectEdit() {
         images: allImages,
       });
 
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       navigate('/projects');
       
     } catch (err: unknown) {
@@ -162,6 +168,7 @@ export default function ProjectEdit() {
     setIsDeleting(true);
     try {
       await api.delete(`/admin/projects/${id}`);
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       navigate('/projects');
     } catch (err: unknown) {
       console.error(err);

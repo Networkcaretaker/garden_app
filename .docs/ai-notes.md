@@ -13,7 +13,7 @@ gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform m
 Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
 2. Header with navigation on website project and projects pages
-3. Project settings page (taxonomies) with editible Catagories and Tags (include remove function)
+3. Project settings page (taxonomies) with editible Catagories and Tags (include remove function) **DONE**
 4. Create pop up on create and edit projects page to add new category or tag
 5. Add testimonials to homepage **DONE**
 6. Create website footer with contact and social links
@@ -37,8 +37,3 @@ Next Tasks
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
 
-
-Great, next we need to update the backend to handle the functionality.
-here is the handler file for the website settings in the backend, we need to add the required functions so we can fetch and edit the project settings for the admin app.
-Here is the settings.go file
-if you need any other files please ask

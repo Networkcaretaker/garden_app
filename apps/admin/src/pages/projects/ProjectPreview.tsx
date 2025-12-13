@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   MapPin, 
@@ -11,41 +11,27 @@ import {
   Cpu,
   Loader2
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import type { Project } from '@garden/shared';
 
 const ProjectPreview: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const [project, setProject] = useState<Project | null>(null);
-  const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    const loadProject = async () => {
-      if (!id) return;
+  const { data: projects, isLoading: isFetching, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const data = await api.get('/projects');
+      return (data || []) as Project[];
+    },
+  });
 
-      try {
-        const projects: Project[] = await api.get('/projects');
-        const foundProject = projects.find(p => p.id === id);
-        
-        if (!foundProject) {
-          setError('Project not found');
-          return;
-        }
-        
-        setProject(foundProject);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load project details');
-      } finally {
-        setIsFetching(false);
-      }
-    };
+  const project = useMemo(() => {
+    if (!projects || !id) return null;
+    return projects.find(p => p.id === id) || null;
+  }, [projects, id]);
 
-    loadProject();
-  }, [id]);
 
   if (isFetching) {
     return (
@@ -64,7 +50,7 @@ const ProjectPreview: React.FC = () => {
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-sm text-center">
           <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Project</h2>
-          <p className="text-gray-500 mb-6">{error || "Project not found."}</p>
+          <p className="text-gray-500 mb-6">{error ? (error as Error).message : "Project not found."}</p>
           <button 
             onClick={() => navigate('/projects')}
             className="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"

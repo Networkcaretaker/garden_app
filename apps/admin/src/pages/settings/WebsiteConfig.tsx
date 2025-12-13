@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown } from 'lucide-react';
 import { api } from '../../services/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks } from '@garden/shared';
 
 // Default initial state matching the interface structure
-const initialSettings: Partial<WebsiteSettings> = {
+const defaultSettings: WebsiteSettings = {
   title: '',
   websiteURL: '',
   tagline: '',
@@ -17,23 +18,19 @@ const initialSettings: Partial<WebsiteSettings> = {
     whatsapp: '',
   },
   seo: [],
+  updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
 };
 
-export default function WebsiteConfig() {
-  const [settings, setSettings] = useState<Partial<WebsiteSettings>>(initialSettings);
-  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
+  const queryClient = useQueryClient();
+  const [settings, setSettings] = useState<WebsiteSettings>(initialData);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
-  const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState('');
   const [publishSuccess, setPublishSuccess] = useState('');
 
-  // Helper to handle SEO keywords input (comma separated string <-> array)
-  const [seoInput, setSeoInput] = useState('');
+  const [seoInput, setSeoInput] = useState(initialData.seo?.join(', ') || '');
 
   // Accordion state: Track which sections are open
   // We default 'general' to true so the first section is open on mobile load
@@ -50,48 +47,16 @@ export default function WebsiteConfig() {
     }));
   };
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setIsLoading(true);
-        const data: WebsiteSettings = await api.get('/settings/website');
-        
-        // Merge with initial settings to ensure nested objects (like social) exist
-        setSettings({
-          ...initialSettings,
-          ...data,
-          social: { ...initialSettings.social, ...(data.social || {}) }
-        });
-
-        if (data.seo && Array.isArray(data.seo)) {
-          setSeoInput(data.seo.join(', '));
-        }
-
-        if (data.updatedAt) {
-          // Handle cases where updatedAt might be a Firestore Timestamp object or a serialized date string
-          // We cast to 'unknown' first to safely check types without using 'any'
-          const rawDate = data.updatedAt as unknown;
-          
-          if (typeof rawDate === 'string') {
-             setUpdatedAt(new Date(rawDate));
-          } else if (typeof rawDate === 'object' && rawDate !== null && 'seconds' in rawDate) {
-             // Handle Firestore Timestamp object structure { seconds, nanoseconds }
-             setUpdatedAt(new Date((rawDate as { seconds: number }).seconds * 1000));
-          } else {
-             // Fallback
-             setUpdatedAt(new Date(rawDate as string));
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load website settings.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+  // Parse date for display from props
+  const getDisplayDate = (val: unknown): Date | null => {
+    if (!val) return null;
+    if (typeof val === 'string') return new Date(val);
+    if (typeof val === 'object' && val !== null && 'seconds' in val) {
+      return new Date((val as { seconds: number }).seconds * 1000);
+    }
+    return null;
+  };
+  const updatedAt = getDisplayDate(initialData.updatedAt);
 
   const handleInputChange = (field: keyof WebsiteSettings, value: unknown) => {
     setSettings(prev => ({ ...prev, [field]: value }));
@@ -114,52 +79,45 @@ export default function WebsiteConfig() {
     handleInputChange('seo', keywords);
   };
 
+  // Save Mutation
+  const saveMutation = useMutation({
+    mutationFn: (newSettings: Partial<WebsiteSettings>) => api.put('/admin/settings/website', newSettings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'website'] });
+      setSuccess('Website settings updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+    onError: (err: Error) => {
+      console.error(err);
+      setError(`Failed to save settings: ${err.message}`);
+    }
+  });
+
+  // Publish Mutation
+  const publishMutation = useMutation({
+    mutationFn: () => api.post('/admin/settings/website/publish', {}),
+    onSuccess: () => {
+      setPublishSuccess('Config & Projects published successfully!');
+      setTimeout(() => setPublishSuccess(''), 3000);
+    },
+    onError: (err: Error) => {
+      console.error(err);
+      setPublishError(`Failed to publish data: ${err.message}`);
+    }
+  });
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     setError('');
     setSuccess('');
-
-    try {
-      await api.put('/admin/settings/website', settings);
-      setSuccess('Website settings updated successfully!');
-      setUpdatedAt(new Date());
-    } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Failed to save settings: ${message}`);
-    } finally {
-      setIsSaving(false);
-      setTimeout(() => setSuccess(''), 3000);
-    }
+    saveMutation.mutate(settings);
   };
 
   const handlePublish = async () => {
-    setIsPublishing(true);
     setPublishError('');
     setPublishSuccess('');
-
-    try {
-      // The backend now generates both projects.json and websiteConfig.json
-      await api.post('/admin/settings/website/publish', {});
-      setPublishSuccess('Config & Projects published successfully!');
-    } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setPublishError(`Failed to publish data: ${message}`);
-    } finally {
-      setIsPublishing(false);
-      setTimeout(() => setPublishSuccess(''), 3000);
-    }
+    publishMutation.mutate();
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -374,10 +332,10 @@ export default function WebsiteConfig() {
             <button
                 type="button"
                 onClick={handlePublish}
-                disabled={isSaving || isPublishing}
+                disabled={saveMutation.isPending || publishMutation.isPending}
                 className="flex items-center justify-center gap-2 bg-orange-600 text-white py-2 px-5 rounded-lg hover:bg-orange-700 disabled:opacity-50 font-medium"
             >
-                {isPublishing ? (
+                {publishMutation.isPending ? (
                 <>
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Publishing...
@@ -392,10 +350,10 @@ export default function WebsiteConfig() {
             
             <button
                 type="submit"
-                disabled={isSaving}
+                disabled={saveMutation.isPending}
                 className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
             >
-                {isSaving ? (
+                {saveMutation.isPending ? (
                 <>
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Saving...
@@ -412,4 +370,39 @@ export default function WebsiteConfig() {
       </form>
     </div>
   );
+}
+
+export default function WebsiteConfig() {
+  const { data, isLoading, error, isError } = useQuery({
+    queryKey: ['settings', 'website'],
+    queryFn: async () => {
+      const data = await api.get('/settings/website');
+      return data as WebsiteSettings;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex justify-center items-center h-64 text-red-600 gap-2">
+        <AlertCircle className="h-5 w-5" />
+        <span>{error?.message || 'Failed to load website settings.'}</span>
+      </div>
+    );
+  }
+
+  const safeData = data ? {
+    ...defaultSettings,
+    ...data,
+    social: { ...defaultSettings.social, ...(data.social || {}) }
+  } : defaultSettings;
+
+  return <WebsiteConfigForm initialData={safeData} />;
 }

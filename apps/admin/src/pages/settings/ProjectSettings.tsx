@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Settings, Tags, ChevronDown, Plus, X, Edit2, Check } from 'lucide-react';
 import { api } from '../../services/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ProjectSettings } from '@garden/shared';
 
-const initialSettings: Partial<ProjectSettings> = {
+const defaultSettings: ProjectSettings = {
   categories: [],
   tags: [],
+  updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as ProjectSettings['updatedAt'],
 };
 
 // Helper component to manage a list of strings (add, edit, delete)
@@ -114,12 +116,10 @@ function TaxonomyManager({
   );
 }
 
-export default function ProjectSettings() {
-  const [settings, setSettings] = useState<Partial<ProjectSettings>>(initialSettings);
-  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) {
+  const queryClient = useQueryClient();
+  const [settings, setSettings] = useState<ProjectSettings>(initialData);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -135,67 +135,37 @@ export default function ProjectSettings() {
     }));
   };
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setIsLoading(true);
-        const data: ProjectSettings = await api.get('/settings/projects');
-        
-        setSettings({
-          ...initialSettings,
-          ...data,
-          categories: data.categories || [],
-          tags: data.tags || []
-        });
+  // Parse date for display from props (updates when parent refetches)
+  const getDisplayDate = (val: unknown): Date | null => {
+    if (!val) return null;
+    if (typeof val === 'string') return new Date(val);
+    if (typeof val === 'object' && val !== null && 'seconds' in val) {
+      return new Date((val as { seconds: number }).seconds * 1000);
+    }
+    return null;
+  };
+  const updatedAt = getDisplayDate(initialData.updatedAt);
 
-        if (data.updatedAt) {
-          const rawDate = data.updatedAt as unknown;
-          if (typeof rawDate === 'string') {
-             setUpdatedAt(new Date(rawDate));
-          } else if (typeof rawDate === 'object' && rawDate !== null && 'seconds' in rawDate) {
-             setUpdatedAt(new Date((rawDate as { seconds: number }).seconds * 1000));
-          } else {
-             setUpdatedAt(new Date(rawDate as string));
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load project settings.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+  // Save mutation
+  const saveMutation = useMutation({
+    mutationFn: (newSettings: Partial<ProjectSettings>) => api.put('/admin/settings/projects', newSettings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'projects'] });
+      setSuccess('Project settings updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+    onError: (err: Error) => {
+      console.error(err);
+      setError(`Failed to save settings: ${err.message}`);
+    }
+  });
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     setError('');
     setSuccess('');
-
-    try {
-      await api.put('/admin/settings/projects', settings);
-      setSuccess('Project settings updated successfully!');
-      setUpdatedAt(new Date());
-    } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Failed to save settings: ${message}`);
-    } finally {
-      setIsSaving(false);
-      setTimeout(() => setSuccess(''), 3000);
-    }
+    saveMutation.mutate(settings);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -269,10 +239,10 @@ export default function ProjectSettings() {
           
           <button
               type="submit"
-              disabled={isSaving}
+              disabled={saveMutation.isPending}
               className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium w-full md:w-auto"
           >
-              {isSaving ? (
+              {saveMutation.isPending ? (
               <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Saving...
@@ -288,4 +258,34 @@ export default function ProjectSettings() {
       </form>
     </div>
   );
+}
+
+export default function ProjectSettings() {
+  const { data, isLoading, error, isError } = useQuery({
+    queryKey: ['settings', 'projects'],
+    queryFn: async () => {
+      const data = await api.get('/settings/projects');
+      return data as ProjectSettings;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex justify-center items-center h-64 text-red-600 gap-2">
+        <AlertCircle className="h-5 w-5" />
+        <span>{error?.message || 'Failed to load project settings.'}</span>
+      </div>
+    );
+  }
+
+  const safeData = data || defaultSettings;
+  return <ProjectSettingsForm initialData={safeData} />;
 }

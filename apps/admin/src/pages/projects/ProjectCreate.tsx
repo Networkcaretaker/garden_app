@@ -6,9 +6,11 @@ import { db } from '../../services/firebase';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize';
 import { uploadImage } from '../../services/storage';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ProjectCategory, ProjectImage } from '@garden/shared';
 
 export default function ProjectCreate() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -73,6 +75,8 @@ export default function ProjectCreate() {
         images: projectImages,
       });
 
+      // Invalidate cache so the list updates immediately
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       navigate('/projects');
       
     } catch (err: unknown) {
