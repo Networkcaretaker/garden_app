@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import WebsiteConfig from './WebsiteConfig';
+import ProjectSettings from './ProjectSettings';
 
 // A placeholder for the future General settings component
 function GeneralSettingsPlaceholder() {
@@ -12,12 +13,12 @@ function GeneralSettingsPlaceholder() {
 }
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'website'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects'>('general');
 
   const tabs = [
     { id: 'general', name: 'General' },
     { id: 'website', name: 'Website' },
-
+    { id: 'projects', name: 'Projects' },
   ];
 
   return (
@@ -33,7 +34,7 @@ export default function SettingsPage() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'general' | 'website')}
+                onClick={() => setActiveTab(tab.id as 'general' | 'website' | 'projects')}
                 className={`${
                   activeTab === tab.id
                     ? 'border-green-500 text-green-600'
@@ -51,6 +52,7 @@ export default function SettingsPage() {
         <div>
           {activeTab === 'general' && <GeneralSettingsPlaceholder />}
           {activeTab === 'website' && <WebsiteConfig />}
+          {activeTab === 'projects' && <ProjectSettings />}
         </div>
       </div>
     </div>

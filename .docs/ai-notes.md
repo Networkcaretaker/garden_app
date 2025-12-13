@@ -37,3 +37,8 @@ Next Tasks
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
 
+
+Great, next we need to update the backend to handle the functionality.
+here is the handler file for the website settings in the backend, we need to add the required functions so we can fetch and edit the project settings for the admin app.
+Here is the settings.go file
+if you need any other files please ask

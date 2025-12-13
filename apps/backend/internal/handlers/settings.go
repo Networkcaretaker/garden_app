@@ -28,6 +28,7 @@ func NewSettingsHandler(client *db.Client, cfg *config.Config) *SettingsHandler 
 
 const settingsCollection = "settings"
 const websiteDocument = "website"
+const projectsDocument = "projects"
 
 // GetWebsiteSettings handles GET /settings/website
 func (h *SettingsHandler) GetWebsiteSettings(c echo.Context) error {
@@ -106,6 +107,59 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	if err != nil {
 		c.Logger().Errorf("Failed to update website settings: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update settings"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"status": "success"})
+}
+
+// GetProjectSettings handles GET /settings/projects
+func (h *SettingsHandler) GetProjectSettings(c echo.Context) error {
+	ctx := context.Background()
+	doc, err := h.Client.Firestore.Collection(settingsCollection).Doc(projectsDocument).Get(ctx)
+	if err != nil {
+		if strings.Contains(err.Error(), "NotFound") {
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"categories": []string{},
+				"tags":       []string{},
+			})
+		}
+		c.Logger().Errorf("Failed to fetch project settings: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch project settings"})
+	}
+
+	var settings map[string]interface{}
+	if err := doc.DataTo(&settings); err != nil {
+		c.Logger().Errorf("Failed to parse project settings: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to parse project settings"})
+	}
+
+	return c.JSON(http.StatusOK, settings)
+}
+
+// UpdateProjectSettings handles PUT /admin/settings/projects
+func (h *SettingsHandler) UpdateProjectSettings(c echo.Context) error {
+	var req struct {
+		Categories []string `json:"categories"`
+		Tags       []string `json:"tags"`
+	}
+
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+	}
+
+	ctx := context.Background()
+	docRef := h.Client.Firestore.Collection(settingsCollection).Doc(projectsDocument)
+
+	data := map[string]interface{}{
+		"categories": req.Categories,
+		"tags":       req.Tags,
+		"updatedAt":  time.Now(),
+	}
+
+	_, err := docRef.Set(ctx, data, firestore.MergeAll)
+	if err != nil {
+		c.Logger().Errorf("Failed to update project settings: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update project settings"})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "success"})

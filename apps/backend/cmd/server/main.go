@@ -56,6 +56,7 @@ func main() {
 	e.GET("/projects", projectHandler.GetProjects)
 	// Public Settings Routes (Read-only)
 	e.GET("/settings/website", settingsHandler.GetWebsiteSettings)
+	e.GET("/settings/projects", settingsHandler.GetProjectSettings)
 
 	// --- Protected Routes (Admin Only) ---
 	adminGroup := e.Group("/admin")
@@ -69,6 +70,7 @@ func main() {
 	// Admin Settings Routes (Write)
 	adminGroup.PUT("/settings/website", settingsHandler.UpdateWebsiteSettings)
 	adminGroup.POST("/settings/website/publish", settingsHandler.PublishWebsiteData)
+	adminGroup.PUT("/settings/projects", settingsHandler.UpdateProjectSettings)
 
 	adminGroup.GET("/me", func(c echo.Context) error {
 		uid := c.Get("uid").(string)

@@ -17,3 +17,9 @@ export interface WebsiteSettings {
   seo: string[];
   updatedAt: Timestamp;
 }
+
+export interface ProjectSettings {
+  categories: string[];
+  tags: string[];
+  updatedAt: Timestamp;
+}
