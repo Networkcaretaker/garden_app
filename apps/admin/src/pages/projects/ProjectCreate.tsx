@@ -133,6 +133,17 @@ export default function ProjectCreate() {
             />
           </div>
         </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea
+            rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+            placeholder="Describe the project..."
+          />
+        </div>
 
         <div className="flex items-center justify-between">
           <label htmlFor="status" className="text-sm font-medium text-gray-700">
@@ -151,16 +162,7 @@ export default function ProjectCreate() {
           </button>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="Describe the project..."
-          />
-        </div>
+        
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>

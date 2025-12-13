@@ -47,8 +47,7 @@ export default function ProjectList() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1">Manage your portfolio</p>
+          <h1 className="text-2xl font-bold text-gray-900">Project Portfolio</h1>
         </div>
         <Link
           to="/projects/new"

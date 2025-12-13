@@ -1,7 +1,12 @@
 firebase target:apply hosting admin garden-projects-admin
 firebase target:apply hosting web garden-projects
 
+## Deploy Websites
 firebase deploy --only hosting
+firebase deploy --only hosting:website
+firebase deploy --only hosting:admin
+
+## Deploy Backend
 gcloud builds submit --tag gcr.io/garden-projects/backend
 gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
 
