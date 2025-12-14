@@ -26,10 +26,8 @@ Next Tasks
 8. Add option to set feature image for projects
 9. Add image split before and after **DONE**
 10. Sort image size and rotation. Add thumbnail images
-11. Create Preview page for projects in Admin, Use same layout as website Project page 
-    - Website Project page will have Header and Footer
+11. Create Preview page for projects in Admin, Use same layout as website Project page **DONE**
     - Admin ProjectPreview Page will have options to edit project and edit images **DONE**
-    - Add edit image page
 12. Create EditImage page to admin to edit image metadata
 13. Add About, Services and Why US to website **DONE**
 14. Add social links to website

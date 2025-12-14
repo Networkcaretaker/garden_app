@@ -5,7 +5,7 @@ import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Project, ProjectCategory, ProjectImage } from '@garden/shared';
+import type { Project, ProjectCategory, ProjectImage, ProjectSettings } from '@garden/shared';
 import DeleteProject from '../../components/popup/DeleteProject';
 
 export default function ProjectEdit() {
@@ -24,7 +24,7 @@ export default function ProjectEdit() {
   // Form State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<ProjectCategory>('residential');
+  const [category, setCategory] = useState<ProjectCategory>('');
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [coverImage, setCoverImage] = useState(''); // New state for cover image
@@ -32,6 +32,7 @@ export default function ProjectEdit() {
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   // Use useQuery to fetch data (uses cache if available)
   const { data: projects, isLoading: isFetching } = useQuery({
@@ -39,6 +40,14 @@ export default function ProjectEdit() {
     queryFn: async () => {
       const data = await api.get('/projects');
       return (data || []) as Project[];
+    },
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings', 'projects'],
+    queryFn: async () => {
+      const data = await api.get('/settings/projects');
+      return data as ProjectSettings;
     },
   });
 
@@ -58,6 +67,7 @@ export default function ProjectEdit() {
       setExistingImages(project.images || []);
       setStatus(project.status || 'inactive');
       setCoverImage(project.coverImage || '');
+      setTags(project.tags || []);
       
       // Mark as loaded so we don't overwrite user edits if background refetch happens
       dataLoaded.current = true;
@@ -96,6 +106,13 @@ export default function ProjectEdit() {
     if (previewToRemove === coverImage) {
       setCoverImage('');
     }
+  };
+
+  const toggleTag = (tag: string) => {
+    setTags(prev => prev.includes(tag) 
+      ? prev.filter(t => t !== tag)
+      : [...prev, tag]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,6 +160,7 @@ export default function ProjectEdit() {
         category,
         location,
         status,
+        tags,
         coverImage: finalCoverImage,
         images: allImages,
       });
@@ -253,10 +271,10 @@ export default function ProjectEdit() {
               onChange={(e) => setCategory(e.target.value as ProjectCategory)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             >
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="landscape">Landscape</option>
-              <option value="collection">Collection</option>
+              <option value="" disabled>Select a category</option>
+              {settings?.categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
 
@@ -279,6 +297,22 @@ export default function ProjectEdit() {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2">
+              {settings?.tags.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="md:col-span-2 flex items-center justify-between">

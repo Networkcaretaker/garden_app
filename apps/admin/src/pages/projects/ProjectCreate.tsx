@@ -6,8 +6,8 @@ import { db } from '../../services/firebase';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize';
 import { uploadImage } from '../../services/storage';
-import { useQueryClient } from '@tanstack/react-query';
-import type { ProjectCategory, ProjectImage } from '@garden/shared';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import type { ProjectCategory, ProjectImage, ProjectSettings } from '@garden/shared';
 
 export default function ProjectCreate() {
   const queryClient = useQueryClient();
@@ -18,11 +18,20 @@ export default function ProjectCreate() {
   // Form State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<ProjectCategory>('residential');
+  const [category, setCategory] = useState<ProjectCategory>('');
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
+  const [tags, setTags] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings', 'projects'],
+    queryFn: async () => {
+      const data = await api.get('/settings/projects');
+      return data as ProjectSettings;
+    },
+  });
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -37,6 +46,13 @@ export default function ProjectCreate() {
   const removeImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const toggleTag = (tag: string) => {
+    setTags(prev => prev.includes(tag) 
+      ? prev.filter(t => t !== tag)
+      : [...prev, tag]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,6 +87,7 @@ export default function ProjectCreate() {
         description,
         category,
         location,
+        tags,
         status,
         images: projectImages,
       });
@@ -119,10 +136,10 @@ export default function ProjectCreate() {
               onChange={(e) => setCategory(e.target.value as ProjectCategory)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             >
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="landscape">Landscape</option>
-              <option value="collection">Collection</option>
+              <option value="" disabled>Select a category</option>
+              {settings?.categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -147,6 +164,22 @@ export default function ProjectCreate() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             placeholder="Describe the project..."
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+          <div className="flex flex-wrap gap-2">
+            {settings?.tags.map((tag) => (
+              <button
+                type="button"
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center justify-between">

@@ -1,4 +1,4 @@
-export type ProjectCategory = 'residential' | 'commercial' | 'landscape' | 'collection';
+export type ProjectCategory = string;
 
 export interface AIGeneratedContent {
   description: boolean;
@@ -24,6 +24,7 @@ export interface Project {
   location: string;
   completedDate: string;
   category: ProjectCategory;
+  tags?: string[];
   coverImage: string;
   images: ProjectImage[];
   aiGenerated?: AIGeneratedContent;
@@ -39,5 +40,6 @@ export interface ProjectCreateInput {
   description?: string;
   location: string;
   category: ProjectCategory;
+  tags?: string[];
   images: ProjectImage[];
 }

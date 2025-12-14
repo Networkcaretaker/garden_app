@@ -21,6 +21,7 @@ type Project struct {
 	Location      string         `json:"location" firestore:"location"`
 	CompletedDate string         `json:"completedDate" firestore:"completedDate"`
 	Category      string         `json:"category" firestore:"category"`
+	Tags          []string       `json:"tags" firestore:"tags"`
 	CoverImage    string         `json:"coverImage" firestore:"coverImage"`
 	Images        []ProjectImage `json:"images" firestore:"images"`
 	Featured      bool           `json:"featured" firestore:"featured"`
@@ -36,6 +37,7 @@ type CreateProjectRequest struct {
 	Description string         `json:"description"`
 	Location    string         `json:"location"`
 	Category    string         `json:"category"`
+	Tags        []string       `json:"tags"`
 	Status      string         `json:"status"`
 	CoverImage  string         `json:"coverImage"` // Added required field
 	Images      []ProjectImage `json:"images"`

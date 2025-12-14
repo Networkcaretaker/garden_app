@@ -40,6 +40,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		Description:   req.Description,
 		Location:      req.Location,
 		Category:      req.Category,
+		Tags:          req.Tags,
 		Status:        req.Status,
 		Images:        req.Images,
 		CoverImage:    req.CoverImage, // Use the provided cover image
@@ -205,6 +206,7 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		{Path: "description", Value: req.Description},
 		{Path: "location", Value: req.Location},
 		{Path: "category", Value: req.Category},
+		{Path: "tags", Value: req.Tags},
 		{Path: "status", Value: req.Status},
 		{Path: "images", Value: req.Images},
 		{Path: "coverImage", Value: finalCoverImage}, // Use calculated cover image
