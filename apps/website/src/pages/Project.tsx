@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { X } from 'lucide-react';
 import type { Project } from '@garden/shared';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
@@ -11,6 +12,7 @@ export default function ProjectPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -101,7 +103,11 @@ export default function ProjectPage() {
             <div className="mx-auto max-w-6xl">
               <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
                 {galleryImages.map((image, index) => (
-                  <div key={image.id || index} className="mb-6 break-inside-avoid overflow-hidden rounded-lg shadow-xl transition-transform hover:scale-[1.02]">
+                  <div 
+                    key={image.id || index} 
+                    className="mb-6 break-inside-avoid cursor-pointer overflow-hidden rounded-lg shadow-xl transition-transform hover:scale-[1.02]"
+                    onClick={() => setSelectedImage(image.url)}
+                  >
                     <img
                       src={image.url}
                       alt={image.alt || `${project.title} - Image ${index + 1}`}
@@ -115,6 +121,27 @@ export default function ProjectPage() {
         </div>
         <Footer />
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute right-4 top-4 text-white/70 hover:text-white transition-colors"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X size={40} />
+          </button>
+          <img 
+            src={selectedImage} 
+            alt="Full screen view" 
+            className="max-h-[90vh] max-w-full rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
