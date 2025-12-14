@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Settings, Tags, ChevronDown, Plus, X, Edit2, Check } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ProjectSettings } from '@garden/shared';
+import UnsavedChanges from '../../components/popup/UnsavedChanges';
 
 const defaultSettings: ProjectSettings = {
   categories: [],
@@ -116,9 +117,10 @@ function TaxonomyManager({
   );
 }
 
-function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) {
+function ProjectSettingsForm({ initialData, onDirtyChange }: { initialData: ProjectSettings; onDirtyChange?: (isDirty: boolean) => void }) {
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<ProjectSettings>(initialData);
+  const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -134,6 +136,37 @@ function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) 
       [section]: !prev[section]
     }));
   };
+
+  // Sync state with initialData when it changes
+  useEffect(() => {
+    setSettings(initialData);
+  }, [initialData]);
+
+  // Check if form is dirty
+  const isDirty = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { updatedAt: u1, ...current } = settings;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { updatedAt: u2, ...initial } = initialData;
+    return JSON.stringify(current) !== JSON.stringify(initial);
+  }, [settings, initialData]);
+
+  // Notify parent of dirty state
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  // Warn on browser refresh/close if dirty
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // Parse date for display from props (updates when parent refetches)
   const getDisplayDate = (val: unknown): Date | null => {
@@ -165,6 +198,11 @@ function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) 
     setError('');
     setSuccess('');
     saveMutation.mutate(settings);
+  };
+
+  const handleDiscard = () => {
+    setSettings(initialData);
+    setShowUnsavedPopup(false);
   };
 
   return (
@@ -239,7 +277,7 @@ function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) 
           
           <button
               type="submit"
-              disabled={saveMutation.isPending}
+              disabled={!isDirty || saveMutation.isPending}
               className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium w-full md:w-auto"
           >
               {saveMutation.isPending ? (
@@ -256,11 +294,17 @@ function ProjectSettingsForm({ initialData }: { initialData: ProjectSettings }) 
           </button>
         </div>
       </form>
+
+      <UnsavedChanges
+        isOpen={showUnsavedPopup}
+        onClose={() => setShowUnsavedPopup(false)}
+        onDiscard={handleDiscard}
+      />
     </div>
   );
 }
 
-export default function ProjectSettings() {
+export default function ProjectSettings({ onDirtyChange }: { onDirtyChange?: (isDirty: boolean) => void }) {
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ['settings', 'projects'],
     queryFn: async () => {
@@ -287,5 +331,5 @@ export default function ProjectSettings() {
   }
 
   const safeData = data || defaultSettings;
-  return <ProjectSettingsForm initialData={safeData} />;
+  return <ProjectSettingsForm initialData={safeData} onDirtyChange={onDirtyChange} />;
 }

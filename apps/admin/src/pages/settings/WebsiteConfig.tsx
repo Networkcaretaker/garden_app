@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks } from '@garden/shared';
+import UnsavedChanges from '../../components/popup/UnsavedChanges';
 
 // Default initial state matching the interface structure
 const defaultSettings: WebsiteSettings = {
@@ -21,9 +22,10 @@ const defaultSettings: WebsiteSettings = {
   updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
 };
 
-function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
+function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: WebsiteSettings; onDirtyChange?: (isDirty: boolean) => void }) {
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<WebsiteSettings>(initialData);
+  const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -46,6 +48,39 @@ function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
       [section]: !prev[section]
     }));
   };
+
+  // Sync state with initialData when it changes (e.g. after save/refetch)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setSettings(initialData);
+    setSeoInput(initialData.seo?.join(', ') || '');
+  }, [initialData]);
+
+  // Check if form is dirty
+  const isDirty = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { updatedAt: u1, ...current } = settings;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { updatedAt: u2, ...initial } = initialData;
+    return JSON.stringify(current) !== JSON.stringify(initial);
+  }, [settings, initialData]);
+
+  // Notify parent of dirty state
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  // Warn on browser refresh/close if dirty
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // Parse date for display from props
   const getDisplayDate = (val: unknown): Date | null => {
@@ -117,6 +152,12 @@ function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
     setPublishError('');
     setPublishSuccess('');
     publishMutation.mutate();
+  };
+
+  const handleDiscard = () => {
+    setSettings(initialData);
+    setSeoInput(initialData.seo?.join(', ') || '');
+    setShowUnsavedPopup(false);
   };
 
   return (
@@ -350,7 +391,7 @@ function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
             
             <button
                 type="submit"
-                disabled={saveMutation.isPending}
+                disabled={!isDirty || saveMutation.isPending}
                 className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
             >
                 {saveMutation.isPending ? (
@@ -368,11 +409,17 @@ function WebsiteConfigForm({ initialData }: { initialData: WebsiteSettings }) {
           </div>
         </div>
       </form>
+
+      <UnsavedChanges
+        isOpen={showUnsavedPopup}
+        onClose={() => setShowUnsavedPopup(false)}
+        onDiscard={handleDiscard}
+      />
     </div>
   );
 }
 
-export default function WebsiteConfig() {
+export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDirty: boolean) => void }) {
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ['settings', 'website'],
     queryFn: async () => {
@@ -380,6 +427,12 @@ export default function WebsiteConfig() {
       return data as WebsiteSettings;
     },
   });
+
+  const safeData = useMemo(() => data ? {
+    ...defaultSettings,
+    ...data,
+    social: { ...defaultSettings.social, ...(data.social || {}) }
+  } : defaultSettings, [data]);
 
   if (isLoading) {
     return (
@@ -398,11 +451,5 @@ export default function WebsiteConfig() {
     );
   }
 
-  const safeData = data ? {
-    ...defaultSettings,
-    ...data,
-    social: { ...defaultSettings.social, ...(data.social || {}) }
-  } : defaultSettings;
-
-  return <WebsiteConfigForm initialData={safeData} />;
+  return <WebsiteConfigForm initialData={safeData} onDirtyChange={onDirtyChange} />;
 }

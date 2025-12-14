@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import WebsiteConfig from './WebsiteConfig';
 import ProjectSettings from './ProjectSettings';
+import UnsavedChanges from '../../components/popup/UnsavedChanges';
 
 // A placeholder for the future General settings component
 function GeneralSettingsPlaceholder() {
@@ -14,12 +15,35 @@ function GeneralSettingsPlaceholder() {
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects'>('general');
+  const [isDirty, setIsDirty] = useState(false);
+  const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
+  const [pendingTab, setPendingTab] = useState<'general' | 'website' | 'projects' | null>(null);
 
   const tabs = [
     { id: 'general', name: 'General' },
     { id: 'website', name: 'Website' },
     { id: 'projects', name: 'Projects' },
   ];
+
+  const handleTabClick = (tabId: 'general' | 'website' | 'projects') => {
+    if (activeTab === tabId) return;
+    
+    if (isDirty) {
+      setPendingTab(tabId);
+      setShowUnsavedPopup(true);
+    } else {
+      setActiveTab(tabId);
+    }
+  };
+
+  const handleDiscard = () => {
+    if (pendingTab) {
+      setActiveTab(pendingTab);
+      setPendingTab(null);
+      setIsDirty(false); // Reset dirty state as we are unmounting the dirty component
+    }
+    setShowUnsavedPopup(false);
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -34,7 +58,7 @@ export default function SettingsPage() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'general' | 'website' | 'projects')}
+                onClick={() => handleTabClick(tab.id as 'general' | 'website' | 'projects')}
                 className={`${
                   activeTab === tab.id
                     ? 'border-green-500 text-green-600'
@@ -51,10 +75,16 @@ export default function SettingsPage() {
         {/* Tab Content */}
         <div>
           {activeTab === 'general' && <GeneralSettingsPlaceholder />}
-          {activeTab === 'website' && <WebsiteConfig />}
-          {activeTab === 'projects' && <ProjectSettings />}
+          {activeTab === 'website' && <WebsiteConfig onDirtyChange={setIsDirty} />}
+          {activeTab === 'projects' && <ProjectSettings onDirtyChange={setIsDirty} />}
         </div>
       </div>
+
+      <UnsavedChanges
+        isOpen={showUnsavedPopup}
+        onClose={() => setShowUnsavedPopup(false)}
+        onDiscard={handleDiscard}
+      />
     </div>
   );
 }
