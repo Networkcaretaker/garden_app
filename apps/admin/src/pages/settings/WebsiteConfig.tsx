@@ -166,10 +166,11 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
 
   // Determine status
   const needsPublish = useMemo(() => {
-    if (!projectUpdatedAt) return false;
-    if (!publishedAt) return true;
-    return projectUpdatedAt > publishedAt;
-  }, [projectUpdatedAt, publishedAt]);
+    if (!publishedAt) return !!projectUpdatedAt || !!updatedAt;
+    const projectChanged = projectUpdatedAt ? projectUpdatedAt > publishedAt : false;
+    const settingsChanged = updatedAt ? updatedAt > publishedAt : false;
+    return projectChanged || settingsChanged;
+  }, [projectUpdatedAt, publishedAt, updatedAt]);
 
   return (
     <div className="max-w-4xl mx-auto">

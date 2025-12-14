@@ -24,8 +24,14 @@ export default function DashboardPage() {
 
   const publishedAt = getDisplayDate(settings?.publishedAt);
   const projectUpdatedAt = getDisplayDate(settings?.projectUpdatedAt);
+  const settingsUpdatedAt = getDisplayDate(settings?.updatedAt);
 
-  const needsPublish = projectUpdatedAt && publishedAt ? projectUpdatedAt > publishedAt : (!publishedAt && !!projectUpdatedAt);
+  const needsPublish = 
+    (!publishedAt && (!!projectUpdatedAt || !!settingsUpdatedAt)) ||
+    (!!publishedAt && (
+      (projectUpdatedAt ? projectUpdatedAt > publishedAt : false) || 
+      (settingsUpdatedAt ? settingsUpdatedAt > publishedAt : false)
+    ));
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -56,7 +62,7 @@ export default function DashboardPage() {
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
                   {needsPublish 
-                    ? 'Changes have been made to active projects since the last publish.' 
+                    ? 'Changes have been made to the website settings or active projects since the last publish.' 
                     : `Last published on ${publishedAt?.toLocaleDateString()} at ${publishedAt?.toLocaleTimeString()}`
                   }
                 </p>
