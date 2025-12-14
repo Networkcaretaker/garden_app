@@ -247,6 +247,14 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload settings data"})
 	}
 
+	// Update publishedAt timestamp
+	_, err = h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Set(ctx, map[string]interface{}{
+		"publishedAt": time.Now(),
+	}, firestore.MergeAll)
+	if err != nil {
+		c.Logger().Errorf("Failed to update publishedAt timestamp: %v", err)
+	}
+
 	c.Logger().Info("Successfully published website data (projects.json and websiteConfig.json)")
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success", 

@@ -16,6 +16,8 @@ export interface WebsiteSettings {
   social: SocialLinks;
   seo: string[];
   updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+  projectUpdatedAt?: Timestamp;
 }
 
 export interface ProjectSettings {

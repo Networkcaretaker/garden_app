@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import WebsiteConfig from './WebsiteConfig';
 import ProjectSettings from './ProjectSettings';
 import UnsavedChanges from '../../components/popup/UnsavedChanges';
@@ -14,7 +15,11 @@ function GeneralSettingsPlaceholder() {
 }
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects'>('general');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects'>(() => {
+    const tab = searchParams.get('tab');
+    return (tab === 'website' || tab === 'projects') ? tab : 'general';
+  });
   const [isDirty, setIsDirty] = useState(false);
   const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
   const [pendingTab, setPendingTab] = useState<'general' | 'website' | 'projects' | null>(null);

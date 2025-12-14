@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown, Clock } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks } from '@garden/shared';
@@ -40,6 +40,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     general: false,
     seo: false,
     social: false,
+    publish: true, // Default open
   });
 
   const toggleSection = (section: string) => {
@@ -92,6 +93,8 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     return null;
   };
   const updatedAt = getDisplayDate(initialData.updatedAt);
+  const publishedAt = getDisplayDate(initialData.publishedAt);
+  const projectUpdatedAt = getDisplayDate(initialData.projectUpdatedAt);
 
   const handleInputChange = (field: keyof WebsiteSettings, value: unknown) => {
     setSettings(prev => ({ ...prev, [field]: value }));
@@ -134,6 +137,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     onSuccess: () => {
       setPublishSuccess('Config & Projects published successfully!');
       setTimeout(() => setPublishSuccess(''), 3000);
+      queryClient.invalidateQueries({ queryKey: ['settings', 'website'] });
     },
     onError: (err: Error) => {
       console.error(err);
@@ -159,6 +163,13 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     setSeoInput(initialData.seo?.join(', ') || '');
     setShowUnsavedPopup(false);
   };
+
+  // Determine status
+  const needsPublish = useMemo(() => {
+    if (!projectUpdatedAt) return false;
+    if (!publishedAt) return true;
+    return projectUpdatedAt > publishedAt;
+  }, [projectUpdatedAt, publishedAt]);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -205,6 +216,16 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="My Awesome Garden"
                         />
                     </div>
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                        <input
+                            type="text"
+                            value={settings.tagline || ''}
+                            onChange={(e) => handleInputChange('tagline', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="Growing the future, one plant at a time"
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Public URL</label>
                         <input
@@ -216,14 +237,18 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                        <input
-                            type="text"
-                            value={settings.tagline || ''}
-                            onChange={(e) => handleInputChange('tagline', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="Growing the future, one plant at a time"
-                        />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                      <a
+                          href={settings.websiteURL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open website URL"
+                          className={`flex items-center justify-center gap-2 bg-teal-600 text-white border border-gray-300 py-2 rounded-lg hover:bg-teal-700 font-medium ${!settings.websiteURL ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={(e) => !settings.websiteURL && e.preventDefault()}
+                      >
+                          <Globe className="h-5 w-5" />
+                          <span className="inline">Visit Site</span>
+                      </a>
                     </div>
                 </div>
             </div>
@@ -348,6 +373,79 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             </div>
         </div>
 
+        {/* Publish Status */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('publish')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Webhook className="h-5 w-5 text-teal-600" /> Publish Status
+                    {needsPublish ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Updates Pending
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Up to Date
+                        </span>
+                    )}
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['publish'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['publish'] ? 'block' : 'hidden'} md:block`}>
+                <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
+                    <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-gray-400" />
+                            <span>Last Published: </span>
+                            <span className="font-medium text-gray-900">{publishedAt ? publishedAt.toLocaleString() : 'Never'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Save className="h-4 w-4 text-gray-400" />
+                            <span>Last Project Update: </span>
+                            <span className="font-medium text-gray-900">{projectUpdatedAt ? projectUpdatedAt.toLocaleString() : 'Never'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Save className="h-4 w-4 text-gray-400" />
+                            <span>Last Settings Update: </span>
+                            <span className="font-medium text-gray-900">{updatedAt ? updatedAt.toLocaleString(): 'Never'}</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handlePublish}
+                        disabled={saveMutation.isPending || publishMutation.isPending}
+                        className={`w-full md:w-auto flex items-center justify-center gap-2 text-white py-2 px-5 rounded-lg disabled:opacity-50 font-medium ${
+                            needsPublish 
+                                ? 'bg-orange-600 hover:bg-orange-700' 
+                                : 'bg-teal-600 hover:bg-teal-700'
+                        }`}
+                    >
+                        {publishMutation.isPending ? (
+                        <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Publishing...
+                        </>
+                        ) : (
+                        <>
+                            <Webhook className="h-5 w-5" />
+                            
+                            {needsPublish ? 'Update Required' : 'Publish Data'}
+                        </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex items-center w-full md:w-auto justify-center md:justify-end">
@@ -358,37 +456,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <a
-                href={settings.websiteURL}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Open website URL"
-                className={`flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2 px-5 rounded-lg hover:bg-gray-50 font-medium ${!settings.websiteURL ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={(e) => !settings.websiteURL && e.preventDefault()}
-            >
-                <Globe className="h-5 w-5" />
-                <span className="inline">Visit Site</span>
-            </a>
-
-            <button
-                type="button"
-                onClick={handlePublish}
-                disabled={saveMutation.isPending || publishMutation.isPending}
-                className="flex items-center justify-center gap-2 bg-orange-600 text-white py-2 px-5 rounded-lg hover:bg-orange-700 disabled:opacity-50 font-medium"
-            >
-                {publishMutation.isPending ? (
-                <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Publishing...
-                </>
-                ) : (
-                <>
-                    <Webhook className="h-5 w-5" />
-                    Publish Data
-                </>
-                )}
-            </button>
-            
             <button
                 type="submit"
                 disabled={!isDirty || saveMutation.isPending}

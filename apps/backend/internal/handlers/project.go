@@ -71,6 +71,16 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to save project"})
 	}
 
+	// Update website settings timestamp if active
+	if strings.ToLower(newProject.Status) == "active" {
+		_, err := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Set(ctx, map[string]interface{}{
+			"projectUpdatedAt": time.Now(),
+		}, firestore.MergeAll)
+		if err != nil {
+			c.Logger().Errorf("Failed to update projectUpdatedAt in settings: %v", err)
+		}
+	}
+
 	return c.JSON(http.StatusCreated, newProject)
 }
 
@@ -218,6 +228,16 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update project"})
 	}
 
+	// Update website settings timestamp if active or was active
+	if strings.ToLower(req.Status) == "active" || strings.ToLower(oldProject.Status) == "active" {
+		_, err := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Set(ctx, map[string]interface{}{
+			"projectUpdatedAt": time.Now(),
+		}, firestore.MergeAll)
+		if err != nil {
+			c.Logger().Errorf("Failed to update projectUpdatedAt in settings: %v", err)
+		}
+	}
+
 	return c.JSON(http.StatusOK, map[string]string{
 		"id":      id,
 		"status":  "updated",
@@ -292,6 +312,16 @@ func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	if _, err := docRef.Delete(ctx); err != nil {
 		c.Logger().Errorf("Failed to delete project document: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete project document"})
+	}
+
+	// Update website settings timestamp if deleted project was active
+	if strings.ToLower(project.Status) == "active" {
+		_, err := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Set(ctx, map[string]interface{}{
+			"projectUpdatedAt": time.Now(),
+		}, firestore.MergeAll)
+		if err != nil {
+			c.Logger().Errorf("Failed to update projectUpdatedAt in settings: %v", err)
+		}
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{
