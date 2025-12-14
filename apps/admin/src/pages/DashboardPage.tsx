@@ -1,8 +1,11 @@
-import { LayoutDashboard, AlertCircle, CheckCircle, ArrowRight, Globe } from 'lucide-react';
+import { AlertCircle, CheckCircle, ArrowRight, Globe } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
 import type { WebsiteSettings } from '@garden/shared';
 import { Link } from 'react-router-dom';
+import { AnalyticsOverview } from '../components/dashboard/AnalyticsOverview';
+import { RecentComments } from '../components/dashboard/RecentComments';
+import { PopularProjects } from '../components/dashboard/PopularProjects';
 
 export default function DashboardPage() {
   const { data: settings, isLoading } = useQuery({
@@ -96,10 +99,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="text-center py-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-        <LayoutDashboard className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">Coming Soon</h3>
-        <p className="mt-1 text-sm text-gray-500">The dashboard overview is currently under construction.</p>
+      <AnalyticsOverview />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <PopularProjects />
+        <RecentComments />
       </div>
     </div>
   );

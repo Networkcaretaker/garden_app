@@ -36,19 +36,10 @@ Next Tasks
 17. Add contact details to website Config
 
 
-Hi Gemini, I would like to add 2 Timestamp fields to the WebsiteSettings.
-The first field we need is called publishedAt wich will record the timestamp when the website is last published.
-The second field we need is called projectUpdatedAt. The timestamp in this feild will be updated when an Active Project is edited and saved in the admin app.
-These values will be used later in the admin project to indicate if the website needs to be updated.
-We will place a section on the admin Dashboard page that states if the website is up-to-date or needs to be updated because changes have been made. Remember that we only need to update if changes are made to Active projects
+I would like to create some template components for the dashboard page in the admin app in the following folder location "src/components/dashboard/"
+I would like some mock components that I will populate with real data in future.
+I would like some analytic components that measures website tracking and project views and a component that notifies the admin user of any new comments that are left on the website.
+We dont have the comments or analytics setup yet, I would just like to get an idea of what data should be displayed on the dashboard.
+If you can think of any more components that would be helpful then please let me know.
 
-Here are some of the Backend files you may need to update:
-project.go
-settings.go
-Here are some files from the admin app:
-WebsiteConfig.tsx - this is where the website is published, we will need to add the puplishedAt and projectUpdatedAt fields to this page. Can we add a new section below the Social Media called "Publish Status" and include the new feilds here. We could also move the Publish Data button into this section.
-DashboardPage.tsx
-And here is the shared Types file for settings
-settings.ts
 
-If there are any other files you need to access please ask.
