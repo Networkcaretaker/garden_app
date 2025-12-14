@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye } from 'lucide-react';
+import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye, Plus } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Project, ProjectCategory, ProjectImage, ProjectSettings } from '@garden/shared';
 import DeleteProject from '../../components/popup/DeleteProject';
+import AddCategory from '../../components/popup/AddCategory';
+import AddTag from '../../components/popup/AddTag';
 
 export default function ProjectEdit() {
   const queryClient = useQueryClient();
@@ -33,6 +35,8 @@ export default function ProjectEdit() {
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
   // Use useQuery to fetch data (uses cache if available)
   const { data: projects, isLoading: isFetching } = useQuery({
@@ -251,6 +255,23 @@ export default function ProjectEdit() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm">
+
+        <div className="md:col-span-2 flex items-center justify-between">
+            <label htmlFor="status" className="text-sm font-medium text-gray-700">
+              Project Status
+              <span className="block text-xs text-gray-500">
+                'Active' projects are visible on the public website.
+              </span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
+              className={`${status === 'active' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+              role="switch"
+              aria-checked={status === 'active'}>
+              <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+            </button>
+          </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
@@ -266,16 +287,26 @@ export default function ProjectEdit() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as ProjectCategory)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="" disabled>Select a category</option>
-              {settings?.categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as ProjectCategory)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="" disabled>Select a category</option>
+                {settings?.categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setIsAddCategoryOpen(true)}
+                className="p-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 border border-gray-300 transition-colors"
+                title="Add new category"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           <div>
@@ -302,6 +333,14 @@ export default function ProjectEdit() {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
             <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setIsAddTagOpen(true)}
+                className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                New
+              </button>
               {settings?.tags.map((tag) => (
                 <button
                   type="button"
@@ -313,23 +352,6 @@ export default function ProjectEdit() {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="md:col-span-2 flex items-center justify-between">
-            <label htmlFor="status" className="text-sm font-medium text-gray-700">
-              Project Status
-              <span className="block text-xs text-gray-500">
-                'Active' projects are visible on the public website.
-              </span>
-            </label>
-            <button
-              type="button"
-              onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
-              className={`${status === 'active' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-              role="switch"
-              aria-checked={status === 'active'}>
-              <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-            </button>
           </div>
         </div>
 
@@ -469,6 +491,18 @@ export default function ProjectEdit() {
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
         projectTitle={title}
+      />
+
+      <AddCategory 
+        isOpen={isAddCategoryOpen} 
+        onClose={() => setIsAddCategoryOpen(false)} 
+        onAdded={(newCat) => setCategory(newCat)} 
+      />
+
+      <AddTag
+        isOpen={isAddTagOpen}
+        onClose={() => setIsAddTagOpen(false)}
+        onAdded={(newTag) => toggleTag(newTag)}
       />
     </div>
   );

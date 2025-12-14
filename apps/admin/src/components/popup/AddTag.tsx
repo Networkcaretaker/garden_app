@@ -4,14 +4,14 @@ import { api } from '../../services/api';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import type { ProjectSettings } from '@garden/shared';
 
-interface AddCategoryProps {
+interface AddTagProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdded: (category: string) => void;
+  onAdded: (tag: string) => void;
 }
 
-export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryProps) {
-  const [newCategory, setNewCategory] = useState('');
+export default function AddTag({ isOpen, onClose, onAdded }: AddTagProps) {
+  const [newTag, setNewTag] = useState('');
   const [error, setError] = useState('');
   const queryClient = useQueryClient();
 
@@ -25,26 +25,26 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
   });
 
   const mutation = useMutation({
-    mutationFn: async (category: string) => {
+    mutationFn: async (tag: string) => {
       if (!settings) throw new Error("Settings not loaded");
       
-      const normalizedCategory = category.trim();
-      if (settings.categories.some(c => c.toLowerCase() === normalizedCategory.toLowerCase())) {
-        throw new Error("Category already exists");
+      const normalizedTag = tag.trim();
+      if (settings.tags.some(t => t.toLowerCase() === normalizedTag.toLowerCase())) {
+        throw new Error("Tag already exists");
       }
 
       const updatedSettings = {
         ...settings,
-        categories: [...settings.categories, normalizedCategory]
+        tags: [...settings.tags, normalizedTag]
       };
 
       await api.put('/settings/projects', updatedSettings);
-      return normalizedCategory;
+      return normalizedTag;
     },
-    onSuccess: (category) => {
+    onSuccess: (tag) => {
       queryClient.invalidateQueries({ queryKey: ['settings', 'projects'] });
-      setNewCategory('');
-      onAdded(category);
+      setNewTag('');
+      onAdded(tag);
       onClose();
     },
     onError: (err: Error) => {
@@ -54,9 +54,9 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCategory.trim()) return;
+    if (!newTag.trim()) return;
     setError('');
-    mutation.mutate(newCategory);
+    mutation.mutate(newTag);
   };
 
   if (!isOpen) return null;
@@ -65,7 +65,7 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">Add New Category</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Add New Tag</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-500 transition-colors">
             <X className="h-5 w-5" />
           </button>
@@ -80,14 +80,14 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
           
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category Name
+              Tag Name
             </label>
             <input
               type="text"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-              placeholder="e.g. Urban Garden"
+              placeholder="e.g. Sustainable"
               autoFocus
             />
           </div>
@@ -102,7 +102,7 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
             </button>
             <button
               type="submit"
-              disabled={mutation.isPending || !newCategory.trim()}
+              disabled={mutation.isPending || !newTag.trim()}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
               {mutation.isPending ? (
@@ -110,7 +110,7 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
               ) : (
                 <Plus className="h-4 w-4" />
               )}
-              Add Category
+              Add Tag
             </button>
           </div>
         </form>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2, Plus } from 'lucide-react';
 import { doc, collection } from "firebase/firestore";
 import { db } from '../../services/firebase';
 import { api } from '../../services/api';
@@ -8,6 +8,8 @@ import { resizeImage } from '../../utils/imageResize';
 import { uploadImage } from '../../services/storage';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import type { ProjectCategory, ProjectImage, ProjectSettings } from '@garden/shared';
+import AddCategory from '../../components/popup/AddCategory';
+import AddTag from '../../components/popup/AddTag';
 
 export default function ProjectCreate() {
   const queryClient = useQueryClient();
@@ -24,6 +26,8 @@ export default function ProjectCreate() {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
   const { data: settings } = useQuery({
     queryKey: ['settings', 'projects'],
@@ -116,6 +120,22 @@ export default function ProjectCreate() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex items-center justify-between">
+          <label htmlFor="status" className="text-sm font-medium text-gray-700">
+            Project Status
+            <span className="block text-xs text-gray-500">'Active' projects are visible on the public website.</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
+            className={`${
+              status === 'active' ? 'bg-green-600' : 'bg-gray-200'
+            } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+            role="switch"
+            aria-checked={status === 'active'}>
+            <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+          </button>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
           <input
@@ -131,16 +151,26 @@ export default function ProjectCreate() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as ProjectCategory)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="" disabled>Select a category</option>
-              {settings?.categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as ProjectCategory)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="" disabled>Select a category</option>
+                {settings?.categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setIsAddCategoryOpen(true)}
+                className="p-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 border border-gray-300 transition-colors"
+                title="Add new category"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
@@ -169,6 +199,14 @@ export default function ProjectCreate() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setIsAddTagOpen(true)}
+              className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1"
+            >
+              <Plus className="h-3 w-3" />
+              New
+            </button>
             {settings?.tags.map((tag) => (
               <button
                 type="button"
@@ -181,25 +219,6 @@ export default function ProjectCreate() {
             ))}
           </div>
         </div>
-
-        <div className="flex items-center justify-between">
-          <label htmlFor="status" className="text-sm font-medium text-gray-700">
-            Project Status
-            <span className="block text-xs text-gray-500">'Active' projects are visible on the public website.</span>
-          </label>
-          <button
-            type="button"
-            onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
-            className={`${
-              status === 'active' ? 'bg-green-600' : 'bg-gray-200'
-            } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-            role="switch"
-            aria-checked={status === 'active'}>
-            <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-          </button>
-        </div>
-
-        
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>
@@ -250,6 +269,18 @@ export default function ProjectCreate() {
         </div>
 
       </form>
+
+      <AddCategory 
+        isOpen={isAddCategoryOpen} 
+        onClose={() => setIsAddCategoryOpen(false)} 
+        onAdded={(newCat) => setCategory(newCat)} 
+      />
+
+      <AddTag
+        isOpen={isAddTagOpen}
+        onClose={() => setIsAddTagOpen(false)}
+        onAdded={(newTag) => toggleTag(newTag)}
+      />
     </div>
   );
 }
