@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye, Plus } from 'lucide-react';
 import { api } from '../../services/api';
@@ -9,6 +9,7 @@ import type { Project, ProjectCategory, ProjectImage, ProjectSettings } from '@g
 import DeleteProject from '../../components/popup/DeleteProject';
 import AddCategory from '../../components/popup/AddCategory';
 import AddTag from '../../components/popup/AddTag';
+import UnsavedChanges from '../../components/popup/UnsavedChanges';
 
 export default function ProjectEdit() {
   const queryClient = useQueryClient();
@@ -18,6 +19,8 @@ export default function ProjectEdit() {
   const dataLoaded = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
+  const [initialData, setInitialData] = useState<Project | null>(null);
+  const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
 
   // Delete State
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -73,11 +76,49 @@ export default function ProjectEdit() {
       setCoverImage(project.coverImage || '');
       setTags(project.tags || []);
       
+      setInitialData(project);
+      
       // Mark as loaded so we don't overwrite user edits if background refetch happens
       dataLoaded.current = true;
     }
   }, [projects, id]);
 
+  // Check if form is dirty (has changes)
+  const isDirty = useMemo(() => {
+    if (!initialData) return false;
+    if (newFiles.length > 0) return true;
+    if (title !== initialData.title) return true;
+    if (description !== initialData.description) return true;
+    if (category !== initialData.category) return true;
+    if (location !== initialData.location) return true;
+    if (status !== (initialData.status || 'inactive')) return true;
+    if (coverImage !== (initialData.coverImage || '')) return true;
+    
+    // Tags comparison
+    const currentTags = [...tags].sort();
+    const initTags = [...(initialData.tags || [])].sort();
+    if (JSON.stringify(currentTags) !== JSON.stringify(initTags)) return true;
+
+    // Images comparison (existing only)
+    if (existingImages.length !== (initialData.images || []).length) return true;
+    const currentIds = existingImages.map(i => i.id).sort().join(',');
+    const initIds = (initialData.images || []).map(i => i.id).sort().join(',');
+    if (currentIds !== initIds) return true;
+
+    return false;
+  }, [title, description, category, location, status, tags, coverImage, existingImages, newFiles, initialData]);
+
+  // Warn on browser refresh/close if dirty
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +158,19 @@ export default function ProjectEdit() {
       ? prev.filter(t => t !== tag)
       : [...prev, tag]
     );
+  };
+
+  const handleBack = () => {
+    if (isDirty) {
+      setShowUnsavedPopup(true);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleDiscard = () => {
+    setShowUnsavedPopup(false);
+    navigate(-1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,7 +271,7 @@ export default function ProjectEdit() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <button 
-              onClick={() => navigate(-1)}
+              onClick={handleBack}
               className="flex items-center text-gray-500 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
@@ -227,9 +281,9 @@ export default function ProjectEdit() {
             <div className="flex items-center gap-3">
               <button
                 type="submit"
-                disabled={isSaving}
+                disabled={!isDirty || isSaving}
                 onClick={handleSubmit}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSaving ? (
                   <>
@@ -465,8 +519,8 @@ export default function ProjectEdit() {
             </button>
             <button
               type="submit"
-              disabled={isSaving}
-              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+              disabled={!isDirty || isSaving}
+              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {isSaving ? (
                 <>
@@ -503,6 +557,12 @@ export default function ProjectEdit() {
         isOpen={isAddTagOpen}
         onClose={() => setIsAddTagOpen(false)}
         onAdded={(newTag) => toggleTag(newTag)}
+      />
+
+      <UnsavedChanges
+        isOpen={showUnsavedPopup}
+        onClose={() => setShowUnsavedPopup(false)}
+        onDiscard={handleDiscard}
       />
     </div>
   );

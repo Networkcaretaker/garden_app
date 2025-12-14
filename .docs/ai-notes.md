@@ -14,7 +14,7 @@ Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
 2. Header with navigation on website project and projects pages
 3. Project settings page (taxonomies) with editible Catagories and Tags (include remove function) **DONE**
-4. Create pop up on create and edit projects page to add new category or tag
+4. Create pop up on create and edit projects page to add new category or tag **DONE**
 5. Add testimonials to homepage **DONE**
 6. Create website footer with contact and social links
 7. Add Groups to images and group type (collection, slider)
