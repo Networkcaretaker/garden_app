@@ -67,55 +67,54 @@ export default function ProjectPage() {
   const galleryImages = project.images ? project.images.slice(1) : [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <Header />
-      
-      {/* Hero Section */}
-      <div className="relative h-[50vh] min-h-[400px] w-full bg-gray-900">
-        {heroImage && (
-          <img
-            src={heroImage.url}
-            alt={heroImage.alt || project.title}
-            className="absolute inset-0 h-full w-full object-cover opacity-60"
-          />
+    <div className="relative min-h-screen">
+      {/* Fixed Background */}
+      <div className="fixed inset-0 z-0">
+        {heroImage ? (
+          <>
+            <img
+              src={heroImage.url}
+              alt={heroImage.alt || project.title}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </>
+        ) : (
+          <div className="h-full w-full bg-gray-900" />
         )}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 p-4 text-center">
-          <div>
-            <h1 className="text-4xl font-bold text-white shadow-sm md:text-6xl">{project.title}</h1>
-            <p className="mt-4 text-xl font-light text-white/90">{project.location}</p>
-          </div>
-        </div>
       </div>
 
-      <div className="container mx-auto flex-grow px-4 py-12">
-        <div className="mx-auto max-w-4xl">
-          <Link to="/projects" className="mb-8 inline-flex items-center text-green-600 hover:underline">
-            &larr; Back to all projects
-          </Link>
-
-          {project.description && (
-            <div className="mb-16">
-              <h2 className="mb-4 text-2xl font-bold text-green-800">About this Project</h2>
-              <p className="whitespace-pre-line text-lg leading-relaxed text-gray-700">{project.description}</p>
-            </div>
-          )}
+      {/* Content Overlay */}
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <Header />
+        
+        <div className="container mx-auto flex-grow px-4 py-12">
+          <div className="mb-16 text-center">
+            <h1 className="mb-4 text-4xl font-bold text-white drop-shadow-lg md:text-6xl">{project.title}</h1>
+            <p className="text-xl text-white/90 drop-shadow-md">{project.location}</p>
+            {project.description && (
+              <p className="whitespace-pre-line border-t border-b my-10 py-6 text-lg font-thin leading-relaxed text-white/90 italic">{project.description}</p>
+            )}
+          </div>
 
           {galleryImages.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {galleryImages.map((image, index) => (
-                <div key={image.id || index} className="overflow-hidden rounded-lg shadow-md transition-transform hover:scale-[1.02]">
-                  <img
-                    src={image.url}
-                    alt={image.alt || `${project.title} - Image ${index + 2}`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
+            <div className="mx-auto max-w-6xl">
+              <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+                {galleryImages.map((image, index) => (
+                  <div key={image.id || index} className="mb-6 break-inside-avoid overflow-hidden rounded-lg shadow-xl transition-transform hover:scale-[1.02]">
+                    <img
+                      src={image.url}
+                      alt={image.alt || `${project.title} - Image ${index + 2}`}
+                      className="w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }
