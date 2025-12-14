@@ -64,7 +64,7 @@ export default function ProjectPage() {
   // Use the first image as the hero background if available
   const heroImage = project.images && project.images.length > 0 ? project.images[0] : null;
   // The rest of the images for the gallery
-  const galleryImages = project.images ? project.images.slice(1) : [];
+  const galleryImages = project.images || [];
 
   return (
     <div className="relative min-h-screen">
@@ -104,7 +104,7 @@ export default function ProjectPage() {
                   <div key={image.id || index} className="mb-6 break-inside-avoid overflow-hidden rounded-lg shadow-xl transition-transform hover:scale-[1.02]">
                     <img
                       src={image.url}
-                      alt={image.alt || `${project.title} - Image ${index + 2}`}
+                      alt={image.alt || `${project.title} - Image ${index + 1}`}
                       className="w-full object-cover"
                     />
                   </div>
