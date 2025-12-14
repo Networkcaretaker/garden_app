@@ -127,7 +127,7 @@ function ProjectSettingsForm({ initialData, onDirtyChange }: { initialData: Proj
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     general: false,
-    taxonomies: true, // Default open for this task
+    taxonomies: false,
   });
 
   const toggleSection = (section: string) => {

@@ -34,12 +34,3 @@ Next Tasks
 15. Add contact details to website
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
-
-
-I would like to create some template components for the dashboard page in the admin app in the following folder location "src/components/dashboard/"
-I would like some mock components that I will populate with real data in future.
-I would like some analytic components that measures website tracking and project views and a component that notifies the admin user of any new comments that are left on the website.
-We dont have the comments or analytics setup yet, I would just like to get an idea of what data should be displayed on the dashboard.
-If you can think of any more components that would be helpful then please let me know.
-
-

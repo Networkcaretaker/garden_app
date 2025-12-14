@@ -10,6 +10,7 @@ import ProjectList from './pages/projects/ProjectList';
 import ProjectEdit from './pages/projects/ProjectEdit';
 import ProjectPreview from './pages/projects/ProjectPreview';
 import SettingsPage from './pages/settings/SettingsPage';
+import { ScrollToTop } from './components/ScrollToTop';
 
 // ... ProtectedRoute component ...
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -33,6 +34,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/login" element={<Login />} />
 

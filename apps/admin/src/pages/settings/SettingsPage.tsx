@@ -13,24 +13,33 @@ function GeneralSettingsPlaceholder() {
     </div>
   );
 }
+function UserSettingsPlaceholder() {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <h2 className="text-lg font-medium text-gray-900 mb-4">User Settings</h2>
+      <p className="text-gray-500">User settings will be managed here in the future.</p>
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects'>(() => {
+  const [activeTab, setActiveTab] = useState<'general' | 'website' | 'projects' | 'users'>(() => {
     const tab = searchParams.get('tab');
     return (tab === 'website' || tab === 'projects') ? tab : 'general';
   });
   const [isDirty, setIsDirty] = useState(false);
   const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
-  const [pendingTab, setPendingTab] = useState<'general' | 'website' | 'projects' | null>(null);
+  const [pendingTab, setPendingTab] = useState<'general' | 'website' | 'projects' | 'users' | null>(null);
 
   const tabs = [
     { id: 'general', name: 'General' },
     { id: 'website', name: 'Website' },
     { id: 'projects', name: 'Projects' },
+    { id: 'users', name: 'Users' },
   ];
 
-  const handleTabClick = (tabId: 'general' | 'website' | 'projects') => {
+  const handleTabClick = (tabId: 'general' | 'website' | 'projects' | 'users') => {
     if (activeTab === tabId) return;
     
     if (isDirty) {
@@ -63,7 +72,7 @@ export default function SettingsPage() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => handleTabClick(tab.id as 'general' | 'website' | 'projects')}
+                onClick={() => handleTabClick(tab.id as 'general' | 'website' | 'projects' | 'users')}
                 className={`${
                   activeTab === tab.id
                     ? 'border-green-500 text-green-600'
@@ -82,6 +91,7 @@ export default function SettingsPage() {
           {activeTab === 'general' && <GeneralSettingsPlaceholder />}
           {activeTab === 'website' && <WebsiteConfig onDirtyChange={setIsDirty} />}
           {activeTab === 'projects' && <ProjectSettings onDirtyChange={setIsDirty} />}
+          {activeTab === 'users' && <UserSettingsPlaceholder />}
         </div>
       </div>
 

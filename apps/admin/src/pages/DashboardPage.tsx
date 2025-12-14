@@ -48,8 +48,8 @@ export default function DashboardPage() {
       {/* Website Status Section */}
       {!isLoading && settings && (
         <div className={`mb-8 p-6 rounded-lg border ${needsPublish ? 'bg-yellow-50 border-yellow-200' : 'bg-white border-gray-200 shadow-sm'}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
               {needsPublish ? (
                 <div className="p-3 bg-yellow-100 rounded-full text-yellow-600">
                   <AlertCircle className="h-6 w-6" />
@@ -66,18 +66,18 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 mt-1">
                   {needsPublish 
                     ? 'Changes have been made to the website settings or active projects since the last publish.' 
-                    : `Last published on ${publishedAt?.toLocaleDateString()} at ${publishedAt?.toLocaleTimeString()}`
+                    : `Last published on ${publishedAt?.toLocaleDateString()}`
                   }
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
               {settings.websiteURL && (
                 <a 
                   href={settings.websiteURL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors bg-teal-600 border border-teal-600 text-white hover:bg-teal-700"
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-colors bg-teal-600 border border-teal-600 text-white hover:bg-teal-700 w-full sm:w-auto"
                 >
                   <Globe className="h-4 w-4" />
                   Visit Website
@@ -85,7 +85,7 @@ export default function DashboardPage() {
               )}
               <Link 
                 to="/settings?tab=website" 
-                className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors ${
+                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-colors w-full sm:w-auto ${
                   needsPublish 
                     ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

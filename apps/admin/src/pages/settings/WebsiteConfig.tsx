@@ -40,7 +40,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     general: false,
     seo: false,
     social: false,
-    publish: true, // Default open
+    publish: false,
   });
 
   const toggleSection = (section: string) => {
