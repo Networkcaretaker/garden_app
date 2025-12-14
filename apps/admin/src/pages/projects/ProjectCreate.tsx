@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, Loader2, Plus } from 'lucide-react';
+import { Upload, X, Loader2, Plus, ArrowLeft, Save, Star } from 'lucide-react';
 import { doc, collection } from "firebase/firestore";
 import { db } from '../../services/firebase';
 import { api } from '../../services/api';
@@ -26,6 +26,7 @@ export default function ProjectCreate() {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [coverImage, setCoverImage] = useState('');
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
@@ -42,14 +43,24 @@ export default function ProjectCreate() {
       const newFiles = Array.from(e.target.files);
       setSelectedImages((prev) => [...prev, ...newFiles]);
 
-      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
-      setPreviews((prev) => [...prev, ...newPreviews]);
+      const newPreviewUrls = newFiles.map((file) => URL.createObjectURL(file));
+      setPreviews((prev) => [...prev, ...newPreviewUrls]);
+
+      // If no cover image is set, default to the first uploaded image
+      if (!coverImage && newPreviewUrls.length > 0) {
+        setCoverImage(newPreviewUrls[0]);
+      }
     }
   };
 
   const removeImage = (index: number) => {
+    const previewToRemove = previews[index];
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
+
+    if (previewToRemove === coverImage) {
+      setCoverImage('');
+    }
   };
 
   const toggleTag = (tag: string) => {
@@ -71,11 +82,19 @@ export default function ProjectCreate() {
       const projectImages: ProjectImage[] = [];
       const uploadPath = `project-images/${newProjectId}`;
       
-      for (const file of selectedImages) {
+      let finalCoverImage = '';
+
+      for (let i = 0; i < selectedImages.length; i++) {
+        const file = selectedImages[i];
+        const previewUrl = previews[i];
+
         const resizedBlob = await resizeImage(file, 1200);
-        // Destructure response to get url AND path
         const { url, path } = await uploadImage(resizedBlob, uploadPath);
         
+        if (coverImage === previewUrl) {
+          finalCoverImage = url;
+        }
+
         projectImages.push({
           id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: url,
@@ -83,6 +102,11 @@ export default function ProjectCreate() {
           caption: '',
           alt: '',
         });
+      }
+
+      // Fallback: If no cover image is explicitly set (or was deleted), use the first one
+      if (!finalCoverImage && projectImages.length > 0) {
+        finalCoverImage = projectImages[0].url;
       }
 
       await api.post('/admin/projects', {
@@ -93,6 +117,7 @@ export default function ProjectCreate() {
         location,
         tags,
         status,
+        coverImage: finalCoverImage,
         images: projectImages,
       });
 
@@ -110,8 +135,42 @@ export default function ProjectCreate() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Create New Project</h1>
+    <div className="min-h-screen bg-white pb-20">
+      {/* Navigation Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={isLoading}
+                onClick={handleSubmit}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-5 w-5" />
+                    Create Project
+                  </>
+                )}
+              </button> 
+            </div>
+          </div>
+        </div>
+      </div>
 
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
@@ -119,36 +178,38 @@ export default function ProjectCreate() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex items-center justify-between">
-          <label htmlFor="status" className="text-sm font-medium text-gray-700">
-            Project Status
-            <span className="block text-xs text-gray-500">'Active' projects are visible on the public website.</span>
-          </label>
-          <button
-            type="button"
-            onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
-            className={`${
-              status === 'active' ? 'bg-green-600' : 'bg-gray-200'
-            } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-            role="switch"
-            aria-checked={status === 'active'}>
-            <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-          </button>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
-          <input
-            type="text"
-            required
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="e.g. Modern Villa Garden"
-          />
+      <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm">
+        
+        <div className="md:col-span-2 flex items-center justify-between">
+            <label htmlFor="status" className="text-sm font-medium text-gray-700">
+              Project Status
+              <span className="block text-xs text-gray-500">
+                'Active' projects are visible on the public website.
+              </span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
+              className={`${status === 'active' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+              role="switch"
+              aria-checked={status === 'active'}>
+              <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+            </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              placeholder="e.g. Modern Villa Garden"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <div className="flex gap-2">
@@ -172,6 +233,7 @@ export default function ProjectCreate() {
               </button>
             </div>
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
             <input
@@ -183,61 +245,82 @@ export default function ProjectCreate() {
               placeholder="e.g. Palma, Mallorca"
             />
           </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="Describe the project..."
-          />
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setIsAddTagOpen(true)}
-              className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1"
-            >
-              <Plus className="h-3 w-3" />
-              New
-            </button>
-            {settings?.tags.map((tag) => (
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              placeholder="Describe the project..."
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                onClick={() => setIsAddTagOpen(true)}
+                className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1"
               >
-                {tag}
+                <Plus className="h-3 w-3" />
+                New
               </button>
-            ))}
+              {settings?.tags.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
+          <p className="text-sm text-gray-500 mb-4">Click the star icon to set the cover image for the project.</p>
           
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {previews.map((src, index) => (
-              <div key={index} className="relative aspect-square">
-                <img src={src} alt="Preview" className="w-full h-full object-cover rounded-md" />
+              <div key={index} className="relative aspect-square group">
+                <img 
+                  src={src} 
+                  alt="Preview" 
+                  className={`w-full h-full object-cover rounded-lg border-2 ${src === coverImage ? 'border-yellow-400 ring-2 ring-yellow-400' : 'border-green-500/50'}`} 
+                />
+                
+                {/* Star / Cover Image Button */}
+                <button
+                  type="button"
+                  onClick={() => setCoverImage(src)}
+                  className="absolute top-2 left-2 p-1 rounded-full shadow-sm transition-all hover:bg-white/80"
+                  title={src === coverImage ? "Cover Image" : "Set as Cover"}
+                >
+                  <Star 
+                    className={`h-5 w-5 ${src === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400'}`} 
+                  />
+                </button>
+
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
+                <span className="absolute bottom-2 left-2 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded">
+                  New
+                </span>
               </div>
             ))}
             
-            <label className="border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
+            <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
               <Upload className="h-6 w-6 text-gray-400 mb-2" />
               <span className="text-sm text-gray-500">Add Photos</span>
               <input
@@ -251,21 +334,33 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Creating Project...
-              </>
-            ) : (
-              'Create Project'
-            )}
-          </button>
+        <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => navigate('/projects')}
+              className="flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-6 rounded-lg hover:bg-gray-50 font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5" />
+                  Create Project
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
       </form>
