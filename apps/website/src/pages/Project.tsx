@@ -13,6 +13,12 @@ export default function ProjectPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isRotated, setIsRotated] = useState(false);
+
+  useEffect(() => {
+    // Reset rotation state when the selected image changes or closes
+    setIsRotated(false);
+  }, [selectedImage]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -62,6 +68,16 @@ export default function ProjectPage() {
       </>
     );
   }
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const isLandscape = img.naturalWidth > img.naturalHeight;
+    const isPortraitView = window.innerHeight > window.innerWidth;
+    
+    if (isLandscape && isPortraitView) {
+      setIsRotated(true);
+    }
+  };
 
   // Use the first image as the hero background if available
   const heroImage = project.images && project.images.length > 0 ? project.images[0] : null;
@@ -137,7 +153,9 @@ export default function ProjectPage() {
           <img 
             src={selectedImage} 
             alt="Full screen view" 
-            className="max-h-[90vh] max-w-full rounded-lg shadow-2xl"
+            onLoad={handleImageLoad}
+            className={`rounded-lg shadow-2xl transition-transform duration-300 ${isRotated ? 'rotate-90' : 'max-h-[90vh] max-w-full'}`}
+            style={isRotated ? { maxHeight: '90vw', maxWidth: '90vh' } : {}}
             onClick={(e) => e.stopPropagation()}
           />
         </div>
