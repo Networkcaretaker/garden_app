@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BeforeAfterSlider } from '../components/ImageSlider';
 import { Footer } from '../components/Footer';
+import { WhatsAppButton } from '../components/ui/WhatsApp';
 
 const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
 
@@ -58,7 +59,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
-          <img src="/icons/icon-128.png" className="mx-auto" />
+          <img src="/icons/icon-128.png" className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-white md:text-6xl">
             {websiteData.title}
           </h1>
@@ -89,18 +90,17 @@ export default function Home() {
       {/* Team Section */}
       <section className="relative flex h-[80vh] min-h-[600px] items-center justify-center text-center text-white">
         <img
-          src="/team.jpg"
+          src="/aj00.jpg"
           alt={`Meet the team`}
           className="absolute z-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
-          <Link
-            to="/contact"
-            className="mt-8 inline-block rounded-full bg-green-600 px-8 py-3 font-bold text-white transition-colors hover:bg-green-700"
-          >
-            Get a Free Quote
-          </Link>
+          <WhatsAppButton 
+            phoneNumber="34123456789" 
+            variant="solid"
+            label="Let's Chat About Your Next Project"
+          />
         </div>
       </section>
       
@@ -117,6 +117,7 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Service 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj06.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Garden Design
               </h3>
@@ -127,6 +128,7 @@ export default function Home() {
             </div>
             {/* Service 2 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj02.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Lawn & Plant Care
               </h3>
@@ -137,6 +139,7 @@ export default function Home() {
             </div>
             {/* Service 3 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj01.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Full Maintenance
               </h3>
@@ -149,6 +152,7 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Service 4 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj05.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Comprehensive Palm Tree and Shrub Care
               </h3>
@@ -158,6 +162,7 @@ export default function Home() {
             </div>
             {/* Service 5 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj04.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Build and Maintain Pools
               </h3>
@@ -167,6 +172,7 @@ export default function Home() {
             </div>
             {/* Service 6 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
+              <img src="/aj03.png" alt="Clip 2" className="rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-green-700">
                 Matting and Gravelling Services
               </h3>
@@ -203,7 +209,7 @@ export default function Home() {
       </section>
 
       {/* Map Section */}
-      <section className="relative flex h-[70vh] min-h-[600px] items-center justify-center text-center text-white">
+      <section className="relative flex h-[70vh] min-h-[500px] items-center justify-center text-center text-white">
         <img
           src="/map.png"
           alt={`A map of Mallorca`}
@@ -211,19 +217,18 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         
-        <div className="relative z-10 p-4">
+        <div className="relative z-10 p-4 max-w-2xl">
           <h1 className="text-4xl font-bold text-white md:text-4xl">
             Serving All of Mallorca
           </h1>
-          <p className="mt-4 text-lg font-light text-green-100 md:text-2xl">
-            No matter where your property is located on the island, our professional gardening team is ready to help.<br></br> We provide complete island-wide coverage for maintenance and landscaping.
+          <p className="mt-4 text-lg font-light text-green-100 md:text-2xl mb-4">
+            No matter where your property is located on the island, our professional gardening team is ready to help. We provide complete island-wide coverage for maintenance and landscaping.
           </p>
-          <Link
-            to="/contact"
-            className="mt-8 inline-block rounded-full bg-green-600 px-8 py-3 font-bold text-white transition-colors hover:bg-green-700"
-          >
-            Get a Free Quote
-          </Link>
+          <WhatsAppButton 
+            phoneNumber="34123456789" 
+            variant="solid"
+            label="Get a Free Quote"
+          />
         </div>
       </section>
 

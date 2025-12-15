@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { WhatsAppButton } from './ui/WhatsApp';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,9 +25,11 @@ export function Header() {
         <nav className="hidden items-center gap-8 md:flex">
           <Link to="/" className="font-medium text-gray-600 transition-colors hover:text-green-700">Home</Link>
           <Link to="/projects" className="font-medium text-gray-600 transition-colors hover:text-green-700">Projects</Link>
-          <Link to="/contact" className="rounded-full bg-green-600 px-5 py-2.5 font-bold text-white transition-colors hover:bg-green-700">
-            Contact Us
-          </Link>
+          <WhatsAppButton 
+            phoneNumber="34123456789" 
+            message="Hola James! I need a website built."
+            variant="solid"
+          />
         </nav>
 
         {/* Mobile Menu Button */}
@@ -45,9 +48,11 @@ export function Header() {
           <nav className="flex flex-col gap-4">
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-green-700">Home</Link>
             <Link to="/projects" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-green-700">Projects</Link>
-            <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="mt-2 block w-full rounded-lg bg-green-600 px-4 py-3 text-center font-bold text-white hover:bg-green-700">
-              Contact Us
-            </Link>
+            <WhatsAppButton 
+              phoneNumber="34123456789" 
+              message="Hola James! I need a website built."
+              variant="solid"
+            />
           </nav>
         </div>
       )}
