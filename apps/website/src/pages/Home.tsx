@@ -3,49 +3,19 @@ import { Link } from 'react-router-dom';
 import { BeforeAfterSlider } from '../components/ImageSlider';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
-
-const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
-
-interface WebsiteData {
-  title: string;
-  tagline: string;
-}
+import { getWebsiteConfig, type WebsiteData, DEFAULT_WEBSITE_DATA } from '../services/configService';
 
 export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
-  const [websiteData, setWebsiteData] = useState<WebsiteData>({
-    title: 'Mallorca Gardens',
-    tagline: 'Mallorcas Premier Gardening & Landscaping Experts'
-  });
+  const [websiteData, setWebsiteData] = useState<WebsiteData>(DEFAULT_WEBSITE_DATA);
 
   useEffect(() => {
-    const fetchConfig = async () => {
-      // If the URL isn't set, we just stick to the defaults
-      if (!VITE_WEBSITE_CONFIG_URL) {
-        console.warn('VITE_WEBSITE_CONFIG_URL is not defined in .env');
-        return;
-      }
-
-      try {
-        const response = await fetch(VITE_WEBSITE_CONFIG_URL);
-        if (!response.ok) {
-          throw new Error('Failed to fetch website config');
-        }
-        const data = await response.json();
-        
-        // Update state with the fetched data
-        // We use prev state spread to ensure we don't lose defaults if fields are missing
-        setWebsiteData(prev => ({
-          ...prev,
-          title: data.title || prev.title,
-          tagline: data.tagline || prev.tagline
-        }));
-      } catch (error) {
-        console.error('Error loading website config:', error);
-      }
+    const loadData = async () => {
+      const data = await getWebsiteConfig();
+      setWebsiteData(data);
     };
 
-    fetchConfig();
+    loadData();
   }, []);
 
   return (
@@ -97,7 +67,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
           <WhatsAppButton 
-            phoneNumber="34123456789" 
+            phoneNumber={websiteData.social.whatsapp} 
             variant="solid"
             label="Let's Chat About Your Next Project"
           />
@@ -225,7 +195,7 @@ export default function Home() {
             No matter where your property is located on the island, our professional gardening team is ready to help. We provide complete island-wide coverage for maintenance and landscaping.
           </p>
           <WhatsAppButton 
-            phoneNumber="34123456789" 
+            phoneNumber={websiteData.social.whatsapp} 
             variant="solid"
             label="Get a Free Quote"
           />

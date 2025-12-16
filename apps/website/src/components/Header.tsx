@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { WhatsAppButton } from './ui/WhatsApp';
+import { getWebsiteConfig, type WebsiteData, DEFAULT_WEBSITE_DATA } from '../services/configService';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [websiteData, setWebsiteData] = useState<WebsiteData>(DEFAULT_WEBSITE_DATA);
+
+  useEffect(() => {
+    getWebsiteConfig().then(setWebsiteData);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -13,11 +19,11 @@ export function Header() {
         <Link to="/" className="group flex items-center gap-3">
           <img 
             src="/icons/icon-128.png" 
-            alt="Mallorca Gardens Logo" 
+            alt={`${websiteData.title} Logo`} 
             className="h-10 w-10 md:h-12 md:w-12" 
           />
           <span className="text-xl font-bold text-green-800 transition-colors group-hover:text-green-700 md:text-2xl">
-            Mallorca Gardens
+            {websiteData.title}
           </span>
         </Link>
 
@@ -26,8 +32,8 @@ export function Header() {
           <Link to="/" className="font-medium text-gray-600 transition-colors hover:text-green-700">Home</Link>
           <Link to="/projects" className="font-medium text-gray-600 transition-colors hover:text-green-700">Projects</Link>
           <WhatsAppButton 
-            phoneNumber="34123456789" 
-            message="Hola James! I need a website built."
+            phoneNumber={websiteData.social.whatsapp}
+            message="Hola! I need a gardener"
             variant="solid"
           />
         </nav>
@@ -49,8 +55,8 @@ export function Header() {
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-green-700">Home</Link>
             <Link to="/projects" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-green-700">Projects</Link>
             <WhatsAppButton 
-              phoneNumber="34123456789" 
-              message="Hola James! I need a website built."
+              phoneNumber={websiteData.social.whatsapp} 
+              message="Hola! I need a gardener"
               variant="solid"
             />
           </nav>
