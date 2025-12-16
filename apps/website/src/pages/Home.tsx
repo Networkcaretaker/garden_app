@@ -3,16 +3,17 @@ import { Link } from 'react-router-dom';
 import { BeforeAfterSlider } from '../components/ImageSlider';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
-import { getWebsiteConfig, type WebsiteData, DEFAULT_WEBSITE_DATA } from '../services/configService';
+import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
+import type { WebsiteSettings } from '@garden/shared';
 
 export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
-  const [websiteData, setWebsiteData] = useState<WebsiteData>(DEFAULT_WEBSITE_DATA);
+  const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
 
   useEffect(() => {
     const loadData = async () => {
       const data = await getWebsiteConfig();
-      setWebsiteData(data);
+      setWebsiteSettings(data);
     };
 
     loadData();
@@ -20,40 +21,66 @@ export default function Home() {
 
   return (
     <main className="bg-white text-gray-800">
+
       {/* Hero Section */}
-      <section className="relative flex h-[60vh] min-h-[400px] items-center justify-center text-center text-white">
+      <section className="relative flex h-[100vh] min-h-[600px] items-center justify-center text-center text-white">
         <img
           src="/rose-garden.webp"
-          alt={`A beautiful, lush garden created by ${websiteData.title}`}
+          alt={`A garden created by ${WebsiteSettings.title}`}
           className="absolute z-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
-          <img src="/icons/icon-128.png" className="mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-white md:text-6xl">
-            {websiteData.title}
-          </h1>
-          <p className="mt-4 text-lg font-light text-teal-100 md:text-2xl">
-            {websiteData.tagline}
+
+          {WebsiteSettings.content.hero.logo && (
+            <img src="/icons/icon-128.png" className="mx-auto mb-4" />
+          )}
+
+          {WebsiteSettings.content.hero.title && (
+            <h1 className="text-4xl font-bold text-white md:text-6xl drop-shadow-lg">
+              {WebsiteSettings.title}
+            </h1>
+          )}
+
+          {WebsiteSettings.content.hero.tagline && (
+          <p className="mt-6 text-xl font-bold text-teal-500 md:text-3xl drop-shadow-lg bg-black/50 py-2 rounded-t-xl">
+            {WebsiteSettings.tagline}
           </p>
-          <Link
-            to="/projects"
-            className="mt-8 inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
-          >
-            View Our Projects
-          </Link>
+          )}
+
+          {WebsiteSettings.content.hero.description && (
+          <p className=" max-w-2xl *:text-lg font-light text-white md:text-lg drop-shadow-lg bg-teal-600/50 p-2 rounded-b-xl">
+            {WebsiteSettings.description}
+          </p>
+          )}
+
+          {WebsiteSettings.content.hero.showCTA && (
+            <Link
+              to="/projects"
+              className="mt-8 inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+            >
+              {WebsiteSettings.content.hero.cta.buttonText}
+            </Link>
+          )}
+
         </div>
       </section>
 
       {/* About Section */}
       <section className="bg-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
+
+          {WebsiteSettings.content.about.title && (
           <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
-            A Passionate Team of Expert Gardeners
+            {WebsiteSettings.content.about.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialize in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with us.
-          </p>
+          )}
+
+          {WebsiteSettings.content.about.text && (
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              {WebsiteSettings.content.about.text}
+            </p>
+          )}
         </div>
       </section>
 
@@ -67,7 +94,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
           <WhatsAppButton 
-            phoneNumber={websiteData.social.whatsapp} 
+            phoneNumber={WebsiteSettings.social.whatsapp} 
             variant="solid"
             label="Let's Chat About Your Next Project"
           />
@@ -75,15 +102,20 @@ export default function Home() {
       </section>
       
       {/* Services Section */}
-      <section className="bg-gray-50 py-16 md:py-24">
+      <section className="bg-teal-100 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
+          {WebsiteSettings.content.services.title && (
           <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
-            Our Services
+            {WebsiteSettings.content.services.title}
           </h2>
+          )}
+
+          {WebsiteSettings.content.services.text && (
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            From design to regular maintenance, we offer a complete range of
-            services to make your garden thrive.
+            {WebsiteSettings.content.services.text}
           </p>
+          )}
+
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Service 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
@@ -157,13 +189,19 @@ export default function Home() {
       {/* Project Showcase Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
-            Our Work
-          </h2>
+
+          {WebsiteSettings.content.gallery.title && (
+            <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
+              {WebsiteSettings.content.gallery.title}
+            </h2>
+          )}
+          
+          {WebsiteSettings.content.gallery.text && (
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Take a look at some of the beautiful spaces we have had the pleasure
-            of creating.
+            {WebsiteSettings.content.gallery.text}
           </p>
+          )}
+
           <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <img src="/project-1.webp" alt="Garden project 1" width={600} height={400} className="rounded-lg" />
             <img src="/project-2.webp" alt="Garden project 2" width={600} height={400} className="rounded-lg" />
@@ -185,17 +223,23 @@ export default function Home() {
           alt={`A map of Mallorca`}
           className="absolute z-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
+        <div className="absolute inset-0 bg-black bg-opacity-60" />
         
         <div className="relative z-10 p-4 max-w-2xl">
-          <h1 className="text-4xl font-bold text-white md:text-4xl">
-            Serving All of Mallorca
-          </h1>
-          <p className="mt-4 text-lg font-light text-teal-100 md:text-2xl mb-4">
-            No matter where your property is located on the island, our professional gardening team is ready to help. We provide complete island-wide coverage for maintenance and landscaping.
-          </p>
+
+          {WebsiteSettings.content.location.title && (
+            <h1 className="text-4xl font-bold text-white md:text-4xl">
+              {WebsiteSettings.content.location.title}
+            </h1>
+          )}
+
+          {WebsiteSettings.content.location.text && (
+            <p className="mt-4 text-lg font-light text-white md:text-2xl mb-4">
+              {WebsiteSettings.content.location.text}
+            </p>
+          )}
           <WhatsAppButton 
-            phoneNumber={websiteData.social.whatsapp} 
+            phoneNumber={WebsiteSettings.social.whatsapp} 
             variant="solid"
             label="Get a Free Quote"
           />
@@ -203,15 +247,21 @@ export default function Home() {
       </section>
 
       {/* Why Us Section */}
-      <section className="bg-gray-50 py-16 md:py-24">
+      <section className="bg-teal-100 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           
-          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
-            Why choose Mallorca Gardens
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Transform your outdoor spaces with Mallorca Gardens
-          </p>
+          {WebsiteSettings.content.benefits.title && (
+            <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
+              {WebsiteSettings.content.benefits.title}
+            </h2>
+          )}
+
+          {WebsiteSettings.content.benefits.text && (
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              {WebsiteSettings.content.benefits.text}
+            </p>
+          )}
+
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
             {/* why 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">

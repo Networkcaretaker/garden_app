@@ -1,40 +1,98 @@
+import type { WebsiteSettings } from '@garden/shared';
+
 const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
 
-export interface SocialData {
-  facebook: string;
-  instagram: string;
-  linkedin: string;
-  whatsapp: string;
-}
-
-export interface WebsiteData {
-  title: string;
-  tagline: string;
-  description: string;
-  excerpt: string;
-  seoKeywords?: string[];
-  social: SocialData;
-}
-
-export const DEFAULT_WEBSITE_DATA: WebsiteData = {
+export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
   title: 'Mallorca Gardens',
+  websiteURL: '',
   tagline: 'Premier Gardening Experts',
   description: '',
   excerpt: '',
-  seoKeywords: [],
+  logo: {
+    id: '',
+    url: ''
+  },
+  content: {
+    hero: {
+      logo: true,
+      title: true,
+      tagline: true,
+      description: true,
+      showCTA: true,
+      cta: {
+        text: '',
+        buttonText: '',
+        buttonVariant: 'none'
+      },
+      background: []
+    },
+    about: {
+      title: '',
+      text: '',
+      showCTA: false,
+      cta: {
+        text: '',
+        buttonText: '',
+        buttonVariant: 'none'
+      }
+    },
+    benefits: {
+      title: '',
+      text: '',
+      cards: []
+    },
+    services: {
+      title: '',
+      text: '',
+      cards: []
+    },
+    location: {
+      title: '',
+      text: '',
+      showCTA: false,
+      cta: {
+        text: '',
+        buttonText: '',
+        buttonVariant: 'none'
+      }
+    },
+    gallery: {
+      title: '',
+      text: '',
+      projects: []
+    },
+    testimonials: {
+      title: '',
+      text: '',
+      clients: []
+    },
+    footer: {
+      title: '',
+      text: '',
+      showCTA: false,
+      cta: {
+        text: '',
+        buttonText: '',
+        buttonVariant: 'none'
+      }
+    }
+  },
   social: {
     facebook: '',
     instagram: '',
     linkedin: '',
-    whatsapp: ''
-  }
+    whatsapp: '',
+    whatsappMessage: ''
+  },
+  seo: [],
+  updatedAt: { seconds: 0, nanoseconds: 0 } as any
 };
 
 // We cache the promise rather than the result to handle concurrent calls
 // correctly and ensure we only fetch once.
-let configPromise: Promise<WebsiteData> | null = null;
+let configPromise: Promise<WebsiteSettings> | null = null;
 
-export const getWebsiteConfig = (): Promise<WebsiteData> => {
+export const getWebsiteConfig = (): Promise<WebsiteSettings> => {
   if (configPromise) {
     return configPromise;
   }
@@ -53,16 +111,15 @@ export const getWebsiteConfig = (): Promise<WebsiteData> => {
       
       // Merge with defaults to ensure all fields exist
       return {
-        title: data.title || DEFAULT_WEBSITE_DATA.title,
-        tagline: data.tagline || DEFAULT_WEBSITE_DATA.tagline,
-        description: data.description || DEFAULT_WEBSITE_DATA.description,
-        excerpt: data.excerpt || DEFAULT_WEBSITE_DATA.excerpt,
-        seoKeywords: data.seoKeywords || DEFAULT_WEBSITE_DATA.seoKeywords,
+        ...DEFAULT_WEBSITE_DATA,
+        ...data,
         social: {
-          facebook: data.social?.facebook || DEFAULT_WEBSITE_DATA.social?.facebook,
-          instagram: data.social?.instagram || DEFAULT_WEBSITE_DATA.social?.instagram,
-          linkedin: data.social?.linkedin || DEFAULT_WEBSITE_DATA.social?.linkedin,
-          whatsapp: data.social?.whatsapp || DEFAULT_WEBSITE_DATA.social?.whatsapp
+          ...DEFAULT_WEBSITE_DATA.social,
+          ...data?.social
+        },
+        content: {
+          ...DEFAULT_WEBSITE_DATA.content,
+          ...data?.content
         }
       };
     })

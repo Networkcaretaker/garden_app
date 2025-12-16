@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { WhatsAppButton } from './ui/WhatsApp';
-import { getWebsiteConfig, type WebsiteData, DEFAULT_WEBSITE_DATA } from '../services/configService';
+import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
+import type { WebsiteSettings } from '@garden/shared';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [websiteData, setWebsiteData] = useState<WebsiteData>(DEFAULT_WEBSITE_DATA);
+  const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
 
   useEffect(() => {
-    getWebsiteConfig().then(setWebsiteData);
+    getWebsiteConfig().then(setWebsiteSettings);
   }, []);
 
   return (
@@ -19,11 +20,11 @@ export function Header() {
         <Link to="/" className="group flex items-center gap-3">
           <img 
             src="/icons/icon-128.png" 
-            alt={`${websiteData.title} Logo`} 
+            alt={`${WebsiteSettings.title} Logo`} 
             className="h-10 w-10 md:h-12 md:w-12" 
           />
           <span className="text-xl font-bold text-teal-800 transition-colors group-hover:text-teal-700 md:text-2xl">
-            {websiteData.title}
+            {WebsiteSettings.title}
           </span>
         </Link>
 
@@ -32,7 +33,7 @@ export function Header() {
           <Link to="/" className="font-medium text-gray-600 transition-colors hover:text-teal-700">Home</Link>
           <Link to="/projects" className="font-medium text-gray-600 transition-colors hover:text-teal-700">Projects</Link>
           <WhatsAppButton 
-            phoneNumber={websiteData.social.whatsapp}
+            phoneNumber={WebsiteSettings.social.whatsapp}
             message="Hola! I need a gardener"
             variant="solid"
           />
@@ -55,7 +56,7 @@ export function Header() {
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Home</Link>
             <Link to="/projects" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Projects</Link>
             <WhatsAppButton 
-              phoneNumber={websiteData.social.whatsapp} 
+              phoneNumber={WebsiteSettings.social.whatsapp} 
               message="Hola! I need a gardener"
               variant="solid"
             />

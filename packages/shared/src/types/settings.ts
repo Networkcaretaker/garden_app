@@ -9,6 +9,7 @@ export interface SocialLinks {
   whatsapp: string;
   whatsappMessage: string;
 }
+
 export interface CallToAction {
   text: string;
   buttonText: string;
