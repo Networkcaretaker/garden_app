@@ -33,18 +33,18 @@ export interface HeroContent {
   title: boolean;
   tagline: boolean;
   description: boolean;
-  cta?: string;
-  buttonText?: string;
-  buttonVariant?: buttonVariants;
+  cta: string;
+  buttonText: string;
+  buttonVariant: buttonVariants;
   background?: WebsiteImage[];
 }
 
 export interface AboutContent {
   title: string;
   text: string;
-  cta?: string;
-  buttonText?: string;
-  buttonVariant?: buttonVariants;
+  cta: string;
+  buttonText: string;
+  buttonVariant: buttonVariants;
   background?: WebsiteImage;
 }
 
@@ -96,9 +96,9 @@ export interface TestimonialContent {
 export interface FootorContent {
   title: string;
   text: string;
-  cta?: string;
-  buttonText?: string;
-  buttonVariant?: buttonVariants;
+  cta: string;
+  buttonText: string;
+  buttonVariant: buttonVariants;
   background?: WebsiteImage;
 }
 
