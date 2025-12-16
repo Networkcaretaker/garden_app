@@ -347,25 +347,98 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
+
+        {/* Publish Status */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('publish')}
+                className="w-full flex justify-between items-center p-6 bg-white"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Webhook className="h-5 w-5 text-teal-600" /> Publish Status
+                    {needsPublish ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Updates Pending
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Up to Date
+                        </span>
+                    )}
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['publish'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['publish'] ? 'block' : 'hidden'}`}>
+                <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
+                    <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-gray-400" />
+                            <span>Last Published: </span>
+                            <span className="font-medium text-gray-900">{publishedAt ? publishedAt.toLocaleString() : 'Never'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Save className="h-4 w-4 text-gray-400" />
+                            <span>Last Project Update: </span>
+                            <span className="font-medium text-gray-900">{projectUpdatedAt ? projectUpdatedAt.toLocaleString() : 'Never'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Save className="h-4 w-4 text-gray-400" />
+                            <span>Last Settings Update: </span>
+                            <span className="font-medium text-gray-900">{updatedAt ? updatedAt.toLocaleString(): 'Never'}</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handlePublish}
+                        disabled={saveMutation.isPending || publishMutation.isPending}
+                        className={`w-full md:w-auto flex items-center justify-center gap-2 text-white py-2 px-5 rounded-lg disabled:opacity-50 font-medium ${
+                            needsPublish 
+                                ? 'bg-orange-600 hover:bg-orange-700' 
+                                : 'bg-teal-600 hover:bg-teal-700'
+                        }`}
+                    >
+                        {publishMutation.isPending ? (
+                        <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Publishing...
+                        </>
+                        ) : (
+                        <>
+                            <Webhook className="h-5 w-5" />
+                            
+                            {needsPublish ? 'Update Required' : 'Publish Data'}
+                        </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
         
         {/* General Settings */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <button 
                 type="button"
                 onClick={() => toggleSection('general')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Globe className="h-5 w-5 text-teal-500" /> General Info
                 </h2>
                 {/* Chevron only visible on mobile */}
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['general'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['general'] ? 'rotate-180' : ''}`} 
                 />
             </button>
             
             {/* Content hidden on mobile if not expanded, always block on md+ */}
-            <div className={`px-6 pb-6 ${expandedSections['general'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['general'] ? 'block' : 'hidden'}`}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Website Title</label>
@@ -430,17 +503,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('hero')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Dock className="h-5 w-5 text-teal-500" /> Hero
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['hero'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['hero'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['hero'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['hero'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div className="md:col-span-2 flex items-center justify-between">
                         <label htmlFor="status" className="text-sm font-medium text-gray-700">
@@ -556,17 +629,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('about')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <BadgeQuestionMark className="h-5 w-5 text-teal-500" /> About Us
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['about'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['about'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['about'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['about'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -649,17 +722,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('services')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <LayoutPanelTopIcon className="h-5 w-5 text-teal-500" /> Services
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['services'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['services'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['services'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['services'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -762,17 +835,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('benefits')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <LayoutPanelTopIcon className="h-5 w-5 text-teal-500" /> Benefits
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['benefits'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['benefits'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['benefits'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['benefits'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -875,17 +948,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('location')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <PinIcon className="h-5 w-5 text-teal-500" /> Location
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['location'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['location'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['location'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['location'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -969,17 +1042,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('gallery')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <LayoutGrid className="h-5 w-5 text-teal-500" /> Gallery
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['gallery'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['gallery'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['gallery'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['gallery'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -1051,17 +1124,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('testimonials')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <MessageCircleMore className="h-5 w-5 text-teal-500" /> Testimonials
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['testimonials'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['testimonials'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['testimonials'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['testimonials'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -1155,17 +1228,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('footer')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <FootprintsIcon className="h-5 w-5 text-teal-500" /> Footer
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['footer'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['footer'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['footer'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['footer'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
@@ -1249,17 +1322,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('seo')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Search className="h-5 w-5 text-teal-500" /> SEO
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['seo'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['seo'] ? 'block' : 'hidden'}`}>
                 <div className="space-y-4">
 
                     <div>
@@ -1314,17 +1387,17 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
              <button 
                 type="button"
                 onClick={() => toggleSection('social')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+                className="w-full flex justify-between items-center p-6 bg-white"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Share2 className="h-5 w-5 text-teal-500" /> Social Media
                 </h2>
                 <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['social'] ? 'rotate-180' : ''}`} 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['social'] ? 'rotate-180' : ''}`} 
                 />
             </button>
 
-            <div className={`px-6 pb-6 ${expandedSections['social'] ? 'block' : 'hidden'} md:block`}>
+            <div className={`px-6 pb-6 ${expandedSections['social'] ? 'block' : 'hidden'}`}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
@@ -1380,78 +1453,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             </div>
         </div>
 
-        {/* Publish Status */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('publish')}
-                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Webhook className="h-5 w-5 text-teal-600" /> Publish Status
-                    {needsPublish ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <AlertCircle className="w-3 h-3 mr-1" />
-                            Updates Pending
-                        </span>
-                    ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Up to Date
-                        </span>
-                    )}
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['publish'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['publish'] ? 'block' : 'hidden'} md:block`}>
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
-                    <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-gray-400" />
-                            <span>Last Published: </span>
-                            <span className="font-medium text-gray-900">{publishedAt ? publishedAt.toLocaleString() : 'Never'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Save className="h-4 w-4 text-gray-400" />
-                            <span>Last Project Update: </span>
-                            <span className="font-medium text-gray-900">{projectUpdatedAt ? projectUpdatedAt.toLocaleString() : 'Never'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Save className="h-4 w-4 text-gray-400" />
-                            <span>Last Settings Update: </span>
-                            <span className="font-medium text-gray-900">{updatedAt ? updatedAt.toLocaleString(): 'Never'}</span>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={handlePublish}
-                        disabled={saveMutation.isPending || publishMutation.isPending}
-                        className={`w-full md:w-auto flex items-center justify-center gap-2 text-white py-2 px-5 rounded-lg disabled:opacity-50 font-medium ${
-                            needsPublish 
-                                ? 'bg-orange-600 hover:bg-orange-700' 
-                                : 'bg-teal-600 hover:bg-teal-700'
-                        }`}
-                    >
-                        {publishMutation.isPending ? (
-                        <>
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                            Publishing...
-                        </>
-                        ) : (
-                        <>
-                            <Webhook className="h-5 w-5" />
-                            
-                            {needsPublish ? 'Update Required' : 'Publish Data'}
-                        </>
-                        )}
-                    </button>
-                </div>
-            </div>
-        </div>
+        
 
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
