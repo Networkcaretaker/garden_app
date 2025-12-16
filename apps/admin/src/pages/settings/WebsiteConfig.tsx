@@ -24,13 +24,13 @@ const defaultSettings: WebsiteSettings = {
   updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
   content: {
     hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
-    about: { title: '', text: '', cta: '', buttonText: '', buttonVariant: 'none' },
+    about: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     beneifts: { title: '', text: '', cards: [] },
     services: { title: '', text: '', cards: [] },
-    location: { title: '', text: '', cta: '', buttonText: '', buttonVariant: 'none' },
+    location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
     gallery: { title: '', text: '', projects: [] },
     testimonials: { title: '', text: '', clients: [] },
-    footer: { title: '', text: '', cta: '', buttonText: '', buttonVariant: 'none' },
+    footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
   },
 };
 
@@ -172,6 +172,21 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   const handleHeroCtaChange = (field: keyof CallToAction, value: string) => {
     const currentCta = settings.content.hero.cta || { text: '', buttonText: '', buttonVariant: 'none' };
     handleContentChange('hero', 'cta', { ...currentCta, [field]: value });
+  };
+
+  const handleAboutCtaChange = (field: keyof CallToAction, value: string) => {
+    const currentCta = settings.content.about.cta || { text: '', buttonText: '', buttonVariant: 'none' };
+    handleContentChange('about', 'cta', { ...currentCta, [field]: value });
+  };
+
+  const handleLocationCtaChange = (field: keyof CallToAction, value: string) => {
+    const currentCta = settings.content.location.cta || { text: '', buttonText: '', buttonVariant: 'none' };
+    handleContentChange('location', 'cta', { ...currentCta, [field]: value });
+  };
+
+  const handleFooterCtaChange = (field: keyof CallToAction, value: string) => {
+    const currentCta = settings.content.footer.cta || { text: '', buttonText: '', buttonVariant: 'none' };
+    handleContentChange('footer', 'cta', { ...currentCta, [field]: value });
   };
 
   const handleServiceCardChange = (index: number, field: keyof ContentCard, value: unknown) => {
@@ -429,6 +444,19 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                 <div className="space-y-4">
                     <div className="md:col-span-2 flex items-center justify-between">
                         <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Website Logo
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => handleContentChange('hero', 'logo', !settings.content?.hero?.logo)}
+                            className={`${settings.content?.hero?.logo ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={settings.content?.hero?.logo}>
+                            <span className={`${settings.content?.hero?.logo ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                    </div>
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
                             Show Website Title
                         </label>
                         <button
@@ -451,19 +479,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             role="switch"
                             aria-checked={settings.content?.hero?.tagline}>
                             <span className={`${settings.content?.hero?.tagline ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Website Logo
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'logo', !settings.content?.hero?.logo)}
-                            className={`${settings.content?.hero?.logo ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.logo}>
-                            <span className={`${settings.content?.hero?.logo ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
                         </button>
                     </div>
                     <div className="md:col-span-2 flex items-center justify-between">
@@ -573,40 +588,58 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="A description of this section"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CTA</label>
-                        <input
-                            type="text"
-                            value={settings.content?.about?.cta || ''}
-                            onChange={(e) => handleContentChange('about', 'cta', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="Call to action text"
-                        />
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Call to Action
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => handleContentChange('about', 'showCTA', !settings.content?.about?.showCTA)}
+                            className={`${settings.content?.about?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={settings.content?.about?.showCTA}>
+                            <span className={`${settings.content?.about?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                            <input
-                                type="text"
-                                value={settings.content?.about?.buttonText || ''}
-                                onChange={(e) => handleContentChange('about', 'buttonText', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                placeholder="Learn More"
-                            />
+
+                    {settings.content?.about?.showCTA && (
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
+                                <textarea
+                                    rows={2}
+                                    value={settings.content?.about?.cta?.text || ''}
+                                    onChange={(e) => handleAboutCtaChange('text', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    placeholder="A call to action statement"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                                    <input
+                                        type="text"
+                                        value={settings.content?.about?.cta?.buttonText || ''}
+                                        onChange={(e) => handleAboutCtaChange('buttonText', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Learn More"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
+                                    <select
+                                        value={settings.content?.about?.cta?.buttonVariant || 'solid'}
+                                        onChange={(e) => handleAboutCtaChange('buttonVariant', e.target.value as buttonVariants)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        >
+                                        <option value="solid">Solid</option>
+                                        <option value="outline">Outline</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                            <select
-                                value={settings.content?.about?.buttonVariant || 'solid'}
-                                onChange={(e) => handleContentChange('about', 'buttonVariant', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            >
-                                <option value="solid">Solid</option>
-                                <option value="outline">Outline</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>  
@@ -874,40 +907,59 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="A description of this section"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CTA</label>
-                        <input
-                            type="text"
-                            value={settings.content?.location?.cta || ''}
-                            onChange={(e) => handleContentChange('location', 'cta', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="Call to action text"
-                        />
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Call to Action
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => handleContentChange('location', 'showCTA', !settings.content?.location?.showCTA)}
+                            className={`${settings.content?.location?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={settings.content?.location?.showCTA}>
+                            <span className={`${settings.content?.location?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                            <input
-                                type="text"
-                                value={settings.content?.location?.buttonText || ''}
-                                onChange={(e) => handleContentChange('location', 'buttonText', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                placeholder="Get Directions"
-                            />
+
+                    {settings.content?.location?.showCTA && (
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
+                                <textarea
+                                    rows={2}
+                                    value={settings.content?.location?.cta?.text || ''}
+                                    onChange={(e) => handleLocationCtaChange('text', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    placeholder="A call to action statement"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                                    <input
+                                        type="text"
+                                        value={settings.content?.location?.cta?.buttonText || ''}
+                                        onChange={(e) => handleLocationCtaChange('buttonText', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Get Directions"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
+                                    <select
+                                        value={settings.content?.location?.cta?.buttonVariant || 'solid'}
+                                        onChange={(e) => handleLocationCtaChange('buttonVariant', e.target.value as buttonVariants)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        >
+                                        <option value="solid">Solid</option>
+                                        <option value="outline">Outline</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                            <select
-                                value={settings.content?.location?.buttonVariant || 'solid'}
-                                onChange={(e) => handleContentChange('location', 'buttonVariant', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            >
-                                <option value="solid">Solid</option>
-                                <option value="outline">Outline</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                    </div>
+                    )}
+
                 </div>
             </div>
         </div>    
@@ -1135,40 +1187,59 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="A description of this section"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CTA</label>
-                        <input
-                            type="text"
-                            value={settings.content?.footer?.cta || ''}
-                            onChange={(e) => handleContentChange('footer', 'cta', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="Call to action text"
-                        />
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Call to Action
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => handleContentChange('footer', 'showCTA', !settings.content?.footer?.showCTA)}
+                            className={`${settings.content?.footer?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={settings.content?.footer?.showCTA}>
+                            <span className={`${settings.content?.footer?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                            <input
-                                type="text"
-                                value={settings.content?.footer?.buttonText || ''}
-                                onChange={(e) => handleContentChange('footer', 'buttonText', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                placeholder="Contact Us"
-                            />
+
+                    {settings.content?.footer?.showCTA && (
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
+                                <textarea
+                                    rows={2}
+                                    value={settings.content?.footer?.cta?.text || ''}
+                                    onChange={(e) => handleFooterCtaChange('text', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    placeholder="A call to action statement"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                                    <input
+                                        type="text"
+                                        value={settings.content?.footer?.cta?.buttonText || ''}
+                                        onChange={(e) => handleFooterCtaChange('buttonText', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Contact Us"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
+                                    <select
+                                        value={settings.content?.footer?.cta?.buttonVariant || 'solid'}
+                                        onChange={(e) => handleFooterCtaChange('buttonVariant', e.target.value as buttonVariants)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        >
+                                        <option value="solid">Solid</option>
+                                        <option value="outline">Outline</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                            <select
-                                value={settings.content?.footer?.buttonVariant || 'solid'}
-                                onChange={(e) => handleContentChange('footer', 'buttonVariant', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            >
-                                <option value="solid">Solid</option>
-                                <option value="outline">Outline</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                    </div>
+                    )}
+                    
                 </div>
             </div>
         </div>
@@ -1443,13 +1514,25 @@ export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDi
         // Ensure cta is an object, handling potential legacy string data or missing data
         cta: (data.content?.hero?.cta && typeof data.content.hero.cta === 'object') ? { ...defaultSettings.content.hero.cta, ...data.content.hero.cta } : defaultSettings.content.hero.cta
       },
-      about: { ...defaultSettings.content.about, ...(data.content?.about || {}) },
+      about: { 
+        ...defaultSettings.content.about, 
+        ...(data.content?.about || {}),
+        cta: (data.content?.about?.cta && typeof data.content.about.cta === 'object') ? { ...defaultSettings.content.about.cta, ...data.content.about.cta } : defaultSettings.content.about.cta
+      },
       beneifts: { ...defaultSettings.content.beneifts, ...(data.content?.beneifts || {}) },
       services: { ...defaultSettings.content.services, ...(data.content?.services || {}) },
-      location: { ...defaultSettings.content.location, ...(data.content?.location || {}) },
+      location: { 
+        ...defaultSettings.content.location, 
+        ...(data.content?.location || {}),
+        cta: (data.content?.location?.cta && typeof data.content.location.cta === 'object') ? { ...defaultSettings.content.location.cta, ...data.content.location.cta } : defaultSettings.content.location.cta
+      },
       gallery: { ...defaultSettings.content.gallery, ...(data.content?.gallery || {}) },
       testimonials: { ...defaultSettings.content.testimonials, ...(data.content?.testimonials || {}) },
-      footer: { ...defaultSettings.content.footer, ...(data.content?.footer || {}) },
+      footer: { 
+        ...defaultSettings.content.footer, 
+        ...(data.content?.footer || {}),
+        cta: (data.content?.footer?.cta && typeof data.content.footer.cta === 'object') ? { ...defaultSettings.content.footer.cta, ...data.content.footer.cta } : defaultSettings.content.footer.cta
+      },
     }
   } : defaultSettings, [data]);
 

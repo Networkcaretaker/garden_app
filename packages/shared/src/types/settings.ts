@@ -46,9 +46,8 @@ export interface HeroContent {
 export interface AboutContent {
   title: string;
   text: string;
-  cta: string;
-  buttonText: string;
-  buttonVariant: buttonVariants;
+  showCTA: boolean;
+  cta: CallToAction;
   background?: WebsiteImage;
 }
 
@@ -69,9 +68,8 @@ export interface ServicesContent {
 export interface LocationContent {
   title: string;
   text: string;
-  cta?: string;
-  buttonText?: string;
-  buttonVariant?: buttonVariants;
+  showCTA: boolean;
+  cta: CallToAction;
   background?: WebsiteImage;
 }
 
@@ -100,9 +98,8 @@ export interface TestimonialContent {
 export interface FootorContent {
   title: string;
   text: string;
-  cta: string;
-  buttonText: string;
-  buttonVariant: buttonVariants;
+  showCTA: boolean;
+  cta: CallToAction;
   background?: WebsiteImage;
 }
 
