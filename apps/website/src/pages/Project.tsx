@@ -61,7 +61,7 @@ export default function ProjectPage() {
         <Header />
         <div className="text-center py-20">
           <p className="text-red-500 mb-4">{error}</p>
-          <Link to="/projects" className="text-green-600 hover:underline">
+          <Link to="/projects" className="text-teal-600 hover:underline">
             &larr; Back to all projects
           </Link>
         </div>

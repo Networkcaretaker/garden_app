@@ -55,7 +55,7 @@ export default function DashboardPage() {
                   <AlertCircle className="h-6 w-6" />
                 </div>
               ) : (
-                <div className="p-3 bg-green-100 rounded-full text-green-600">
+                <div className="p-3 bg-teal-100 rounded-full text-teal-600">
                   <CheckCircle className="h-6 w-6" />
                 </div>
               )}

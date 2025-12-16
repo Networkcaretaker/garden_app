@@ -22,7 +22,7 @@ export function AnalyticsOverview() {
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
-            <span className="text-green-600 font-medium">{stat.change}</span>
+            <span className="text-teal-600 font-medium">{stat.change}</span>
             <span className="text-gray-500 ml-2">from last month</span>
           </div>
         </div>

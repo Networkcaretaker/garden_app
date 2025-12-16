@@ -21,8 +21,8 @@ export function MobileNavigation() {
             className={({ isActive }) =>
               `flex w-full flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${
                 isActive
-                  ? 'text-green-600'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
+                  ? 'text-teal-600'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-teal-600'
               }`
             }
           >

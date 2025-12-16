@@ -62,6 +62,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   // Accordion state: Track which sections are open
   // We default 'general' to true so the first section is open on mobile load
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    publish: true,
     general: false,
     content: false,
     hero: false,
@@ -74,7 +75,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
     footer: false,
     seo: false,
     social: false,
-    publish: false,
   });
 
   const toggleSection = (section: string) => {
@@ -363,7 +363,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             Updates Pending
                         </span>
                     ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Up to Date
                         </span>
@@ -446,7 +446,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.title || ''}
                             onChange={(e) => handleInputChange('title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="My Awesome Garden"
                         />
                     </div>
@@ -456,7 +456,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.tagline || ''}
                             onChange={(e) => handleInputChange('tagline', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="Growing the future, one plant at a time"
                         />
                     </div>
@@ -466,7 +466,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={3}
                             value={settings.description || ''}
                             onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A brief description of your website for search engines."
                         />
                     </div>
@@ -476,7 +476,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="url"
                             value={settings.websiteURL || ''}
                             onChange={(e) => handleInputChange('websiteURL', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="https://www.example.com"
                         />
                     </div>
@@ -522,7 +522,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('hero', 'logo', !settings.content?.hero?.logo)}
-                            className={`${settings.content?.hero?.logo ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.hero?.logo ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.hero?.logo}>
                             <span className={`${settings.content?.hero?.logo ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -535,7 +535,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('hero', 'title', !settings.content?.hero?.title)}
-                            className={`${settings.content?.hero?.title ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.hero?.title ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.hero?.title}>
                             <span className={`${settings.content?.hero?.title ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -548,7 +548,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('hero', 'tagline', !settings.content?.hero?.tagline)}
-                            className={`${settings.content?.hero?.tagline ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.hero?.tagline ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.hero?.tagline}>
                             <span className={`${settings.content?.hero?.tagline ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -561,7 +561,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('hero', 'description', !settings.content?.hero?.description)}
-                            className={`${settings.content?.hero?.description ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.hero?.description ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.hero?.description}>
                             <span className={`${settings.content?.hero?.description ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -575,7 +575,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('hero', 'showCTA', !settings.content?.hero?.showCTA)}
-                            className={`${settings.content?.hero?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.hero?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.hero?.showCTA}>
                             <span className={`${settings.content?.hero?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -590,7 +590,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     rows={2}
                                     value={settings.content?.hero?.cta?.text || ''}
                                     onChange={(e) => handleHeroCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                     placeholder="A call to action statement"
                                 />
                             </div>
@@ -601,7 +601,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                         type="text"
                                         value={settings.content?.hero?.cta?.buttonText || ''}
                                         onChange={(e) => handleHeroCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         placeholder="Contact Us"
                                     />
                                 </div>
@@ -610,7 +610,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     <select
                                         value={settings.content?.hero?.cta?.buttonVariant || 'solid'}
                                         onChange={(e) => handleHeroCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         >
                                         <option value="solid">Solid</option>
                                         <option value="outline">Outline</option>
@@ -647,7 +647,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.about?.title || ''}
                             onChange={(e) => handleContentChange('about', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -657,7 +657,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.about?.text || ''}
                             onChange={(e) => handleContentChange('about', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -668,7 +668,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('about', 'showCTA', !settings.content?.about?.showCTA)}
-                            className={`${settings.content?.about?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.about?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.about?.showCTA}>
                             <span className={`${settings.content?.about?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -683,7 +683,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     rows={2}
                                     value={settings.content?.about?.cta?.text || ''}
                                     onChange={(e) => handleAboutCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                     placeholder="A call to action statement"
                                 />
                             </div>
@@ -694,7 +694,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                         type="text"
                                         value={settings.content?.about?.cta?.buttonText || ''}
                                         onChange={(e) => handleAboutCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         placeholder="Learn More"
                                     />
                                 </div>
@@ -703,7 +703,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     <select
                                         value={settings.content?.about?.cta?.buttonVariant || 'solid'}
                                         onChange={(e) => handleAboutCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         >
                                         <option value="solid">Solid</option>
                                         <option value="outline">Outline</option>
@@ -740,7 +740,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.services?.title || ''}
                             onChange={(e) => handleContentChange('services', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -750,7 +750,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.services?.text || ''}
                             onChange={(e) => handleContentChange('services', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -785,7 +785,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={card.title}
                                                 onChange={(e) => handleServiceCardChange(index, 'title', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div className="col-span-1 md:col-span-2">
@@ -794,7 +794,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 rows={2}
                                                 value={card.text}
                                                 onChange={(e) => handleServiceCardChange(index, 'text', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div>
@@ -803,7 +803,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={card.link}
                                                 onChange={(e) => handleServiceCardChange(index, 'link', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div>
@@ -812,7 +812,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="number"
                                                 value={card.order}
                                                 onChange={(e) => handleServiceCardChange(index, 'order', parseInt(e.target.value) || 0)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                     </div>
@@ -853,7 +853,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.benefits?.title || ''}
                             onChange={(e) => handleContentChange('benefits', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -863,7 +863,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.benefits?.text || ''}
                             onChange={(e) => handleContentChange('benefits', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -898,7 +898,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={card.title}
                                                 onChange={(e) => handleBenefitCardChange(index, 'title', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div className="col-span-1 md:col-span-2">
@@ -907,7 +907,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 rows={2}
                                                 value={card.text}
                                                 onChange={(e) => handleBenefitCardChange(index, 'text', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div>
@@ -916,7 +916,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={card.link}
                                                 onChange={(e) => handleBenefitCardChange(index, 'link', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div>
@@ -925,7 +925,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="number"
                                                 value={card.order}
                                                 onChange={(e) => handleBenefitCardChange(index, 'order', parseInt(e.target.value) || 0)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                     </div>
@@ -966,7 +966,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.location?.title || ''}
                             onChange={(e) => handleContentChange('location', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -976,7 +976,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.location?.text || ''}
                             onChange={(e) => handleContentChange('location', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -987,7 +987,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('location', 'showCTA', !settings.content?.location?.showCTA)}
-                            className={`${settings.content?.location?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.location?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.location?.showCTA}>
                             <span className={`${settings.content?.location?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -1002,7 +1002,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     rows={2}
                                     value={settings.content?.location?.cta?.text || ''}
                                     onChange={(e) => handleLocationCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                     placeholder="A call to action statement"
                                 />
                             </div>
@@ -1013,7 +1013,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                         type="text"
                                         value={settings.content?.location?.cta?.buttonText || ''}
                                         onChange={(e) => handleLocationCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         placeholder="Get Directions"
                                     />
                                 </div>
@@ -1022,7 +1022,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     <select
                                         value={settings.content?.location?.cta?.buttonVariant || 'solid'}
                                         onChange={(e) => handleLocationCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         >
                                         <option value="solid">Solid</option>
                                         <option value="outline">Outline</option>
@@ -1060,7 +1060,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.gallery?.title || ''}
                             onChange={(e) => handleContentChange('gallery', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -1070,7 +1070,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.gallery?.text || ''}
                             onChange={(e) => handleContentChange('gallery', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -1079,7 +1079,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <select
                             value=""
                             onChange={(e) => handleAddGalleryProject(e.target.value)}
-                            className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                         >
                             <option value="" disabled>Select a project to add...</option>
                             {activeProjects
@@ -1142,7 +1142,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.testimonials?.title || ''}
                             onChange={(e) => handleContentChange('testimonials', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -1152,7 +1152,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.testimonials?.text || ''}
                             onChange={(e) => handleContentChange('testimonials', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -1187,7 +1187,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={client.name}
                                                 onChange={(e) => handleTestimonialClientChange(index, 'name', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div>
@@ -1196,7 +1196,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 type="text"
                                                 value={client.occupation}
                                                 onChange={(e) => handleTestimonialClientChange(index, 'occupation', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                         <div className="col-span-1 md:col-span-2">
@@ -1205,7 +1205,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                                 rows={2}
                                                 value={client.text}
                                                 onChange={(e) => handleTestimonialClientChange(index, 'text', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                                             />
                                         </div>
                                     </div>
@@ -1246,7 +1246,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.content?.footer?.title || ''}
                             onChange={(e) => handleContentChange('footer', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A title for this section"
                         />
                     </div>
@@ -1256,7 +1256,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.content?.footer?.text || ''}
                             onChange={(e) => handleContentChange('footer', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="A description of this section"
                         />
                     </div>
@@ -1267,7 +1267,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <button
                             type="button"
                             onClick={() => handleContentChange('footer', 'showCTA', !settings.content?.footer?.showCTA)}
-                            className={`${settings.content?.footer?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            className={`${settings.content?.footer?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
                             role="switch"
                             aria-checked={settings.content?.footer?.showCTA}>
                             <span className={`${settings.content?.footer?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -1282,7 +1282,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     rows={2}
                                     value={settings.content?.footer?.cta?.text || ''}
                                     onChange={(e) => handleFooterCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                     placeholder="A call to action statement"
                                 />
                             </div>
@@ -1293,7 +1293,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                         type="text"
                                         value={settings.content?.footer?.cta?.buttonText || ''}
                                         onChange={(e) => handleFooterCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         placeholder="Contact Us"
                                     />
                                 </div>
@@ -1302,7 +1302,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                     <select
                                         value={settings.content?.footer?.cta?.buttonVariant || 'solid'}
                                         onChange={(e) => handleFooterCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         >
                                         <option value="solid">Solid</option>
                                         <option value="outline">Outline</option>
@@ -1341,7 +1341,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             rows={2}
                             value={settings.excerpt || ''}
                             onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="Short text shown in the footer or intro cards."
                         />
                     </div>
@@ -1353,7 +1353,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                 value={seoInput}
                                 onChange={(e) => setSeoInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSeoKeyword())}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                 placeholder="Add a keyword..."
                             />
                             <button
@@ -1405,7 +1405,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="url"
                             value={settings.social?.facebook || ''}
                             onChange={(e) => handleSocialChange('facebook', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="https://facebook.com/..."
                         />
                     </div>
@@ -1415,7 +1415,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="url"
                             value={settings.social?.instagram || ''}
                             onChange={(e) => handleSocialChange('instagram', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="https://instagram.com/..."
                         />
                     </div>
@@ -1425,7 +1425,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="url"
                             value={settings.social?.linkedin || ''}
                             onChange={(e) => handleSocialChange('linkedin', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="https://linkedin.com/in/..."
                         />
                     </div>
@@ -1435,7 +1435,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.social?.whatsapp || ''}
                             onChange={(e) => handleSocialChange('whatsapp', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="+34 600 000 000"
                         />
                     </div>
@@ -1445,7 +1445,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             type="text"
                             value={settings.social?.whatsappMessage || ''}
                             onChange={(e) => handleSocialChange('whatsappMessage', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                             placeholder="Hello, I would like to know more..."
                         />
                     </div>
@@ -1458,7 +1458,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex items-center w-full md:w-auto justify-center md:justify-end">
-            {success && <span className="text-sm text-green-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {success}</span>}
+            {success && <span className="text-sm text-teal-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {success}</span>}
             {publishSuccess && <span className="text-sm text-blue-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {publishSuccess}</span>}
             {error && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {error}</span>}
             {publishError && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {publishError}</span>}
@@ -1468,7 +1468,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             <button
                 type="submit"
                 disabled={!isDirty || saveMutation.isPending}
-                className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+                className="flex items-center justify-center gap-2 bg-teal-600 text-white py-2 px-5 rounded-lg hover:bg-teal-700 disabled:opacity-50 font-medium"
             >
                 {saveMutation.isPending ? (
                 <>
@@ -1541,7 +1541,7 @@ export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDi
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
   }

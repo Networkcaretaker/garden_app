@@ -86,7 +86,7 @@ export default function AddTag({ isOpen, onClose, onAdded }: AddTagProps) {
               type="text"
               value={newTag}
               onChange={(e) => setNewTag(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
               placeholder="e.g. Sustainable"
               autoFocus
             />
@@ -103,7 +103,7 @@ export default function AddTag({ isOpen, onClose, onAdded }: AddTagProps) {
             <button
               type="submit"
               disabled={mutation.isPending || !newTag.trim()}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 disabled:opacity-50 transition-colors"
             >
               {mutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

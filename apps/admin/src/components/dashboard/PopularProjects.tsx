@@ -31,7 +31,7 @@ export function PopularProjects() {
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     project.status === 'Published' 
-                      ? 'bg-green-100 text-green-800' 
+                      ? 'bg-teal-100 text-teal-800' 
                       : 'bg-yellow-100 text-yellow-800'
                   }`}>
                     {project.status}

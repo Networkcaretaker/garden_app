@@ -37,7 +37,7 @@ const ProjectPreview: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 text-green-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 text-teal-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-500">Loading project details...</p>
         </div>
       </div>
@@ -80,7 +80,7 @@ const ProjectPreview: React.FC = () => {
             <div className="flex items-center gap-3">
               <Link
                 to={`/projects/${project.id}/edit`}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Project
@@ -150,7 +150,7 @@ const ProjectPreview: React.FC = () => {
                     <dt className="text-gray-500">Status</dt>
                     <dd className="font-medium text-gray-900 capitalize flex items-center">
                       {project.status === 'active' ? (
-                        <CheckCircle className="w-4 h-4 text-green-500 mr-1.5" />
+                        <CheckCircle className="w-4 h-4 text-teal-500 mr-1.5" />
                       ) : (
                         <XCircle className="w-4 h-4 text-gray-400 mr-1.5" />
                       )}
@@ -175,7 +175,7 @@ const ProjectPreview: React.FC = () => {
               {/* Description */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">About the Project</h3>
-                <div className="prose prose-green prose-sm max-w-none text-gray-600">
+                <div className="prose prose-teal prose-sm max-w-none text-gray-600">
                   <p className="whitespace-pre-line leading-relaxed">
                     {project.description || "No description provided."}
                   </p>

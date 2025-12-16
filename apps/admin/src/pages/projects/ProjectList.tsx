@@ -17,7 +17,7 @@ export default function ProjectList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
   }
@@ -40,7 +40,7 @@ export default function ProjectList() {
         </div>
         <Link
           to="/projects/new"
-          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+          className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
         >
           <Plus className="h-5 w-5" />
           <span>New</span>
@@ -79,7 +79,7 @@ export default function ProjectList() {
                   {project.category}
                 </span>
                 <span className={`absolute top-2 left-2 text-white text-xs font-medium px-2.5 py-1 rounded-full ${
-                  project.status === 'active' ? 'bg-green-500' : 'bg-gray-500'
+                  project.status === 'active' ? 'bg-teal-500' : 'bg-gray-500'
                 }`}
                 >
                   {project.status === 'active' ? 'Active' : 'Inactive'}
@@ -106,7 +106,7 @@ export default function ProjectList() {
                 <div className="pt-3 border-t border-gray-100 flex justify-end">
                    <Link 
                      to={`/projects/${project.id}/edit`}
-                     className="text-sm font-medium text-green-600 hover:text-green-700"
+                     className="text-sm font-medium text-teal-600 hover:text-teal-700"
                    >
                      Edit Details &rarr;
                    </Link>

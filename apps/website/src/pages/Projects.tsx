@@ -54,7 +54,7 @@ export default function ProjectsPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="container mx-auto flex-grow px-4 py-12">
-        <h1 className="mb-2 text-center text-4xl font-bold text-green-800">Our Projects</h1>
+        <h1 className="mb-2 text-center text-4xl font-bold text-teal-800">Our Projects</h1>
         <p className="mb-12 text-center text-lg text-gray-600">A showcase of our recent work across Mallorca.</p>
 
         {projects.length === 0 ? (
@@ -79,7 +79,7 @@ export default function ProjectsPage() {
                   )}
                 </div>
                 <div className="mt-4">
-                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-green-700 transition-colors">
+                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">
                     {project.title}
                   </h3>
                   <p className="text-gray-500 mt-1">{project.location}</p>

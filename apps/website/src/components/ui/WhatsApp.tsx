@@ -45,13 +45,13 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
   // Base styles shared across variants
-  const baseStyles = "inline-flex items-center justify-center font-semibold transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer";
+  const baseStyles = "inline-flex items-center justify-center font-semibold transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 cursor-pointer";
   
   // Specific styles for variants
   const variants: Record<ButtonVariant, string> = {
     solid: `bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`,
     outline: `border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white px-6 py-3 rounded-full`,
-    floating: `fixed bottom-6 right-6 bg-[#25D366] hover:bg-[#20bd5a] text-white p-4 rounded-full shadow-2xl hover:shadow-green-500/50 transform hover:scale-110 z-50`
+    floating: `fixed bottom-6 right-6 bg-[#25D366] hover:bg-[#20bd5a] text-white p-4 rounded-full shadow-2xl hover:shadow-teal-500/50 transform hover:scale-110 z-50`
   };
 
   const currentStyle = variants[variant] || variants.solid;

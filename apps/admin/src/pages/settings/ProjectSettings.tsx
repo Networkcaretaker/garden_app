@@ -61,7 +61,7 @@ function TaxonomyManager({
           value={newItem}
           onChange={(e) => setNewItem(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAdd())}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500 text-sm"
           placeholder={`Add new ${title.toLowerCase().slice(0, -1)}...`}
         />
         <button
@@ -90,7 +90,7 @@ function TaxonomyManager({
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
                   autoFocus
                 />
-                <button type="button" onClick={() => saveEdit(index)} className="text-green-600 hover:text-green-700">
+                <button type="button" onClick={() => saveEdit(index)} className="text-teal-600 hover:text-teal-700">
                   <Check className="h-4 w-4" />
                 </button>
                 <button type="button" onClick={() => setEditingIndex(null)} className="text-gray-500 hover:text-gray-700">
@@ -271,14 +271,14 @@ function ProjectSettingsForm({ initialData, onDirtyChange }: { initialData: Proj
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex items-center w-full md:w-auto justify-center md:justify-end">
-            {success && <span className="text-sm text-green-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {success}</span>}
+            {success && <span className="text-sm text-teal-600 flex items-center gap-2 mr-4"><CheckCircle className="h-4 w-4" /> {success}</span>}
             {error && <span className="text-sm text-red-600 flex items-center gap-2 mr-4"><AlertCircle className="h-4 w-4" /> {error}</span>}
           </div>
           
           <button
               type="submit"
               disabled={!isDirty || saveMutation.isPending}
-              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-teal-600 text-white py-2 px-5 rounded-lg hover:bg-teal-700 disabled:opacity-50 font-medium w-full md:w-auto"
           >
               {saveMutation.isPending ? (
               <>
@@ -316,7 +316,7 @@ export default function ProjectSettings({ onDirtyChange }: { onDirtyChange?: (is
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
   }

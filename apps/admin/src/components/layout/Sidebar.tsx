@@ -18,8 +18,8 @@ export function Sidebar() {
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64">
       {/* Logo Area */}
       <div className="flex items-center gap-3 px-6 h-16 border-b border-gray-200">
-        <div className="bg-green-100 p-2 rounded-full">
-          <Flower className="h-5 w-5 text-green-600" />
+        <div className="bg-teal-100 p-2 rounded-full">
+          <Flower className="h-5 w-5 text-teal-600" />
         </div>
         <span className="font-bold text-gray-900">Garden Admin</span>
       </div>
@@ -33,7 +33,7 @@ export function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
-                  ? 'bg-green-50 text-green-700'
+                  ? 'bg-teal-50 text-teal-700'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
               }`
             }

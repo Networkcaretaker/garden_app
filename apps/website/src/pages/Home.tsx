@@ -33,12 +33,12 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-white md:text-6xl">
             {websiteData.title}
           </h1>
-          <p className="mt-4 text-lg font-light text-green-100 md:text-2xl">
+          <p className="mt-4 text-lg font-light text-teal-100 md:text-2xl">
             {websiteData.tagline}
           </p>
           <Link
             to="/projects"
-            className="mt-8 inline-block rounded-full bg-white border-2 border-green-600 px-8 py-3 font-bold text-green-600 transition-colors hover:bg-green-600 hover:text-white"
+            className="mt-8 inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
           >
             View Our Projects
           </Link>
@@ -48,7 +48,7 @@ export default function Home() {
       {/* About Section */}
       <section className="bg-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
             A Passionate Team of Expert Gardeners
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
@@ -77,7 +77,7 @@ export default function Home() {
       {/* Services Section */}
       <section className="bg-gray-50 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
             Our Services
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
@@ -88,7 +88,7 @@ export default function Home() {
             {/* Service 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj06.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Garden Design
               </h3>
               <p className="mt-2 text-gray-600">
@@ -99,18 +99,18 @@ export default function Home() {
             {/* Service 2 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj02.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Lawn & Plant Care
               </h3>
               <p className="mt-2 text-gray-600">
-                Expert care to keep your lawn green, your plants healthy, and
+                Expert care to keep your lawn teal, your plants healthy, and
                 your garden beautiful.
               </p>
             </div>
             {/* Service 3 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj01.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Full Maintenance
               </h3>
               <p className="mt-2 text-gray-600">
@@ -123,7 +123,7 @@ export default function Home() {
             {/* Service 4 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj05.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Comprehensive Palm Tree and Shrub Care
               </h3>
               <p className="mt-2 text-gray-600">
@@ -133,7 +133,7 @@ export default function Home() {
             {/* Service 5 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj04.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Build and Maintain Pools
               </h3>
               <p className="mt-2 text-gray-600">
@@ -143,7 +143,7 @@ export default function Home() {
             {/* Service 6 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/aj03.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Matting and Gravelling Services
               </h3>
               <p className="mt-2 text-gray-600">
@@ -157,7 +157,7 @@ export default function Home() {
       {/* Project Showcase Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
             Our Work
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
@@ -171,7 +171,7 @@ export default function Home() {
           </div>
           <Link
             to="/projects"
-            className="mt-8 inline-block rounded-full border-2 border-green-600 px-8 py-3 font-bold text-green-600 transition-colors hover:bg-green-600 hover:text-white"
+            className="mt-8 inline-block rounded-full border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
           >
             View All Projects
           </Link>
@@ -191,7 +191,7 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-white md:text-4xl">
             Serving All of Mallorca
           </h1>
-          <p className="mt-4 text-lg font-light text-green-100 md:text-2xl mb-4">
+          <p className="mt-4 text-lg font-light text-teal-100 md:text-2xl mb-4">
             No matter where your property is located on the island, our professional gardening team is ready to help. We provide complete island-wide coverage for maintenance and landscaping.
           </p>
           <WhatsAppButton 
@@ -206,7 +206,7 @@ export default function Home() {
       <section className="bg-gray-50 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           
-          <h2 className="text-3xl font-bold text-green-800 md:text-4xl">
+          <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
             Why choose Mallorca Gardens
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
@@ -216,7 +216,7 @@ export default function Home() {
             {/* why 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/clip-1.png" alt="Clip 1" className="rounded-lg" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Personalized Garden Designs
               </h3>
               <p className="mt-2 text-gray-600">
@@ -226,7 +226,7 @@ export default function Home() {
             {/* why 2 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/clip-2.png" alt="Clip 2" className="rounded-lg" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Professional Garden Maintenance
               </h3>
               <p className="mt-2 text-gray-600">
@@ -236,7 +236,7 @@ export default function Home() {
             {/* why 3 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/clip-3.png" alt="Clip 3" className="rounded-lg" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Creating Stunning and Sustainable Landscapes
               </h3>
               <p className="mt-2 text-gray-600">
@@ -246,7 +246,7 @@ export default function Home() {
             {/* why 4 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
               <img src="/clip-4.png" alt="Clip 4" className="rounded-lg" />
-              <h3 className="text-xl font-bold text-green-700">
+              <h3 className="text-xl font-bold text-teal-700">
                 Customer Happiness Guarantee
               </h3>
               <p className="mt-2 text-gray-600">
@@ -267,7 +267,7 @@ export default function Home() {
               afterImage="/project-3.webp"
               altText="Reform Project"
             />
-          <h2 className="text-2xl font-light text-green-800 md:text-4xl mt-4">
+          <h2 className="text-2xl font-light text-teal-800 md:text-4xl mt-4">
             <i>"What a fantastic team, thank you Mallorca Gardens"</i>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">

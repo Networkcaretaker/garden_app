@@ -153,7 +153,7 @@ export default function ProjectCreate() {
                 type="submit"
                 disabled={isLoading}
                 onClick={handleSubmit}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 {isLoading ? (
                   <>
@@ -190,7 +190,7 @@ export default function ProjectCreate() {
             <button
               type="button"
               onClick={() => setStatus(status === 'inactive' ? 'active' : 'inactive')}
-              className={`${status === 'active' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+              className={`${status === 'active' ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
               role="switch"
               aria-checked={status === 'active'}>
               <span className={`${status === 'active' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
@@ -205,7 +205,7 @@ export default function ProjectCreate() {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
               placeholder="e.g. Modern Villa Garden"
             />
           </div>
@@ -216,7 +216,7 @@ export default function ProjectCreate() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ProjectCategory)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
               >
                 <option value="" disabled>Select a category</option>
                 {settings?.categories.map((cat) => (
@@ -241,7 +241,7 @@ export default function ProjectCreate() {
               required
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
               placeholder="e.g. Palma, Mallorca"
             />
           </div>
@@ -252,7 +252,7 @@ export default function ProjectCreate() {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
               placeholder="Describe the project..."
             />
           </div>
@@ -263,7 +263,7 @@ export default function ProjectCreate() {
               <button
                 type="button"
                 onClick={() => setIsAddTagOpen(true)}
-                className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors flex items-center gap-1"
+                className="px-3 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-teal-500 hover:text-teal-600 hover:bg-teal-50 transition-colors flex items-center gap-1"
               >
                 <Plus className="h-3 w-3" />
                 New
@@ -273,7 +273,7 @@ export default function ProjectCreate() {
                   type="button"
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${tags.includes(tag) ? 'bg-teal-100 text-teal-800 border-teal-200' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
                 >
                   {tag}
                 </button>
@@ -292,7 +292,7 @@ export default function ProjectCreate() {
                 <img 
                   src={src} 
                   alt="Preview" 
-                  className={`w-full h-full object-cover rounded-lg border-2 ${src === coverImage ? 'border-yellow-400 ring-2 ring-yellow-400' : 'border-green-500/50'}`} 
+                  className={`w-full h-full object-cover rounded-lg border-2 ${src === coverImage ? 'border-yellow-400 ring-2 ring-yellow-400' : 'border-teal-500/50'}`} 
                 />
                 
                 {/* Star / Cover Image Button */}
@@ -314,13 +314,13 @@ export default function ProjectCreate() {
                 >
                   <X className="h-5 w-5" />
                 </button>
-                <span className="absolute bottom-2 left-2 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded">
+                <span className="absolute bottom-2 left-2 bg-teal-600 text-white text-[10px] px-1.5 py-0.5 rounded">
                   New
                 </span>
               </div>
             ))}
             
-            <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
+            <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition-colors aspect-square">
               <Upload className="h-6 w-6 text-gray-400 mb-2" />
               <span className="text-sm text-gray-500">Add Photos</span>
               <input
@@ -346,7 +346,7 @@ export default function ProjectCreate() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+              className="flex items-center justify-center gap-2 bg-teal-600 text-white py-2.5 px-6 rounded-lg hover:bg-teal-700 disabled:opacity-50 font-medium"
             >
               {isLoading ? (
                 <>
