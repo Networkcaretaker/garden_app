@@ -9,6 +9,11 @@ export interface SocialLinks {
   whatsapp: string;
   whatsappMessage: string;
 }
+export interface CallToAction {
+  text: string;
+  buttonText: string;
+  buttonVariant: buttonVariants;
+}
 
 export interface WebsiteImage {
   id: string;
@@ -33,9 +38,8 @@ export interface HeroContent {
   title: boolean;
   tagline: boolean;
   description: boolean;
-  cta: string;
-  buttonText: string;
-  buttonVariant: buttonVariants;
+  showCTA: boolean;
+  cta: CallToAction;
   background?: WebsiteImage[];
 }
 

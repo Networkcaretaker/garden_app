@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown, Clock, LayoutGrid, Dock, BadgeQuestionMark, LayoutPanelTopIcon, PinIcon, MessageCircleMore, FootprintsIcon, Plus, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { WebsiteSettings, SocialLinks, ContentCard, Project, TestimonialClients } from '@garden/shared';
+import type { WebsiteSettings, SocialLinks, ContentCard, Project, TestimonialClients, CallToAction, buttonVariants } from '@garden/shared';
 import UnsavedChanges from '../../components/popup/UnsavedChanges';
 
 // Default initial state matching the interface structure
@@ -23,7 +23,7 @@ const defaultSettings: WebsiteSettings = {
   seo: [],
   updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
   content: {
-    hero: { logo: true, title: true, tagline: true, description: true, cta: '', buttonText: '', buttonVariant: 'none' },
+    hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
     about: { title: '', text: '', cta: '', buttonText: '', buttonVariant: 'none' },
     beneifts: { title: '', text: '', cards: [] },
     services: { title: '', text: '', cards: [] },
@@ -167,6 +167,11 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   const handleRemoveGalleryProject = (projectId: string) => {
     const currentProjects = settings.content?.gallery?.projects || [];
     handleContentChange('gallery', 'projects', currentProjects.filter(id => id !== projectId));
+  };
+
+  const handleHeroCtaChange = (field: keyof CallToAction, value: string) => {
+    const currentCta = settings.content.hero.cta || { text: '', buttonText: '', buttonVariant: 'none' };
+    handleContentChange('hero', 'cta', { ...currentCta, [field]: value });
   };
 
   const handleServiceCardChange = (index: number, field: keyof ContentCard, value: unknown) => {
@@ -475,40 +480,58 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         </button>
                     </div>
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CTA</label>
-                        <textarea
-                            rows={2}
-                            value={settings.content?.hero?.cta || ''}
-                            onChange={(e) => handleContentChange('hero', 'cta', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="A call to action statement"
-                        />
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Call to Action
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => handleContentChange('hero', 'showCTA', !settings.content?.hero?.showCTA)}
+                            className={`${settings.content?.hero?.showCTA ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={settings.content?.hero?.showCTA}>
+                            <span className={`${settings.content?.hero?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                            <input
-                                type="text"
-                                value={settings.content?.hero?.buttonText || ''}
-                                onChange={(e) => handleContentChange('hero', 'buttonText', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                placeholder="Contact Us"
-                            />
+
+                    {settings.content?.hero?.showCTA && (
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
+                                <textarea
+                                    rows={2}
+                                    value={settings.content?.hero?.cta?.text || ''}
+                                    onChange={(e) => handleHeroCtaChange('text', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                    placeholder="A call to action statement"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                                    <input
+                                        type="text"
+                                        value={settings.content?.hero?.cta?.buttonText || ''}
+                                        onChange={(e) => handleHeroCtaChange('buttonText', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Contact Us"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
+                                    <select
+                                        value={settings.content?.hero?.cta?.buttonVariant || 'solid'}
+                                        onChange={(e) => handleHeroCtaChange('buttonVariant', e.target.value as buttonVariants)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                        >
+                                        <option value="solid">Solid</option>
+                                        <option value="outline">Outline</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                            <select
-                                value={settings.content?.hero?.buttonVariant || 'solid'}
-                                onChange={(e) => handleContentChange('hero', 'buttonVariant', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                >
-                                <option value="solid">Solid</option>
-                                <option value="outline">Outline</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -1262,7 +1285,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="https://linkedin.com/in/..."
                         />
                     </div>
-                    <div className="md:col-span-2">
+                    <div >
                         <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
                         <input
                             type="text"
@@ -1272,7 +1295,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="+34 600 000 000"
                         />
                     </div>
-                    <div>
+                    <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Message</label>
                         <input
                             type="text"
@@ -1414,7 +1437,12 @@ export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDi
     logo: data.logo || defaultSettings.logo,
     social: { ...defaultSettings.social, ...(data.social || {}) },
     content: {
-      hero: { ...defaultSettings.content.hero, ...(data.content?.hero || {}) },
+      hero: { 
+        ...defaultSettings.content.hero, 
+        ...(data.content?.hero || {}),
+        // Ensure cta is an object, handling potential legacy string data or missing data
+        cta: (data.content?.hero?.cta && typeof data.content.hero.cta === 'object') ? { ...defaultSettings.content.hero.cta, ...data.content.hero.cta } : defaultSettings.content.hero.cta
+      },
       about: { ...defaultSettings.content.about, ...(data.content?.about || {}) },
       beneifts: { ...defaultSettings.content.beneifts, ...(data.content?.beneifts || {}) },
       services: { ...defaultSettings.content.services, ...(data.content?.services || {}) },
