@@ -25,7 +25,7 @@ const defaultSettings: WebsiteSettings = {
   content: {
     hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
     about: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
-    beneifts: { title: '', text: '', cards: [] },
+    benefits: { title: '', text: '', cards: [] },
     services: { title: '', text: '', cards: [] },
     location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
     gallery: { title: '', text: '', projects: [] },
@@ -215,14 +215,14 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   };
 
   const handleBenefitCardChange = (index: number, field: keyof ContentCard, value: unknown) => {
-    const currentCards = settings.content?.beneifts?.cards || [];
+    const currentCards = settings.content?.benefits?.cards || [];
     const newCards = [...currentCards];
     newCards[index] = { ...newCards[index], [field]: value };
-    handleContentChange('beneifts', 'cards', newCards);
+    handleContentChange('benefits', 'cards', newCards);
   };
 
   const addBenefitCard = () => {
-    const currentCards = settings.content?.beneifts?.cards || [];
+    const currentCards = settings.content?.benefits?.cards || [];
     const newCard: ContentCard = {
         title: '',
         text: '',
@@ -230,13 +230,13 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         link: '',
         order: currentCards.length,
     };
-    handleContentChange('beneifts', 'cards', [...currentCards, newCard]);
+    handleContentChange('benefits', 'cards', [...currentCards, newCard]);
   };
 
   const removeBenefitCard = (index: number) => {
-    const currentCards = settings.content?.beneifts?.cards || [];
+    const currentCards = settings.content?.benefits?.cards || [];
     const newCards = currentCards.filter((_, i) => i !== index);
-    handleContentChange('beneifts', 'cards', newCards);
+    handleContentChange('benefits', 'cards', newCards);
   };
 
   const handleTestimonialClientChange = (index: number, field: keyof TestimonialClients, value: unknown) => {
@@ -778,8 +778,8 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                         <input
                             type="text"
-                            value={settings.content?.beneifts?.title || ''}
-                            onChange={(e) => handleContentChange('beneifts', 'title', e.target.value)}
+                            value={settings.content?.benefits?.title || ''}
+                            onChange={(e) => handleContentChange('benefits', 'title', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                             placeholder="A title for this section"
                         />
@@ -788,8 +788,8 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
                         <textarea
                             rows={2}
-                            value={settings.content?.beneifts?.text || ''}
-                            onChange={(e) => handleContentChange('beneifts', 'text', e.target.value)}
+                            value={settings.content?.benefits?.text || ''}
+                            onChange={(e) => handleContentChange('benefits', 'text', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                             placeholder="A description of this section"
                         />
@@ -808,7 +808,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                         </div>
                         
                         <div className="space-y-4">
-                            {settings.content?.beneifts?.cards?.map((card, index) => (
+                            {settings.content?.benefits?.cards?.map((card, index) => (
                                 <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
                                     <button
                                         type="button"
@@ -859,7 +859,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                                 </div>
                             ))}
                             
-                            {(!settings.content?.beneifts?.cards || settings.content.beneifts.cards.length === 0) && (
+                            {(!settings.content?.benefits?.cards || settings.content.benefits.cards.length === 0) && (
                                 <div className="text-center py-6 text-gray-500 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-300">
                                     No benefit cards added yet.
                                 </div>
@@ -1519,7 +1519,7 @@ export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDi
         ...(data.content?.about || {}),
         cta: (data.content?.about?.cta && typeof data.content.about.cta === 'object') ? { ...defaultSettings.content.about.cta, ...data.content.about.cta } : defaultSettings.content.about.cta
       },
-      beneifts: { ...defaultSettings.content.beneifts, ...(data.content?.beneifts || {}) },
+      benefits: { ...defaultSettings.content.benefits, ...(data.content?.benefits || {}) },
       services: { ...defaultSettings.content.services, ...(data.content?.services || {}) },
       location: { 
         ...defaultSettings.content.location, 

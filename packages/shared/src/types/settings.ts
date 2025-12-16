@@ -51,7 +51,7 @@ export interface AboutContent {
   background?: WebsiteImage;
 }
 
-export interface BeneiftsContent {
+export interface BenefitsContent {
   title: string;
   text: string;
   cards: ContentCard[];
@@ -106,7 +106,7 @@ export interface FootorContent {
 export interface WebsiteContent {
   hero: HeroContent;
   about: AboutContent;
-  beneifts: BeneiftsContent;
+  benefits: BenefitsContent;
   services: ServicesContent;
   location: LocationContent;
   gallery: GalleryContent;

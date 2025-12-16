@@ -60,20 +60,23 @@ func (h *SettingsHandler) GetWebsiteSettings(c echo.Context) error {
 func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	// Define structs to match the Typescript interfaces
 	type SocialLinks struct {
-		Facebook  string `json:"facebook"`
-		Instagram string `json:"instagram"`
-		Linkedin  string `json:"linkedin"`
-		Whatsapp  string `json:"whatsapp"`
+		Facebook        string `json:"facebook"`
+		Instagram       string `json:"instagram"`
+		Linkedin        string `json:"linkedin"`
+		Whatsapp        string `json:"whatsapp"`
+		WhatsappMessage string `json:"whatsappMessage"`
 	}
 
 	var req struct {
-		Title       string      `json:"title"`
-		WebsiteURL  string      `json:"websiteURL"`
-		Tagline     string      `json:"tagline"`
-		Description string      `json:"description"`
-		Excerpt     string      `json:"excerpt"`
-		Social      SocialLinks `json:"social"`
-		SEO         []string    `json:"seo"`
+		Title       string                 `json:"title"`
+		WebsiteURL  string                 `json:"websiteURL"`
+		Tagline     string                 `json:"tagline"`
+		Description string                 `json:"description"`
+		Excerpt     string                 `json:"excerpt"`
+		Logo        map[string]interface{} `json:"logo"`
+		Social      SocialLinks            `json:"social"`
+		SEO         []string               `json:"seo"`
+		Content     map[string]interface{} `json:"content"`
 	}
 
 	if err := c.Bind(&req); err != nil {
@@ -83,7 +86,7 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	ctx := context.Background()
 	docRef := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument)
 
-	// Construct the map to save. 
+	// Construct the map to save.
 	// We map the struct fields explicitly to ensure only valid data is saved.
 	data := map[string]interface{}{
 		"title":       req.Title,
@@ -91,13 +94,16 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 		"tagline":     req.Tagline,
 		"description": req.Description,
 		"excerpt":     req.Excerpt,
+		"logo":        req.Logo,
 		"social": map[string]string{
-			"facebook":  req.Social.Facebook,
-			"instagram": req.Social.Instagram,
-			"linkedin":  req.Social.Linkedin,
-			"whatsapp":  req.Social.Whatsapp,
+			"facebook":        req.Social.Facebook,
+			"instagram":       req.Social.Instagram,
+			"linkedin":        req.Social.Linkedin,
+			"whatsapp":        req.Social.Whatsapp,
+			"whatsappMessage": req.Social.WhatsappMessage,
 		},
 		"seo":       req.SEO,
+		"content":   req.Content,
 		"updatedAt": time.Now(),
 	}
 
@@ -168,7 +174,7 @@ func (h *SettingsHandler) UpdateProjectSettings(c echo.Context) error {
 // PublishWebsiteData handles POST /admin/settings/website/publish
 func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 	ctx := context.Background()
-	
+
 	// Get bucket handle once for both operations
 	bucket, err := h.Client.Storage.Bucket(h.Config.FirebaseStorageBucket)
 	if err != nil {
@@ -182,7 +188,7 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		
+
 		wc := bucket.Object(objectPath).NewWriter(ctx)
 		wc.ContentType = "application/json"
 		if _, err := wc.Write(jsonData); err != nil {
@@ -231,7 +237,7 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 	settingsDoc, err := h.Client.Firestore.Collection(settingsCollection).Doc(websiteDocument).Get(ctx)
 	if err != nil {
 		c.Logger().Errorf("Failed to fetch settings for publish: %v", err)
-		// We continue even if settings fail? Or return error? 
+		// We continue even if settings fail? Or return error?
 		// Usually safer to fail so state isn't partial.
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch website settings"})
 	}
@@ -257,7 +263,7 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 
 	c.Logger().Info("Successfully published website data (projects.json and websiteConfig.json)")
 	return c.JSON(http.StatusOK, map[string]string{
-		"status": "success", 
+		"status":  "success",
 		"message": "Website data and configuration published successfully",
 	})
 }
