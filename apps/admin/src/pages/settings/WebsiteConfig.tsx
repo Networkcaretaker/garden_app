@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown, Clock } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown, Clock, LayoutGrid, Dock, BadgeQuestionMark, LayoutPanelTopIcon, PinIcon, MessageCircleMore, FootprintsIcon   } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks } from '@garden/shared';
@@ -38,6 +38,15 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   // We default 'general' to true so the first section is open on mobile load
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     general: false,
+    content: false,
+    hero: false,
+    about: false,
+    services: false,
+    benefits: false,
+    location: false,
+    gallery: false,
+    testimonials: false,
+    footer: false,
     seo: false,
     social: false,
     publish: false,
@@ -177,7 +186,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Website Configuration</h1>
-            <p className="text-gray-500">Manage global settings, SEO, and social links for your public website.</p>
+            <p className="text-gray-500">Manage global settings, content, SEO, and social links for your public website.</p>
         </div>
         {updatedAt && (
             <div className="text-left md:text-right text-xs text-gray-400">
@@ -196,7 +205,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                 className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-blue-500" /> General Info
+                    <Globe className="h-5 w-5 text-teal-500" /> General Info
                 </h2>
                 {/* Chevron only visible on mobile */}
                 <ChevronDown 
@@ -227,6 +236,16 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                             placeholder="Growing the future, one plant at a time"
                         />
                     </div>
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea
+                            rows={3}
+                            value={settings.description || ''}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A brief description of your website for search engines."
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Public URL</label>
                         <input
@@ -255,7 +274,394 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             </div>
         </div>
 
-        {/* Content & SEO */}
+        {/* Hero */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('hero')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <Dock className="h-5 w-5 text-teal-500" /> Hero
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['hero'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['hero'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Website Title
+                        </label>
+                        <button
+                            type="button"
+                            className={`${status === 'true' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={status === 'true'}>
+                            <span className={`${status === 'true' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                    </div>
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Website Tagline
+                        </label>
+                        <button
+                            type="button"
+                            className={`${status === 'true' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={status === 'true'}>
+                            <span className={`${status === 'true' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                    </div>
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Website Logo
+                        </label>
+                        <button
+                            type="button"
+                            className={`${status === 'true' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={status === 'true'}>
+                            <span className={`${status === 'true' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                    </div>
+                    <div className="md:col-span-2 flex items-center justify-between">
+                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
+                            Show Website Description
+                        </label>
+                        <button
+                            type="button"
+                            className={`${status === 'true' ? 'bg-green-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                            role="switch"
+                            aria-checked={status === 'true'}>
+                            <span className={`${status === 'true' ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">CTA</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A call to action statement"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Button Varient</label>
+                        <select
+                            value={'none'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            >
+                            <option value="none">None</option>
+                            <option value="soild">Solid</option>
+                            <option value="outine">Outline</option>
+
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                        <input
+                            type="text"
+                            value={''}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="Contact Us"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* About Us */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('about')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <BadgeQuestionMark className="h-5 w-5 text-teal-500" /> About Us
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['about'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['about'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        {/* Services */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('services')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <LayoutPanelTopIcon className="h-5 w-5 text-teal-500" /> Services
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['services'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['services'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        {/* Benefits */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('benefits')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <LayoutPanelTopIcon className="h-5 w-5 text-teal-500" /> Benefits
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['benefits'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['benefits'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Location */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('location')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <PinIcon className="h-5 w-5 text-teal-500" /> Location
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['location'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['location'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>    
+
+        {/* Gallery */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('gallery')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <LayoutGrid className="h-5 w-5 text-teal-500" /> Gallery
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['gallery'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['gallery'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        {/* Testimonials */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('testimonials')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <MessageCircleMore className="h-5 w-5 text-teal-500" /> Testimonials
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['testimonials'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['testimonials'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+             <button 
+                type="button"
+                onClick={() => toggleSection('footer')}
+                className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
+            >
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <FootprintsIcon className="h-5 w-5 text-teal-500" /> Footer
+                </h2>
+                <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['footer'] ? 'rotate-180' : ''}`} 
+                />
+            </button>
+
+            <div className={`px-6 pb-6 ${expandedSections['footer'] ? 'block' : 'hidden'} md:block`}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={''}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A title for this section"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+                        <textarea
+                            rows={2}
+                            value={''}
+                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                            placeholder="A description of this section"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* SEO */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
              <button 
                 type="button"
@@ -263,7 +669,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                 className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Search className="h-5 w-5 text-purple-500" /> Content & SEO
+                    <Search className="h-5 w-5 text-teal-500" /> SEO
                 </h2>
                 <ChevronDown 
                     className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
@@ -272,18 +678,9 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
 
             <div className={`px-6 pb-6 ${expandedSections['seo'] ? 'block' : 'hidden'} md:block`}>
                 <div className="space-y-4">
+
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-                        <textarea
-                            rows={3}
-                            value={settings.description || ''}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                            placeholder="A brief description of your website for search engines."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Footer Excerpt</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
                         <textarea
                             rows={2}
                             value={settings.excerpt || ''}
@@ -321,7 +718,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                 className="w-full flex justify-between items-center p-6 bg-white md:cursor-default"
             >
                 <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Share2 className="h-5 w-5 text-orange-500" /> Social Media
+                    <Share2 className="h-5 w-5 text-teal-500" /> Social Media
                 </h2>
                 <ChevronDown 
                     className={`h-5 w-5 text-gray-400 transition-transform md:hidden ${expandedSections['social'] ? 'rotate-180' : ''}`} 
