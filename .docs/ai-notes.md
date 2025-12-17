@@ -34,3 +34,17 @@ Next Tasks
 15. Add contact details to website
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
+
+
+I want to add the website "logo" to the general setting component.
+If there is not a logo already saved we need an option to upload an image. We can use the imageResize function to resize the image to 512x512 but we will need to update the uploadImage function (or create a new function) for uploading the website logo image to the storage location "/website/images/WebsiteLogo.webp"
+we will also need to save the WebsiteImage data to the website settings in the database, this may require updating the backend but for now lets just work on the admin app.
+
+If there is already a logo image saved, we need to display the logo with the url and storage path (not editable), but also add editable feilds for caption and alt text
+
+here is the settings types file for reference to the WebsiteImage type:
+here is the general file where we need to add the logo section (place below the description)
+here are the ImageUpload and Image Resize files
+and here is the ProjectCreate file just for reference on how we have add project images
+If you need access to any other files please ask.
+

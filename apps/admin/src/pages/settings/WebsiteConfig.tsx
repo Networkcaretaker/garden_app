@@ -23,7 +23,7 @@ const defaultSettings: WebsiteSettings = {
   tagline: '',
   description: '',
   excerpt: '',
-  logo: { id: '', url: '' },
+  logo: { id: '', url: '', storagePath: '' },
   social: {
     facebook: '',
     instagram: '',
