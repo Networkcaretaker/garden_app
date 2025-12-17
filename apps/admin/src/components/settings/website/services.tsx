@@ -1,6 +1,8 @@
-import { useMemo } from 'react';
-import { LayoutPanelTopIcon, ChevronDown, Plus, Trash2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { LayoutPanelTopIcon, ChevronDown, Plus, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
 import type { WebsiteSettings, ContentCard, Project } from '@garden/shared';
+import { resizeImage } from '../../../utils/imageResize';
+import { uploadImage } from '../../../services/storage';
 
 interface ServicesSettingsProps {
   settings: WebsiteSettings;
@@ -11,6 +13,8 @@ interface ServicesSettingsProps {
 }
 
 export function ServicesSettings({ settings, expanded, onToggle, onChange, projects }: ServicesSettingsProps) {
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+
   const activeProjects = useMemo(() => {
     return projects?.filter(p => p.status === 'active') || [];
   }, [projects]);
@@ -20,6 +24,38 @@ export function ServicesSettings({ settings, expanded, onToggle, onChange, proje
     const newCards = [...currentCards];
     newCards[index] = { ...newCards[index], [field]: value };
     onChange('services', 'cards', newCards);
+  };
+
+  const handleImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadingIndex(index);
+      try {
+        const file = e.target.files[0];
+        const resizedBlob = await resizeImage(file, 512);
+        
+        const imageId = `service-${Date.now()}`;
+        const fileName = `${imageId}.webp`;
+        
+        const { url, path } = await uploadImage(resizedBlob, 'website/images/services', fileName);
+
+        const currentCards = settings.content?.services?.cards || [];
+        const newCards = [...currentCards];
+        newCards[index] = {
+          ...newCards[index],
+          image: {
+            ...newCards[index].image,
+            id: imageId,
+            url,
+            storagePath: path,
+          }
+        };
+        onChange('services', 'cards', newCards);
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+      } finally {
+        setUploadingIndex(null);
+      }
+    }
   };
 
   const addCard = () => {
@@ -102,6 +138,48 @@ export function ServicesSettings({ settings, expanded, onToggle, onChange, proje
                   </button>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
+                    <div className="col-span-1 md:col-span-2">
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Card Image</label>
+                      <div className="flex items-center gap-4 p-3 border border-gray-200 rounded-md bg-white">
+                        {card.image?.url ? (
+                          <div className="relative h-16 w-16 flex-shrink-0">
+                            <img 
+                              src={card.image.url} 
+                              alt={card.title} 
+                              className="h-16 w-16 object-cover rounded-md border border-gray-200"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-16 w-16 flex items-center justify-center bg-gray-50 rounded-md border border-dashed border-gray-300 text-gray-400">
+                            <ImageIcon className="h-6 w-6" />
+                          </div>
+                        )}
+                        
+                        <div className="flex-grow">
+                           <label className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-xs text-gray-700 hover:bg-gray-50 cursor-pointer shadow-sm transition-colors">
+                              {uploadingIndex === index ? (
+                                <>
+                                  <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                                  Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <ImageIcon className="h-3 w-3 mr-2" />
+                                  {card.image?.url ? 'Change Image' : 'Upload Image'}
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                className="sr-only"
+                                accept="image/*"
+                                onChange={(e) => handleImageUpload(index, e)}
+                                disabled={uploadingIndex === index}
+                              />
+                           </label>
+                           <p className="mt-1 text-[10px] text-gray-500">512x512px WebP</p>
+                        </div>
+                      </div>
+                    </div>
                     <div className="col-span-1 md:col-span-2">
                       <label className="block text-xs font-medium text-gray-500 mb-1">Card Title</label>
                       <input
