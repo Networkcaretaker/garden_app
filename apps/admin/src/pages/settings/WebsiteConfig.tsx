@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Share2, Search, ChevronDown, Clock, MessageCircleMore, FootprintsIcon, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Share2, Search, ChevronDown, Clock, Plus, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { WebsiteSettings, SocialLinks, Project, TestimonialClients, CallToAction, buttonVariants } from '@garden/shared';
+import type { WebsiteSettings, SocialLinks, Project, CallToAction } from '@garden/shared';
 import UnsavedChanges from '../../components/popup/UnsavedChanges';
 import { GeneralSettings } from '../../components/settings/website/general';
 import { HeroSettings } from '../../components/settings/website/hero';
@@ -11,6 +11,8 @@ import { ServicesSettings } from '../../components/settings/website/services';
 import { BenefitsSettings } from '../../components/settings/website/benefits';
 import { LocationSettings } from '../../components/settings/website/location';
 import { GallerySettings } from '../../components/settings/website/gallery';
+import { TestimonialSettings } from '../../components/settings/website/testimonial';
+import { FooterSettings } from '../../components/settings/website/footer';
 
 // Default initial state matching the interface structure
 const defaultSettings: WebsiteSettings = {
@@ -177,31 +179,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   const handleFooterCtaChange = (field: keyof CallToAction, value: string) => {
     const currentCta = settings.content.footer.cta || { text: '', buttonText: '', buttonVariant: 'none' };
     handleContentChange('footer', 'cta', { ...currentCta, [field]: value });
-  };
-
-  const handleTestimonialClientChange = (index: number, field: keyof TestimonialClients, value: unknown) => {
-    const currentClients = settings.content?.testimonials?.clients || [];
-    const newClients = [...currentClients];
-    newClients[index] = { ...newClients[index], [field]: value };
-    handleContentChange('testimonials', 'clients', newClients);
-  };
-
-  const addTestimonialClient = () => {
-    const currentClients = settings.content?.testimonials?.clients || [];
-    const newClient: TestimonialClients = {
-        name: '',
-        occupation: '',
-        text: '',
-        imageType: 'none',
-        images: []
-    };
-    handleContentChange('testimonials', 'clients', [...currentClients, newClient]);
-  };
-
-  const removeTestimonialClient = (index: number) => {
-    const currentClients = settings.content?.testimonials?.clients || [];
-    const newClients = currentClients.filter((_, i) => i !== index);
-    handleContentChange('testimonials', 'clients', newClients);
   };
 
   const handleContentChange = (section: keyof WebsiteSettings['content'], field: string, value: unknown) => {
@@ -422,202 +399,21 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         />
 
         {/* Testimonials */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('testimonials')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <MessageCircleMore className="h-5 w-5 text-teal-500" /> Testimonials
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['testimonials'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['testimonials'] ? 'block' : 'hidden'}`}>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                        <input
-                            type="text"
-                            value={settings.content?.testimonials?.title || ''}
-                            onChange={(e) => handleContentChange('testimonials', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A title for this section"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-                        <textarea
-                            rows={2}
-                            value={settings.content?.testimonials?.text || ''}
-                            onChange={(e) => handleContentChange('testimonials', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A description of this section"
-                        />
-                    </div>
-
-                    <div className="mt-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-sm font-medium text-gray-900">Clients</h3>
-                            <button
-                                type="button"
-                                onClick={addTestimonialClient}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100"
-                            >
-                                <Plus className="h-3 w-3" /> Add Client
-                            </button>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            {settings.content?.testimonials?.clients?.map((client, index) => (
-                                <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeTestimonialClient(index)}
-                                        className="absolute top-4 right-4 text-gray-400 hover:text-red-500"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                                        <div>
-                                            <label className="block text-xs font-medium text-gray-500 mb-1">Client Name</label>
-                                            <input
-                                                type="text"
-                                                value={client.name}
-                                                onChange={(e) => handleTestimonialClientChange(index, 'name', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-medium text-gray-500 mb-1">Occupation / Role</label>
-                                            <input
-                                                type="text"
-                                                value={client.occupation}
-                                                onChange={(e) => handleTestimonialClientChange(index, 'occupation', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
-                                            />
-                                        </div>
-                                        <div className="col-span-1 md:col-span-2">
-                                            <label className="block text-xs font-medium text-gray-500 mb-1">Testimonial Text</label>
-                                            <textarea
-                                                rows={2}
-                                                value={client.text}
-                                                onChange={(e) => handleTestimonialClientChange(index, 'text', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            
-                            {(!settings.content?.testimonials?.clients || settings.content.testimonials.clients.length === 0) && (
-                                <div className="text-center py-6 text-gray-500 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                                    No testimonials added yet.
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <TestimonialSettings
+            settings={settings}
+            expanded={expandedSections['testimonials']}
+            onToggle={() => toggleSection('testimonials')}
+            onChange={handleContentChange}
+        />
 
         {/* Footer */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('footer')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <FootprintsIcon className="h-5 w-5 text-teal-500" /> Footer
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['footer'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['footer'] ? 'block' : 'hidden'}`}>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                        <input
-                            type="text"
-                            value={settings.content?.footer?.title || ''}
-                            onChange={(e) => handleContentChange('footer', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A title for this section"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-                        <textarea
-                            rows={2}
-                            value={settings.content?.footer?.text || ''}
-                            onChange={(e) => handleContentChange('footer', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A description of this section"
-                        />
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Call to Action
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('footer', 'showCTA', !settings.content?.footer?.showCTA)}
-                            className={`${settings.content?.footer?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.footer?.showCTA}>
-                            <span className={`${settings.content?.footer?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-
-                    {settings.content?.footer?.showCTA && (
-                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
-                                <textarea
-                                    rows={2}
-                                    value={settings.content?.footer?.cta?.text || ''}
-                                    onChange={(e) => handleFooterCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                    placeholder="A call to action statement"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                                    <input
-                                        type="text"
-                                        value={settings.content?.footer?.cta?.buttonText || ''}
-                                        onChange={(e) => handleFooterCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        placeholder="Contact Us"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                                    <select
-                                        value={settings.content?.footer?.cta?.buttonVariant || 'solid'}
-                                        onChange={(e) => handleFooterCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        >
-                                        <option value="solid">Solid</option>
-                                        <option value="outline">Outline</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    
-                </div>
-            </div>
-        </div>
+        <FooterSettings
+            settings={settings}
+            expanded={expandedSections['footer']}
+            onToggle={() => toggleSection('footer')}
+            onContentChange={handleContentChange}
+            onCtaChange={handleFooterCtaChange}
+        />
 
         {/* SEO */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
