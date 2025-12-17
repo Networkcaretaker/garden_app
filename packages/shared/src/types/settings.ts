@@ -19,7 +19,7 @@ export interface CallToAction {
 export interface WebsiteImage {
   id: string;
   url: string;
-  thumbnail?: string;
+  storagePath: string; // store the internal path for deletion
   caption?: string;
   alt?: string;
   width?: number;

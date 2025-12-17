@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Globe, Share2, Search, ChevronDown, Clock, LayoutGrid, Dock, BadgeQuestionMark, LayoutPanelTopIcon, PinIcon, MessageCircleMore, FootprintsIcon, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Share2, Search, ChevronDown, Clock, LayoutGrid, LayoutPanelTopIcon, PinIcon, MessageCircleMore, FootprintsIcon, Plus, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks, ContentCard, Project, TestimonialClients, CallToAction, buttonVariants } from '@garden/shared';
 import UnsavedChanges from '../../components/popup/UnsavedChanges';
+import { GeneralSettings } from '../../components/settings/website/general';
+import { HeroSettings } from '../../components/settings/website/hero';
+import { AboutSettings } from '../../components/settings/website/about';
 
 // Default initial state matching the interface structure
 const defaultSettings: WebsiteSettings = {
@@ -422,300 +425,30 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         </div>
         
         {/* General Settings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <button 
-                type="button"
-                onClick={() => toggleSection('general')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-teal-500" /> General Info
-                </h2>
-                {/* Chevron only visible on mobile */}
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['general'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-            
-            {/* Content hidden on mobile if not expanded, always block on md+ */}
-            <div className={`px-6 pb-6 ${expandedSections['general'] ? 'block' : 'hidden'}`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Website Title</label>
-                        <input
-                            type="text"
-                            value={settings.title || ''}
-                            onChange={(e) => handleInputChange('title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="My Awesome Garden"
-                        />
-                    </div>
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                        <input
-                            type="text"
-                            value={settings.tagline || ''}
-                            onChange={(e) => handleInputChange('tagline', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="Growing the future, one plant at a time"
-                        />
-                    </div>
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea
-                            rows={3}
-                            value={settings.description || ''}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A brief description of your website for search engines."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Public URL</label>
-                        <input
-                            type="url"
-                            value={settings.websiteURL || ''}
-                            onChange={(e) => handleInputChange('websiteURL', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="https://www.example.com"
-                        />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-                      <a
-                          href={settings.websiteURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Open website URL"
-                          className={`flex items-center justify-center gap-2 bg-teal-600 text-white border border-gray-300 py-2 rounded-lg hover:bg-teal-700 font-medium ${!settings.websiteURL ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          onClick={(e) => !settings.websiteURL && e.preventDefault()}
-                      >
-                          <Globe className="h-5 w-5" />
-                          <span className="inline">Visit Site</span>
-                      </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <GeneralSettings 
+            settings={settings}
+            expanded={expandedSections['general']}
+            onToggle={() => toggleSection('general')}
+            onChange={handleInputChange}
+        />
 
         {/* Hero */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('hero')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Dock className="h-5 w-5 text-teal-500" /> Hero
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['hero'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['hero'] ? 'block' : 'hidden'}`}>
-                <div className="space-y-4">
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Website Logo
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'logo', !settings.content?.hero?.logo)}
-                            className={`${settings.content?.hero?.logo ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.logo}>
-                            <span className={`${settings.content?.hero?.logo ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Website Title
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'title', !settings.content?.hero?.title)}
-                            className={`${settings.content?.hero?.title ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.title}>
-                            <span className={`${settings.content?.hero?.title ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Website Tagline
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'tagline', !settings.content?.hero?.tagline)}
-                            className={`${settings.content?.hero?.tagline ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.tagline}>
-                            <span className={`${settings.content?.hero?.tagline ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Website Description
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'description', !settings.content?.hero?.description)}
-                            className={`${settings.content?.hero?.description ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.description}>
-                            <span className={`${settings.content?.hero?.description ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-                    
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Call to Action
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('hero', 'showCTA', !settings.content?.hero?.showCTA)}
-                            className={`${settings.content?.hero?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.hero?.showCTA}>
-                            <span className={`${settings.content?.hero?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-
-                    {settings.content?.hero?.showCTA && (
-                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
-                                <textarea
-                                    rows={2}
-                                    value={settings.content?.hero?.cta?.text || ''}
-                                    onChange={(e) => handleHeroCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                    placeholder="A call to action statement"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                                    <input
-                                        type="text"
-                                        value={settings.content?.hero?.cta?.buttonText || ''}
-                                        onChange={(e) => handleHeroCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        placeholder="Contact Us"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                                    <select
-                                        value={settings.content?.hero?.cta?.buttonVariant || 'solid'}
-                                        onChange={(e) => handleHeroCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        >
-                                        <option value="solid">Solid</option>
-                                        <option value="outline">Outline</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+        <HeroSettings 
+            settings={settings}
+            expanded={expandedSections['hero']}
+            onToggle={() => toggleSection('hero')}
+            onContentChange={handleContentChange}
+            onCtaChange={handleHeroCtaChange}
+        />
 
         {/* About Us */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('about')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <BadgeQuestionMark className="h-5 w-5 text-teal-500" /> About Us
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['about'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['about'] ? 'block' : 'hidden'}`}>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                        <input
-                            type="text"
-                            value={settings.content?.about?.title || ''}
-                            onChange={(e) => handleContentChange('about', 'title', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A title for this section"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-                        <textarea
-                            rows={2}
-                            value={settings.content?.about?.text || ''}
-                            onChange={(e) => handleContentChange('about', 'text', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="A description of this section"
-                        />
-                    </div>
-                    <div className="md:col-span-2 flex items-center justify-between">
-                        <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                            Show Call to Action
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => handleContentChange('about', 'showCTA', !settings.content?.about?.showCTA)}
-                            className={`${settings.content?.about?.showCTA ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                            role="switch"
-                            aria-checked={settings.content?.about?.showCTA}>
-                            <span className={`${settings.content?.about?.showCTA ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-                        </button>
-                    </div>
-
-                    {settings.content?.about?.showCTA && (
-                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
-                                <textarea
-                                    rows={2}
-                                    value={settings.content?.about?.cta?.text || ''}
-                                    onChange={(e) => handleAboutCtaChange('text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                    placeholder="A call to action statement"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                                    <input
-                                        type="text"
-                                        value={settings.content?.about?.cta?.buttonText || ''}
-                                        onChange={(e) => handleAboutCtaChange('buttonText', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        placeholder="Learn More"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
-                                    <select
-                                        value={settings.content?.about?.cta?.buttonVariant || 'solid'}
-                                        onChange={(e) => handleAboutCtaChange('buttonVariant', e.target.value as buttonVariants)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                        >
-                                        <option value="solid">Solid</option>
-                                        <option value="outline">Outline</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>  
+        <AboutSettings 
+            settings={settings}
+            expanded={expandedSections['about']}
+            onToggle={() => toggleSection('about')}
+            onContentChange={handleContentChange}
+            onCtaChange={handleAboutCtaChange}
+        />
 
         {/* Services */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -1452,8 +1185,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
                 </div>
             </div>
         </div>
-
-        
 
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
