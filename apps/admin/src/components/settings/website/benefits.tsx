@@ -1,14 +1,20 @@
+import { useMemo } from 'react';
 import { LayoutPanelTopIcon, ChevronDown, Plus, Trash2 } from 'lucide-react';
-import type { WebsiteSettings, ContentCard } from '@garden/shared';
+import type { WebsiteSettings, ContentCard, Project } from '@garden/shared';
 
 interface BenefitsSettingsProps {
   settings: WebsiteSettings;
   expanded: boolean;
   onToggle: () => void;
   onChange: (section: 'benefits', field: string, value: unknown) => void;
+  projects: Project[] | undefined;
 }
 
-export function BenefitsSettings({ settings, expanded, onToggle, onChange }: BenefitsSettingsProps) {
+export function BenefitsSettings({ settings, expanded, onToggle, onChange, projects }: BenefitsSettingsProps) {
+  const activeProjects = useMemo(() => {
+    return projects?.filter(p => p.status === 'active') || [];
+  }, [projects]);
+
   const cards = settings.content?.benefits?.cards || [];
 
   const handleCardChange = (index: number, field: keyof ContentCard, value: unknown) => {
@@ -21,7 +27,7 @@ export function BenefitsSettings({ settings, expanded, onToggle, onChange }: Ben
     const newCard: ContentCard = {
       title: '',
       text: '',
-      image: { id: '', url: '' },
+      image: { id: '', url: '', storagePath: '' },
       link: '',
       order: cards.length,
     };
@@ -114,13 +120,17 @@ export function BenefitsSettings({ settings, expanded, onToggle, onChange }: Ben
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
-                      <input
-                        type="text"
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Link Project</label>
+                      <select
                         value={card.link}
                         onChange={(e) => handleCardChange(index, 'link', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
-                      />
+                      >
+                        <option value="">Select a project...</option>
+                        {activeProjects.map((project) => (
+                          <option key={project.id} value={project.id}>{project.title}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Order</label>

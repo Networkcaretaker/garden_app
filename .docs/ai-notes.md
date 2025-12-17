@@ -36,15 +36,7 @@ Next Tasks
 17. Add contact details to website Config
 
 
-I want to add the website "logo" to the general setting component.
-If there is not a logo already saved we need an option to upload an image. We can use the imageResize function to resize the image to 512x512 but we will need to update the uploadImage function (or create a new function) for uploading the website logo image to the storage location "/website/images/WebsiteLogo.webp"
-we will also need to save the WebsiteImage data to the website settings in the database, this may require updating the backend but for now lets just work on the admin app.
 
-If there is already a logo image saved, we need to display the logo with the url and storage path (not editable), but also add editable feilds for caption and alt text
 
-here is the settings types file for reference to the WebsiteImage type:
-here is the general file where we need to add the logo section (place below the description)
-here are the ImageUpload and Image Resize files
-and here is the ProjectCreate file just for reference on how we have add project images
-If you need access to any other files please ask.
+In the ContentCard on the sevrices component I would like to change the Link url feild. The purpose of this feild is to save the id of a project that the card will link to. So for this we need to be able to select an Active project from a dropdown and store the id (not a link). I will keep the name of the feild "link" because in future cards on other setting sections I may want to use a direct link but on the services cards we just need to ad a project.
 

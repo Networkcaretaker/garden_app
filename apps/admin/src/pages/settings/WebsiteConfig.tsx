@@ -356,6 +356,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             expanded={expandedSections['services']}
             onToggle={() => toggleSection('services')}
             onChange={handleContentChange}
+            projects={projects}
         />
 
         {/* Benefits */}
@@ -364,6 +365,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             expanded={expandedSections['benefits']}
             onToggle={() => toggleSection('benefits')}
             onChange={handleContentChange}
+            projects={projects}
         />
 
         {/* Location */}

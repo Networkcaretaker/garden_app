@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Globe, ChevronDown, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Globe, ChevronDown, Loader2, Image as ImageIcon } from 'lucide-react';
 import type { WebsiteSettings, WebsiteImage } from '@garden/shared';
 import { resizeImage } from '../../../utils/imageResize';
 import { uploadImage } from '../../../services/storage';
