@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Save, AlertCircle, CheckCircle, Webhook, Share2, Search, ChevronDown, Clock, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Save, AlertCircle, CheckCircle, Webhook, ChevronDown, Clock } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { WebsiteSettings, SocialLinks, Project, CallToAction } from '@garden/shared';
@@ -13,6 +13,8 @@ import { LocationSettings } from '../../components/settings/website/location';
 import { GallerySettings } from '../../components/settings/website/gallery';
 import { TestimonialSettings } from '../../components/settings/website/testimonial';
 import { FooterSettings } from '../../components/settings/website/footer';
+import { SeoSettings } from '../../components/settings/website/seo';
+import { SocialSettings } from '../../components/settings/website/social';
 
 // Default initial state matching the interface structure
 const defaultSettings: WebsiteSettings = {
@@ -53,8 +55,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   const [publishError, setPublishError] = useState('');
   const [publishSuccess, setPublishSuccess] = useState('');
 
-  const [seoInput, setSeoInput] = useState('');
-
   // Fetch projects for Gallery selection
   const { data: projects } = useQuery({
     queryKey: ['projects'],
@@ -93,7 +93,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setSettings(initialData);
-    setSeoInput('');
   }, [initialData]);
 
   // Check if form is dirty
@@ -147,18 +146,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         [field]: value
       }
     }));
-  };
-
-  const addSeoKeyword = () => {
-    if (!seoInput.trim()) return;
-    const currentSeo = settings.seo || [];
-    handleInputChange('seo', [...currentSeo, seoInput.trim()]);
-    setSeoInput('');
-  };
-
-  const removeSeoKeyword = (index: number) => {
-    const currentSeo = settings.seo || [];
-    handleInputChange('seo', currentSeo.filter((_, i) => i !== index));
   };
 
   const handleHeroCtaChange = (field: keyof CallToAction, value: string) => {
@@ -237,7 +224,6 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
 
   const handleDiscard = () => {
     setSettings(initialData);
-    setSeoInput('');
     setShowUnsavedPopup(false);
   };
 
@@ -416,140 +402,20 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
         />
 
         {/* SEO */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('seo')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Search className="h-5 w-5 text-teal-500" /> SEO
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['seo'] ? 'block' : 'hidden'}`}>
-                <div className="space-y-4">
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
-                        <textarea
-                            rows={2}
-                            value={settings.excerpt || ''}
-                            onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="Short text shown in the footer or intro cards."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Keywords</label>
-                        <div className="flex gap-2 mb-3">
-                            <input
-                                type="text"
-                                value={seoInput}
-                                onChange={(e) => setSeoInput(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSeoKeyword())}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                placeholder="Add a keyword..."
-                            />
-                            <button
-                                type="button"
-                                onClick={addSeoKeyword}
-                                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
-                            >
-                                <Plus className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <div className="space-y-2">
-                            {settings.seo?.map((t, i) => (
-                            <div key={i} className="flex justify-between items-center p-2 bg-gray-50 border border-gray-200 rounded-md">
-                                <span className="text-sm text-gray-700">{t}</span>
-                                <button type="button" onClick={() => removeSeoKeyword(i)} className="text-gray-400 hover:text-red-500">
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
-                            </div>
-                            ))}
-                            {(!settings.seo || settings.seo.length === 0) && (
-                                <p className="text-sm text-gray-400 italic">No keywords added yet.</p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <SeoSettings
+            settings={settings}
+            expanded={expandedSections['seo']}
+            onToggle={() => toggleSection('seo')}
+            onChange={handleInputChange}
+        />
 
         {/* Social Media */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-             <button 
-                type="button"
-                onClick={() => toggleSection('social')}
-                className="w-full flex justify-between items-center p-6 bg-white"
-            >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Share2 className="h-5 w-5 text-teal-500" /> Social Media
-                </h2>
-                <ChevronDown 
-                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['social'] ? 'rotate-180' : ''}`} 
-                />
-            </button>
-
-            <div className={`px-6 pb-6 ${expandedSections['social'] ? 'block' : 'hidden'}`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-                        <input
-                            type="url"
-                            value={settings.social?.facebook || ''}
-                            onChange={(e) => handleSocialChange('facebook', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="https://facebook.com/..."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-                        <input
-                            type="url"
-                            value={settings.social?.instagram || ''}
-                            onChange={(e) => handleSocialChange('instagram', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="https://instagram.com/..."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-                        <input
-                            type="url"
-                            value={settings.social?.linkedin || ''}
-                            onChange={(e) => handleSocialChange('linkedin', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="https://linkedin.com/in/..."
-                        />
-                    </div>
-                    <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
-                        <input
-                            type="text"
-                            value={settings.social?.whatsapp || ''}
-                            onChange={(e) => handleSocialChange('whatsapp', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="+34 600 000 000"
-                        />
-                    </div>
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Message</label>
-                        <input
-                            type="text"
-                            value={settings.social?.whatsappMessage || ''}
-                            onChange={(e) => handleSocialChange('whatsappMessage', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                            placeholder="Hello, I would like to know more..."
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <SocialSettings
+            settings={settings}
+            expanded={expandedSections['social']}
+            onToggle={() => toggleSection('social')}
+            onChange={handleSocialChange}
+        />
 
         {/* Actions */}
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
