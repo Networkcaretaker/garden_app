@@ -34,14 +34,14 @@ const defaultSettings: WebsiteSettings = {
   seo: [],
   updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
   content: {
-    hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
+    hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     about: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     benefits: { title: '', text: '', cards: [] },
     services: { title: '', text: '', cards: [] },
-    location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
+    location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     gallery: { title: '', text: '', projects: [] },
     testimonials: { title: '', text: '', clients: [] },
-    footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'solid' } },
+    footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
   },
 };
 

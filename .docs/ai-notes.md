@@ -38,5 +38,9 @@ Next Tasks
 
 
 
-In the ContentCard on the sevrices component I would like to change the Link url feild. The purpose of this feild is to save the id of a project that the card will link to. So for this we need to be able to select an Active project from a dropdown and store the id (not a link). I will keep the name of the feild "link" because in future cards on other setting sections I may want to use a direct link but on the services cards we just need to ad a project.
+
+
+
+
+
 

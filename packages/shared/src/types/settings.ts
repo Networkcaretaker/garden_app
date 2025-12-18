@@ -1,6 +1,6 @@
 import type { Timestamp } from 'firebase/firestore';
 
-export type buttonVariants = 'solid' | 'outline' | 'none';
+export type buttonVariants = 'solid' | 'outline' | 'projects' | 'none';
 
 export interface SocialLinks {
   facebook: string;

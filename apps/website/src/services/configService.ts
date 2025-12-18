@@ -10,7 +10,8 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
   excerpt: '',
   logo: {
     id: '',
-    url: ''
+    url: '',
+    storagePath: ''
   },
   content: {
     hero: {

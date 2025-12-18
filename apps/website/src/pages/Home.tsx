@@ -29,11 +29,11 @@ export default function Home() {
           alt={`A garden created by ${WebsiteSettings.title}`}
           className="absolute z-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="relative z-10 p-4">
+        <div className="absolute inset-0 bg-black bg-opacity-60" />
+        <div className="relative z-10 p-4 space-y-4">
 
           {WebsiteSettings.content.hero.logo && (
-            <img src="/icons/icon-128.png" className="mx-auto mb-4" />
+            <img src={`${WebsiteSettings.logo.url}`} className="mx-auto mb-4 max-w-60 w-60" />
           )}
 
           {WebsiteSettings.content.hero.title && (
@@ -43,26 +43,43 @@ export default function Home() {
           )}
 
           {WebsiteSettings.content.hero.tagline && (
-          <p className="mt-6 text-xl font-bold text-teal-500 md:text-3xl drop-shadow-lg bg-black/50 py-2 rounded-t-xl">
-            {WebsiteSettings.tagline}
-          </p>
+            <p className=" text-xl font-bold text-teal-500 md:text-3xl drop-shadow-lg rounded-t-xl">
+              {WebsiteSettings.tagline}
+            </p>
           )}
 
           {WebsiteSettings.content.hero.description && (
-          <p className=" max-w-2xl *:text-lg font-light text-white md:text-lg drop-shadow-lg bg-teal-600/50 p-2 rounded-b-xl">
-            {WebsiteSettings.description}
-          </p>
+            <p className=" max-w-2xl *:text-lg font-light text-white md:text-lg drop-shadow-lg rounded-b-xl">
+              {WebsiteSettings.description}
+            </p>
           )}
 
+          {/* CTA BUTTON */}
           {WebsiteSettings.content.hero.showCTA && (
-            <Link
-              to="/projects"
-              className="mt-8 inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
-            >
-              {WebsiteSettings.content.hero.cta.buttonText}
-            </Link>
+            <div className="space-y-4">
+              {WebsiteSettings.content.hero.cta.text && (
+                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                  {WebsiteSettings.content.hero.cta.text}
+                </p>
+              )}
+              {WebsiteSettings.content.hero.cta.buttonVariant == 'solid' && (
+                <WhatsAppButton 
+                  phoneNumber={WebsiteSettings.social.whatsapp} 
+                  variant={WebsiteSettings.content.hero.cta.buttonVariant}
+                  label={WebsiteSettings.content.hero.cta.buttonText}
+                  message={WebsiteSettings.social.whatsappMessage} 
+                />
+              )}
+              {WebsiteSettings.content.hero.cta.buttonVariant == 'projects' && (
+                <Link
+                  to={`/${WebsiteSettings.content.hero.cta.buttonVariant}`}
+                  className="inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-2 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+                >
+                  {WebsiteSettings.content.hero.cta.buttonText}
+                </Link>
+              )}
+            </div>
           )}
-
         </div>
       </section>
 
@@ -84,7 +101,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* About CTA Section */}
       <section className="relative flex h-[80vh] min-h-[600px] items-center justify-center text-center text-white">
         <img
           src="/aj00.jpg"
@@ -93,11 +110,32 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 p-4">
-          <WhatsAppButton 
-            phoneNumber={WebsiteSettings.social.whatsapp} 
-            variant="solid"
-            label="Let's Chat About Your Next Project"
-          />
+          {/* CTA BUTTON */}
+          {WebsiteSettings.content.about.showCTA && (
+            <div className="space-y-4">
+              {WebsiteSettings.content.about.cta.text && (
+                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                  {WebsiteSettings.content.about.cta.text}
+                </p>
+              )}
+              {WebsiteSettings.content.about.cta.buttonVariant == 'solid' && (
+                <WhatsAppButton 
+                  phoneNumber={WebsiteSettings.social.whatsapp} 
+                  variant={WebsiteSettings.content.about.cta.buttonVariant}
+                  label={WebsiteSettings.content.about.cta.buttonText}
+                  message={WebsiteSettings.social.whatsappMessage} 
+                />
+              )}
+              {WebsiteSettings.content.about.cta.buttonVariant == 'projects' && (
+                <Link
+                  to={`/${WebsiteSettings.content.about.cta.buttonVariant}`}
+                  className="inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-2 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+                >
+                  {WebsiteSettings.content.about.cta.buttonText}
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </section>
       
