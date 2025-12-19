@@ -91,6 +91,11 @@
       },
       "description": true,
       "logo": true,
+      "projects": [
+        "owFm7zPtT75HLuBpeizj",
+        "Q3JIJc5qhaXyczJtUIlz",
+        "zcsPzGP7G89GSGIbyTVW"
+      ],
       "showCTA": true,
       "tagline": true,
       "title": true
@@ -203,7 +208,7 @@
     "width": 512
   },
   "projectUpdatedAt": "2025-12-14T14:42:25.704859Z",
-  "publishedAt": "2025-12-18T11:37:00.613989Z",
+  "publishedAt": "2025-12-18T11:37:52.781841Z",
   "seo": [
     "Mallorca Gardens",
     "Garden Company Mallorca"
@@ -217,6 +222,6 @@
   },
   "tagline": "Gardening \u0026 Landscaping Experts",
   "title": "Mallorca Gardens",
-  "updatedAt": "2025-12-18T11:37:48.609227Z",
+  "updatedAt": "2025-12-19T10:45:34.214572Z",
   "websiteURL": "https://garden-projects.web.app"
 }

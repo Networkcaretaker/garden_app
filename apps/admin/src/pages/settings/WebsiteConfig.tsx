@@ -339,6 +339,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             onToggle={() => toggleSection('hero')}
             onContentChange={handleContentChange}
             onCtaChange={handleHeroCtaChange}
+            projects={projects}
         />
 
         {/* About Us */}

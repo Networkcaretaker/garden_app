@@ -13,6 +13,8 @@ export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
   const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [heroProjects, setHeroProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -36,21 +38,58 @@ export default function Home() {
     fetchProjects();
   }, []);
 
+  // Filter hero projects based on the IDs in WebsiteSettings
+  useEffect(() => {
+    if (projects.length > 0 && WebsiteSettings.content.hero.projects) {
+      const filteredProjects = projects.filter(project => 
+        WebsiteSettings.content.hero.projects.includes(project.id)
+      );
+      setHeroProjects(filteredProjects);
+    }
+  }, [projects, WebsiteSettings.content.hero.projects]);
+
+  // Rotate through hero project images every 5 seconds
+  useEffect(() => {
+    if (heroProjects.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % heroProjects.length
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [heroProjects.length]);
+
   return (
     <main className="bg-white text-gray-800">
 
       {/* Hero Section */}
-      <section className="relative flex h-[100vh] min-h-[600px] items-center justify-center text-center text-white">
-        <img
-          src="/rose-garden.webp"
-          alt={`A garden created by ${WebsiteSettings.title}`}
-          className="absolute z-0 h-full w-full object-cover"
-        />
+      <section className="relative flex h-[100vh] min-h-[600px] items-center justify-center text-center text-white overflow-hidden">
+        {/* Background images with crossfade effect */}
+        {heroProjects.length > 0 ? (
+          heroProjects.map((project, index) => (
+            <img
+              key={project.id}
+              src={project.coverImage}
+              alt={`Garden project by ${WebsiteSettings.title}`}
+              className={`absolute z-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))
+        ) : (
+          <img
+            src="/rose-garden.webp"
+            alt={`A garden created by ${WebsiteSettings.title}`}
+            className="absolute z-0 h-full w-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-black bg-opacity-60" />
         <div className="relative z-10 p-4 space-y-4">
 
           {WebsiteSettings.content.hero.logo && (
-            <img src={`${WebsiteSettings.logo.url}`} className="mx-auto mb-4 max-w-60 w-60" />
+            <img src={`${WebsiteSettings.logo.url}`} className="mx-auto mb-4 h-[150px]" />
           )}
 
           {WebsiteSettings.content.hero.title && (
@@ -224,18 +263,18 @@ export default function Home() {
                 >
                   <div className="aspect-[3/2] overflow-hidden">
                     <img
-                      src={project.images?.[0]?.url}
+                      src={project.coverImage}
                       alt={project.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="p-4 text-left">
+                  <div className="flex justify-between items-center p-4 text-left">
                     <h3 className="text-xl font-bold text-teal-800 group-hover:text-teal-600">
                       {project.title}
                     </h3>
-                    <span className="mt-2 inline-block text-sm font-semibold text-teal-600">
-                      View Project &rarr;
-                    </span>
+                    <h3 className="text-sm font-light text-gray-500 group-hover:text-teal-600">
+                      {new Date(project.updatedAt).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })}
+                    </h3>
                   </div>
                 </Link>
               ))}
@@ -347,7 +386,7 @@ export default function Home() {
             </h1>
           )}
           {WebsiteSettings.content.testimonials.text && (
-            <p className=" text-xl text-teal-500 md:text-2xl rounded-t-xl">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-500 border-b-2 border-teal-300 pb-2">
               {WebsiteSettings.content.testimonials.text}
             </p>
           )}

@@ -41,7 +41,7 @@ export interface HeroContent {
   description: boolean;
   showCTA: boolean;
   cta: CallToAction;
-  background?: WebsiteImage[];
+  projects: string[];
 }
 
 export interface AboutContent {

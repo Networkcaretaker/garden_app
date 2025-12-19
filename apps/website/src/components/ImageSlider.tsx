@@ -25,7 +25,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   };
 
   return (
-    <div className={`relative w-full select-none overflow-hidden group ${className}`} 
+    <div className={`relative w-full md:w-3/4 mx-auto select-none overflow-hidden group ${className}`} 
          // Maintain aspect ratio or rely on container. 
          // Here we let the content define the height or the parent.
     >
