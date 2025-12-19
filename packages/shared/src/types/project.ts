@@ -20,7 +20,7 @@ export interface ImageGroup {
   name: string;
   description: string;
   type: 'gallery' | 'slider';
-  images?: ProjectImage[];
+  images?: string[];
 }
 
 export interface Testimonial {

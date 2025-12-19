@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye, Plus, ChevronDown } from 'lucide-react';
+import { Upload, X, Loader2, Save, ArrowLeft, Trash2, Star, Eye, Plus, Minus, ChevronDown } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
@@ -28,6 +28,7 @@ export default function ProjectEdit() {
     seo: false,
     testimonial: false,
     uploadImages: true,
+    editImages: true,
     imageGroups: true,
   });
 
@@ -617,28 +618,25 @@ export default function ProjectEdit() {
                         <button
                           type="button"
                           onClick={() => setCoverImage(img.url)}
-                          className="absolute top-2 left-2 p-1 rounded-full shadow-sm transition-all hover:bg-white/80"
+                          className="absolute top-2 left-2 p-1 rounded-full shadow-sm transition-all hover:bg-white/80 "
                           title={img.url === coverImage ? "Cover Image" : "Set as Cover"}
                         >
                           <Star 
-                            className={`h-5 w-5 ${img.url === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400'}`} 
+                            className={`h-5 w-5 ${img.url === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity'}`} 
                           />
                         </button>
+
+                        <span className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
+                          Saved
+                        </span>
 
                         <button
                           type="button"
                           onClick={() => removeExistingImage(img.id)}
-                          className="absolute top-2 right-2 bg-white text-red-600 p-1 rounded-full shadow-sm hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Remove Image"
+                          className="absolute bottom-0 flex justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 border border-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-3 w-3" /> Delete Image
                         </button>
-                        <span className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
-                          Saved
-                        </span>
-                        <span className="absolute bottom-2 right-2 bg-teal-600 hover:bg-teal-700 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          Edit
-                        </span>
                       </div>
                     ))}
                     {/* NEW UPLOADS */}
@@ -658,7 +656,7 @@ export default function ProjectEdit() {
                           title={src === coverImage ? "Cover Image" : "Set as Cover"}
                         >
                           <Star 
-                            className={`h-5 w-5 ${src === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400'}`} 
+                            className={`h-5 w-5 ${src === coverImage ? 'text-yellow-400 fill-yellow-400' : 'text-white drop-shadow-md hover:text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity'}`} 
                           />
                         </button>
 
@@ -678,6 +676,53 @@ export default function ProjectEdit() {
                 </div>
               </div> {/* End uploadImages Accordion */}
 
+              {/* editImages Accordion */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <button 
+                  type="button"
+                  onClick={() => toggleSection('editImages')}
+                  className="w-full flex justify-between items-center p-6 bg-white"
+                >
+                  <h2 className="text-lg font-semibold text-gray-800">Edit Images</h2>
+                  <ChevronDown 
+                    className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['editImages'] ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+                <div className={`px-6 pb-6 ${expandedSections['editImages'] ? 'block' : 'hidden'}`}>
+                  
+                  <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {existingImages.map((img) => (
+                      <div key={img.id} className="">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <img 
+                            src={img.url} 
+                            alt="Existing" 
+                            className={`rounded-lg border object-contain aspect-squar`} 
+                          />
+                          <div className="md:col-span-3 space-y-2">
+                            <p className="block text-xs font-medium text-teal-500 mb-1">ID: {img.id}</p>
+                            <input
+                              type="text"
+                              value=""
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
+                              placeholder="Image Title"
+                              disabled
+                            />
+                            <input
+                              type="text"
+                              value=""
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
+                              placeholder="Image Caption"
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div> {/* End editImages Accordion */}
+
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <button 
                   type="button"
@@ -694,8 +739,8 @@ export default function ProjectEdit() {
 
                     {/* Featured Images - default image upload, group cannot be deleted */}
                     <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative mb-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                        <div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="col-span-2 md:col-span-1">
                           <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>
                           <input
                             type="text"
@@ -704,7 +749,7 @@ export default function ProjectEdit() {
                             disabled
                           />
                         </div>
-                        <div>
+                        <div className="col-span-2 md:col-span-1">
                           <label className="block text-xs font-medium text-gray-500 mb-1">Group Type</label>
                           <input
                             type="text"
@@ -713,7 +758,7 @@ export default function ProjectEdit() {
                             disabled
                           />
                         </div>
-                        <div className="col-span-1 md:col-span-2">
+                        <div className="col-span-2 md:col-span-2">
                           <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
                           <textarea
                             rows={1}
@@ -723,26 +768,33 @@ export default function ProjectEdit() {
                           />
                         </div>
 
-                        <div className="flex justify-between items-center mb-4 col-span-1 md:col-span-2">
-                          <h3 className="text-sm font-medium text-gray-900">Group Images</h3>
+                        <div className="col-span-2">
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100"
+                            className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border "
                           >
-                            <Plus className="h-3 w-3" /> Add Images
+                            <Plus className="h-3 w-3" /> Add images to group
                           </button>
                         </div>
 
                         <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
+
                           {existingImages.map((img) => (
-                            <div key={img.id} className="relative aspect-square group">
-                              <img 
-                                src={img.url} 
-                                alt="Existing" 
-                                className={`w-full h-full object-cover rounded-lg border`} 
-                              />
-                            </div>
-                          ))}
+                              <div key={img.id} className="relative aspect-square group bg-teal-50">
+                                <img 
+                                  src={img.url} 
+                                  alt="Existing" 
+                                  className={`w-full h-full object-contain rounded-lg border`} 
+                                />
+                                <button
+                                  type="button"
+                                  className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Minus className="h-3 w-3" /> Remove Image
+                                </button>
+                              </div>
+                            ))}
+
                         </div>
                       </div>
                     </div>
@@ -750,22 +802,16 @@ export default function ProjectEdit() {
                     {/* New Image Group */}
                     <div className="space-y-4">
                       <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
-                        <button
-                          type="button"
-                          className="absolute top-4 right-4 text-gray-400 hover:text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                          <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="col-span-2 md:col-span-1">
                             <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>
                             <input
                               type="text"
                               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                             />
                           </div>
-                          <div>
+                          <div >
                             <label className="block text-xs font-medium text-gray-500 mb-1">Group Type</label>
                             <select
                               value="gallery"
@@ -775,25 +821,48 @@ export default function ProjectEdit() {
                               <option value="slider">Slider</option>
                             </select>
                           </div>
-                          <div className="col-span-1 md:col-span-2">
+                          <div className="col-span-2 md:col-span-2">
                             <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
                             <textarea
                               rows={2}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                             />
                           </div>
+                          <div className="col-span-2">
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border "
+                            >
+                              <Plus className="h-3 w-3" /> Add images to group
+                            </button>
+                          </div>
 
                           <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
                             {/* Change existing images to images saved in the group */}
                             {existingImages.map((img) => (
-                              <div key={img.id} className="relative aspect-square group">
+                              <div key={img.id} className="relative aspect-square group bg-teal-50">
                                 <img 
                                   src={img.url} 
                                   alt="Existing" 
-                                  className={`w-full h-full object-cover rounded-lg border`} 
+                                  className={`w-full h-full object-contain rounded-lg border`} 
                                 />
+                                <button
+                                  type="button"
+                                  className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Minus className="h-3 w-3" /> Remove Image
+                                </button>
                               </div>
                             ))}
+                          </div>
+
+                          <div className="col-span-2">
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 border border-red-400 "
+                            >
+                              <Trash2 className="h-3 w-3" /> Delete group
+                            </button>
                           </div>
                         </div>
                       </div>
