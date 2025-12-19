@@ -13,6 +13,12 @@ type ProjectImage struct {
 	Height      int    `json:"height,omitempty" firestore:"height,omitempty"`
 }
 
+// Testimonial represents a client testimonial for a project
+type Testimonial struct {
+	Name      string `json:"name" firestore:"name"`
+	Occupation string `json:"occupation" firestore:"occupation"`
+	Text      string `json:"text" firestore:"text"`
+}
 // Project represents the data structure for a gardening project
 type Project struct {
 	ID            string         `json:"id" firestore:"id"`
@@ -25,6 +31,8 @@ type Project struct {
 	CoverImage    string         `json:"coverImage" firestore:"coverImage"`
 	Images        []ProjectImage `json:"images" firestore:"images"`
 	Featured      bool           `json:"featured" firestore:"featured"`
+	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission
+	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission
 	Published     bool           `json:"published" firestore:"published"`
 	Status        string         `json:"status" firestore:"status,omitempty"`
 	CreatedAt     time.Time      `json:"createdAt" firestore:"createdAt"`
@@ -41,4 +49,6 @@ type CreateProjectRequest struct {
 	Status      string         `json:"status"`
 	CoverImage  string         `json:"coverImage"` // Added required field
 	Images      []ProjectImage `json:"images"`
+	HasTestimonial *bool          `json:"hasTestimonial,omitempty"`
+	Testimonial    *Testimonial   `json:"testimonial,omitempty"`
 }

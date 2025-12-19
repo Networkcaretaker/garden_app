@@ -40,7 +40,7 @@ export interface Project {
   images: ProjectImage[];
   imageGroups?: ImageGroup[];
   hasTestimonial?: boolean;
-  testimonial?: Testimonial[];
+  testimonial?: Testimonial;
   comments?: string[];
   aiGenerated?: AIGeneratedContent;
   featured: boolean;
