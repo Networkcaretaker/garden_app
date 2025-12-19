@@ -5,11 +5,14 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
-import type { WebsiteSettings } from '@garden/shared';
+import type { WebsiteSettings, Project } from '@garden/shared';
+
+const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
 export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
   const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -17,7 +20,20 @@ export default function Home() {
       setWebsiteSettings(data);
     };
 
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(PROJECTS_URL);
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    };
+
     loadData();
+    fetchProjects();
   }, []);
 
   return (
@@ -162,11 +178,13 @@ export default function Home() {
               .sort((a, b) => a.order - b.order)
               .map((service, index) => (
               <div key={index} className="rounded-lg bg-white p-8 shadow-md flex flex-col items-center">
-                <img 
-                  src={service.image.url} 
-                  alt={service.title} 
-                  className="rounded-lg mb-4 w-full object-cover" 
-                />
+                <a href={`/projects/${service.link}`}>
+                  <img 
+                    src={service.image.url} 
+                    alt={service.title} 
+                    className="rounded-lg mb-4 w-full object-cover" 
+                  />
+                </a>
                 <h3 className="text-xl font-bold text-teal-700">
                   {service.title}
                 </h3>
@@ -195,10 +213,32 @@ export default function Home() {
           </p>
           )}
 
-          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <img src="/project-1.webp" alt="Garden project 1" width={600} height={400} className="rounded-lg" />
-            <img src="/project-2.webp" alt="Garden project 2" width={600} height={400} className="rounded-lg" />
-            <img src="/project-3.webp" alt="Garden project 3" width={600} height={400} className="rounded-lg" />
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+            {projects
+              .filter((project) => WebsiteSettings.content.gallery.projects?.includes(project.id))
+              .map((project) => (
+                <Link
+                  key={project.id}
+                  to={`/projects/${project.id}`}
+                  className="group block overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-xl"
+                >
+                  <div className="aspect-[3/2] overflow-hidden">
+                    <img
+                      src={project.images?.[0]?.url}
+                      alt={project.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-4 text-left">
+                    <h3 className="text-xl font-bold text-teal-800 group-hover:text-teal-600">
+                      {project.title}
+                    </h3>
+                    <span className="mt-2 inline-block text-sm font-semibold text-teal-600">
+                      View Project &rarr;
+                    </span>
+                  </div>
+                </Link>
+              ))}
           </div>
           <Link
             to="/projects"
