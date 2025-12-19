@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BeforeAfterSlider } from '../components/ImageSlider';
+import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
@@ -82,6 +83,8 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <Header />
 
       {/* About Section */}
       <section className="bg-white py-16 md:py-24">
@@ -276,11 +279,32 @@ export default function Home() {
               {WebsiteSettings.content.location.text}
             </p>
           )}
-          <WhatsAppButton 
-            phoneNumber={WebsiteSettings.social.whatsapp} 
-            variant="solid"
-            label="Get a Free Quote"
-          />
+          {/* CTA BUTTON */}
+          {WebsiteSettings.content.location.showCTA && (
+            <div className="space-y-4">
+              {WebsiteSettings.content.location.cta.text && (
+                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                  {WebsiteSettings.content.location.cta.text}
+                </p>
+              )}
+              {WebsiteSettings.content.location.cta.buttonVariant == 'solid' && (
+                <WhatsAppButton 
+                  phoneNumber={WebsiteSettings.social.whatsapp} 
+                  variant={WebsiteSettings.content.location.cta.buttonVariant}
+                  label={WebsiteSettings.content.location.cta.buttonText}
+                  message={WebsiteSettings.social.whatsappMessage} 
+                />
+              )}
+              {WebsiteSettings.content.location.cta.buttonVariant == 'projects' && (
+                <Link
+                  to={`/${WebsiteSettings.content.location.cta.buttonVariant}`}
+                  className="inline-block rounded-full bg-white border-2 border-teal-600 px-8 py-2 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+                >
+                  {WebsiteSettings.content.location.cta.buttonText}
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -303,7 +327,7 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
             {/* why 1 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-1.png" alt="Clip 1" className="rounded-lg" />
+              <img src="/clip-1.png" alt="Clip 1" className="rounded-lg w-[128px] mx-auto" />
               <h3 className="text-xl font-bold text-teal-700">
                 Personalized Garden Designs
               </h3>
@@ -313,7 +337,7 @@ export default function Home() {
             </div>
             {/* why 2 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-2.png" alt="Clip 2" className="rounded-lg" />
+              <img src="/clip-2.png" alt="Clip 2" className="rounded-lg w-[128px] mx-auto" />
               <h3 className="text-xl font-bold text-teal-700">
                 Professional Garden Maintenance
               </h3>
@@ -323,7 +347,7 @@ export default function Home() {
             </div>
             {/* why 3 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-3.png" alt="Clip 3" className="rounded-lg" />
+              <img src="/clip-3.png" alt="Clip 3" className="rounded-lg w-[128px] mx-auto" />
               <h3 className="text-xl font-bold text-teal-700">
                 Creating Stunning and Sustainable Landscapes
               </h3>
@@ -333,7 +357,7 @@ export default function Home() {
             </div>
             {/* why 4 */}
             <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-4.png" alt="Clip 4" className="rounded-lg" />
+              <img src="/clip-4.png" alt="Clip 4" className="rounded-lg w-[128px] mx-auto" />
               <h3 className="text-xl font-bold text-teal-700">
                 Customer Happiness Guarantee
               </h3>

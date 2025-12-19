@@ -1,0 +1,245 @@
+{
+  "content": {
+    "about": {
+      "buttonText": "",
+      "buttonVariant": "",
+      "cta": {
+        "buttonText": "Let's Chat About Your Next Project",
+        "buttonVariant": "solid",
+        "text": "Contact us today for a free quote"
+      },
+      "showCTA": true,
+      "text": "Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialize in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with us.",
+      "title": "A Passionate Team of Expert Gardeners"
+    },
+    "benefits": {
+      "cards": [
+        {
+          "image": {
+            "id": "benefit-1765964498235",
+            "storagePath": "website/images/benefits/benefit-1765964498235.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fbenefits%2Fbenefit-1765964498235.webp?alt=media\u0026token=45dbc60e-ad55-4a0a-8a4e-e1a1ea07d6c8"
+          },
+          "link": "",
+          "order": 0,
+          "text": "Custom garden designs tailored to your style and preferences. We bring your vision to life.",
+          "title": "Personalized Garden Designs"
+        },
+        {
+          "image": {
+            "id": "benefit-1765964509273",
+            "storagePath": "website/images/benefits/benefit-1765964509273.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fbenefits%2Fbenefit-1765964509273.webp?alt=media\u0026token=b89c7853-cd55-446e-8a1b-146a7dd09b85"
+          },
+          "link": "",
+          "order": 1,
+          "text": "Our expert gardeners provide year-round maintenance to ensure your garden flourishes and remains vibrant.",
+          "title": "Professional Garden Maintenance"
+        },
+        {
+          "image": {
+            "id": "benefit-1765964514615",
+            "storagePath": "website/images/benefits/benefit-1765964514615.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fbenefits%2Fbenefit-1765964514615.webp?alt=media\u0026token=86ea71d0-e0f9-4c44-8989-e44b6b4e352b"
+          },
+          "link": "",
+          "order": 2,
+          "text": "Transform your outdoor space into an eco-friendly haven that will leave your neighbors in awe.",
+          "title": "Creating Stunning and Sustainable Landscapes"
+        },
+        {
+          "image": {
+            "id": "benefit-1765964519307",
+            "storagePath": "website/images/benefits/benefit-1765964519307.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fbenefits%2Fbenefit-1765964519307.webp?alt=media\u0026token=2193d36a-9150-436e-abf0-811697e4b877"
+          },
+          "link": "",
+          "order": 3,
+          "text": "Customer satisfaction is our top priority. We go the extra mile to fulfil your gardening dreams.",
+          "title": "Customer Happiness Guarantee"
+        }
+      ],
+      "text": "Transform your outdoor spaces with Mallorca Gardens",
+      "title": "Why choose Mallorca Gardens"
+    },
+    "footer": {
+      "buttonText": "Get in touch",
+      "buttonVariant": "solid",
+      "cta": {
+        "buttonText": "Get in touch",
+        "buttonVariant": "solid",
+        "text": "Contact us for a free consultation and let us bring your unique vision to life."
+      },
+      "showCTA": true,
+      "text": "Our expert team specializes in custom and sustainable gardening solutions across beautiful Mallorca.",
+      "title": "Get in Touch with Our Skilled Gardeners for a Free Consultation"
+    },
+    "gallery": {
+      "projects": [
+        "Q3JIJc5qhaXyczJtUIlz",
+        "KmoAclgKom2BJcyZdmpO",
+        "zcsPzGP7G89GSGIbyTVW"
+      ],
+      "text": "Take a look at some of the beautiful spaces we have had the pleasure of creating.",
+      "title": "Our Portfolio"
+    },
+    "hero": {
+      "cta": {
+        "buttonText": "For help and advice",
+        "buttonVariant": "solid",
+        "text": "Click below to view our most recent garden projects"
+      },
+      "description": true,
+      "logo": true,
+      "showCTA": true,
+      "tagline": true,
+      "title": true
+    },
+    "location": {
+      "cta": {
+        "buttonText": "Contact us got help and advice",
+        "buttonVariant": "solid",
+        "text": "Contact us today for a free quote"
+      },
+      "showCTA": true,
+      "text": "No matter where your property is located on the island, our professional gardening team is ready to help. We provide complete island-wide coverage for maintenance and landscaping.",
+      "title": "Serving All of Mallorca"
+    },
+    "services": {
+      "cards": [
+        {
+          "image": {
+            "id": "service-1765964271879",
+            "storagePath": "website/images/services/service-1765964271879.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964271879.webp?alt=media\u0026token=9530f92e-d290-47c6-ae64-97219c50892e"
+          },
+          "link": "",
+          "order": 0,
+          "text": "Creative and sustainable garden designs tailored to your space and lifestyle.",
+          "title": "Garden Design"
+        },
+        {
+          "image": {
+            "id": "service-1765964286207",
+            "storagePath": "website/images/services/service-1765964286207.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964286207.webp?alt=media\u0026token=2dc010f5-979b-4864-be7e-5ffdd9cd64f6"
+          },
+          "link": "zcsPzGP7G89GSGIbyTVW",
+          "order": 1,
+          "text": "Expert care to keep your lawn teal, your plants healthy, and your garden beautiful.",
+          "title": "Lawn \u0026 Plant Care"
+        },
+        {
+          "image": {
+            "id": "service-1765964297374",
+            "storagePath": "website/images/services/service-1765964297374.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964297374.webp?alt=media\u0026token=d4726f83-6b48-456f-8c87-182ff4765132"
+          },
+          "link": "",
+          "order": 2,
+          "text": "Comprehensive maintenance plans to ensure your garden looks its best all year round.",
+          "title": "Full Maintenance"
+        },
+        {
+          "image": {
+            "id": "service-1765964310170",
+            "storagePath": "website/images/services/service-1765964310170.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964310170.webp?alt=media\u0026token=61ee5992-b8d9-4401-a468-a975fbc99648"
+          },
+          "link": "owFm7zPtT75HLuBpeizj",
+          "order": 3,
+          "text": "Specialised tree and shrub care for vibrant, flourishing landscapes.",
+          "title": "Comprehensive Tree and Shrub Care"
+        },
+        {
+          "image": {
+            "id": "service-1765964326779",
+            "storagePath": "website/images/services/service-1765964326779.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964326779.webp?alt=media\u0026token=717f9ab4-a5a3-420b-a7a7-aecfd0963217"
+          },
+          "link": "",
+          "order": 4,
+          "text": "Your Pool, Our Passion. Design, build, and maintain your Mallorca dream pool.",
+          "title": "Build and Maintain Pools"
+        },
+        {
+          "image": {
+            "id": "service-1765964332355",
+            "storagePath": "website/images/services/service-1765964332355.webp",
+            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2Fservices%2Fservice-1765964332355.webp?alt=media\u0026token=31352c92-0f27-41ca-a523-b96c2c8bb63a"
+          },
+          "link": "KmoAclgKom2BJcyZdmpO",
+          "order": 5,
+          "text": "We offer expert matting and gravelling services to transform your outdoor spaces into long-lasting, eye-catching areas.",
+          "title": "Matting and Gravelling Services"
+        }
+      ],
+      "sections": [
+        {
+          "image": "",
+          "link": "",
+          "order": 0,
+          "text": "Creative and sustainable garden designs tailored to your space and lifestyle.",
+          "title": "Garden Design"
+        },
+        {
+          "image": "",
+          "link": "",
+          "order": 1,
+          "text": "Expert care to keep your lawn green, your plants healthy, and your garden beautiful.",
+          "title": "Lawn \u0026 Plant Care"
+        },
+        {
+          "image": "",
+          "link": "",
+          "order": 2,
+          "text": "Comprehensive maintenance plans to ensure your garden looks its best all year round.",
+          "title": "Full Maintenance"
+        }
+      ],
+      "text": "From design to regular maintenance, we offer a complete range of services to make your garden thrive.",
+      "title": "Bespoke Services"
+    },
+    "testimonials": {
+      "clients": [
+        {
+          "imageType": "slider",
+          "images": [],
+          "name": "Jonh Dow",
+          "occupation": "Mallorca Resident",
+          "text": "What a fantastic team, thank you Mallorca Gardens"
+        }
+      ],
+      "text": "Here is what our clients have to say",
+      "title": "Client Testimonials"
+    }
+  },
+  "description": "Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialise in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with Mallorca Gardens.",
+  "excerpt": "Our expert team specialises in custom and sustainable gardening solutions across beautiful Mallorca.\nContact us for a free consultation and let us bring your unique vision to life.",
+  "logo": {
+    "alt": "Mallorca Gardens",
+    "caption": "",
+    "height": 512,
+    "id": "website-logo",
+    "storagePath": "website/images/WebsiteLogo.webp",
+    "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2FWebsiteLogo.webp?alt=media\u0026token=4378c1c2-24a8-4191-a666-0557e622543f",
+    "width": 512
+  },
+  "projectUpdatedAt": "2025-12-14T14:42:25.704859Z",
+  "publishedAt": "2025-12-18T11:37:00.613989Z",
+  "seo": [
+    "Mallorca Gardens",
+    "Garden Company Mallorca"
+  ],
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "linkedin": "",
+    "whatsapp": "619530423",
+    "whatsappMessage": "Hello Andrew! I need a gardener, I am interested in the services you provide"
+  },
+  "tagline": "Gardening \u0026 Landscaping Experts",
+  "title": "Mallorca Gardens",
+  "updatedAt": "2025-12-18T11:37:48.609227Z",
+  "websiteURL": "https://garden-projects.web.app"
+}
