@@ -56,14 +56,12 @@ export interface BenefitsContent {
   title: string;
   text: string;
   cards: ContentCard[];
-  background?: WebsiteImage;
 }
 
 export interface ServicesContent {
   title: string;
   text: string;
   cards: ContentCard[];
-  background?: WebsiteImage;
 }
 
 export interface LocationContent {
@@ -71,17 +69,16 @@ export interface LocationContent {
   text: string;
   showCTA: boolean;
   cta: CallToAction;
-  background?: WebsiteImage;
 }
 
 export interface GalleryContent {
   title: string;
   text: string;
   projects: string[];
-  background?: WebsiteImage;
 }
 
 export interface TestimonialClients {
+  project: string;
   name: string;
   occupation: string;
   text: string;
@@ -93,7 +90,6 @@ export interface TestimonialContent {
   title: string;
   text: string;
   clients: TestimonialClients[];
-  background?: WebsiteImage;
 }
 
 export interface FootorContent {
@@ -101,7 +97,6 @@ export interface FootorContent {
   text: string;
   showCTA: boolean;
   cta: CallToAction;
-  background?: WebsiteImage;
 }
 
 export interface WebsiteContent {

@@ -16,6 +16,17 @@ export interface ProjectImage {
   width?: number;
   height?: number;
 }
+export interface ImageGroup {
+  name: string;
+  type: string;
+  images: ProjectImage[];
+}
+
+export interface Testimonial {
+  name: string;
+  occupation: string;
+  text: string;
+}
 
 export interface Project {
   id: string;
@@ -27,6 +38,10 @@ export interface Project {
   tags?: string[];
   coverImage: string;
   images: ProjectImage[];
+  imageGroups?: ImageGroup[];
+  hasTestimonial?: boolean;
+  testimonial?: Testimonial[];
+  comments?: string[];
   aiGenerated?: AIGeneratedContent;
   featured: boolean;
   published: boolean;
@@ -42,4 +57,20 @@ export interface ProjectCreateInput {
   category: ProjectCategory;
   tags?: string[];
   images: ProjectImage[];
+}
+
+export interface ProjectComments {
+  projectId: string;
+  name: string;
+  comment: string;
+  reply: string;
+  createdAt: string;
+  approved: boolean;
+}
+
+export interface ProjectAnalytics {
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
 }
