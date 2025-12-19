@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Dock, ChevronDown, Plus, Trash2 } from 'lucide-react';
+import { Dock, ChevronDown, Trash2 } from 'lucide-react';
 import type { WebsiteSettings, CallToAction, buttonVariants, Project } from '@garden/shared';
 
 interface HeroSettingsProps {

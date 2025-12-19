@@ -34,7 +34,7 @@ const defaultSettings: WebsiteSettings = {
   seo: [],
   updatedAt: { seconds: 0, nanoseconds: 0 } as unknown as WebsiteSettings['updatedAt'],
   content: {
-    hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
+    hero: { logo: true, title: true, tagline: true, description: true, showCTA: false, projects: [], cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     about: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     benefits: { title: '', text: '', cards: [] },
     services: { title: '', text: '', cards: [] },

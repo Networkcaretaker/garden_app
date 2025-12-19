@@ -25,7 +25,7 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
         buttonText: '',
         buttonVariant: 'none'
       },
-      background: []
+      projects: []
     },
     about: {
       title: '',
