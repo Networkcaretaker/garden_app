@@ -158,71 +158,23 @@ export default function Home() {
           )}
 
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Service 1 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj06.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Garden Design
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Creative and sustainable garden designs tailored to your space
-                and lifestyle.
-              </p>
-            </div>
-            {/* Service 2 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj02.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Lawn & Plant Care
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Expert care to keep your lawn teal, your plants healthy, and
-                your garden beautiful.
-              </p>
-            </div>
-            {/* Service 3 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj01.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Full Maintenance
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Comprehensive maintenance plans to ensure your garden looks its
-                best all year round.
-              </p>
-            </div>
-          </div>
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Service 4 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj05.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Comprehensive Palm Tree and Shrub Care
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Specialized tree and shrub care for vibrant, flourishing landscapes.
-              </p>
-            </div>
-            {/* Service 5 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj04.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Build and Maintain Pools
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Your Pool, Our Passion. Design, build, and maintain your Mallorca dream pool.
-              </p>
-            </div>
-            {/* Service 6 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/aj03.png" alt="Clip 2" className="rounded-lg mb-4" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Matting and Gravelling Services
-              </h3>
-              <p className="mt-2 text-gray-600">
-                We offer expert matting and gravelling services to transform your outdoor spaces into long-lasting, eye-catching areas.
-              </p>
-            </div>
+            {WebsiteSettings.content.services.cards
+              .sort((a, b) => a.order - b.order)
+              .map((service, index) => (
+              <div key={index} className="rounded-lg bg-white p-8 shadow-md flex flex-col items-center">
+                <img 
+                  src={service.image.url} 
+                  alt={service.title} 
+                  className="rounded-lg mb-4 w-full object-cover" 
+                />
+                <h3 className="text-xl font-bold text-teal-700">
+                  {service.title}
+                </h3>
+                <p className="mt-2 text-gray-600">
+                  {service.text}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -325,53 +277,40 @@ export default function Home() {
           )}
 
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
-            {/* why 1 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-1.png" alt="Clip 1" className="rounded-lg w-[128px] mx-auto" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Personalized Garden Designs
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Custom garden designs tailored to your style and preferences. We bring your vision to life.
-              </p>
-            </div>
-            {/* why 2 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-2.png" alt="Clip 2" className="rounded-lg w-[128px] mx-auto" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Professional Garden Maintenance
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Our expert gardeners provide year-round maintenance to ensure your garden flourishes and remains vibrant.
-              </p>
-            </div>
-            {/* why 3 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-3.png" alt="Clip 3" className="rounded-lg w-[128px] mx-auto" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Creating Stunning and Sustainable Landscapes
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Transform your outdoor space into an eco-friendly haven that will leave your neighbors in awe.
-              </p>
-            </div>
-            {/* why 4 */}
-            <div className="rounded-lg bg-white p-8 shadow-md">
-              <img src="/clip-4.png" alt="Clip 4" className="rounded-lg w-[128px] mx-auto" />
-              <h3 className="text-xl font-bold text-teal-700">
-                Customer Happiness Guarantee
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Customer satisfaction is our top priority. We go the extra mile to fulfill your gardening dreams.
-              </p>
-            </div>
+            {WebsiteSettings.content.benefits.cards
+              .sort((a, b) => a.order - b.order)
+              .map((benefit, index) => (
+              <div key={index} className="rounded-lg bg-white p-8 shadow-md">
+                <img 
+                  src={benefit.image.url} 
+                  alt={benefit.title} 
+                  className="rounded-lg w-[150px] mx-auto mb-4" 
+                />
+                <h3 className="text-xl font-bold text-teal-700">
+                  {benefit.title}
+                </h3>
+                <p className="mt-2 text-gray-600">
+                  {benefit.text}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Testimonial Section */}
       <section className="bg-white py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center space-y-4">
+          {WebsiteSettings.content.testimonials.title && (
+            <h1 className="text-4xl font-bold text-teal-800 md:text-4xl">
+              {WebsiteSettings.content.testimonials.title}
+            </h1>
+          )}
+          {WebsiteSettings.content.testimonials.text && (
+            <p className=" text-xl text-teal-500 md:text-2xl rounded-t-xl">
+              {WebsiteSettings.content.testimonials.text}
+            </p>
+          )}
           <BeforeAfterSlider 
               // Using distinct placeholder images to simulate before/after
               // Ideally these would be the same dimensions.
@@ -379,10 +318,10 @@ export default function Home() {
               afterImage="/project-3.webp"
               altText="Reform Project"
             />
-          <h2 className="text-2xl font-light text-teal-800 md:text-4xl mt-4">
+          <h2 className="text-2xl font-light text-teal-600 md:text-4xl mt-4">
             <i>"What a fantastic team, thank you Mallorca Gardens"</i>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-800">
             <b>John Dow</b> - Mallorca Resident
           </p>
         </div>
