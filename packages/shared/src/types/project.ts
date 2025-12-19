@@ -18,8 +18,9 @@ export interface ProjectImage {
 }
 export interface ImageGroup {
   name: string;
-  type: string;
-  images: ProjectImage[];
+  description: string;
+  type: 'gallery' | 'slider';
+  images?: ProjectImage[];
 }
 
 export interface Testimonial {
@@ -37,7 +38,7 @@ export interface Project {
   category: ProjectCategory;
   tags?: string[];
   coverImage: string;
-  images: ProjectImage[];
+  images: ProjectImage[]; // to remove later
   imageGroups?: ImageGroup[];
   hasTestimonial?: boolean;
   testimonial?: Testimonial;

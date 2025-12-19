@@ -39,7 +39,15 @@ Next Tasks
 
 
 
-
+I want to update the image section on the ProjectEdit.tsx page
+The first thing we need to do is add image groups. The default group will be called Featured Images and will be of type Gallery.
+We will need a container for the group on the page with the images saved indside
+We will remove the "image"feild from the projects later after we have successfully created the grouping functionality.
+under the featured group we need an option to create a new group. The new group will require a name, type and an option to upload images into the group.
+Images will be saved in storage in the same way as before but the image data will now be saved in the image section of the image group. I hope this makes sence.
+Also, after an image group has been saved (inluding default Featured Images group) the name and type cannot be changed.
+We will need an option to be able to delete a group but not the Featured Images Group as this is defualt. Before a group can be deleted, the images inside the group must be deleted or moved to another group first. We will sort out moving images between groups later on.
+Does this make sence?
 
 
 
