@@ -124,10 +124,19 @@ export default function ProjectEdit() {
     if (JSON.stringify(currentTags) !== JSON.stringify(initTags)) return true;
 
     // Images comparison (existing only)
-    if (existingImages.length !== (initialData.images || []).length) return true;
-    const currentIds = existingImages.map(i => i.id).sort().join(',');
-    const initIds = (initialData.images || []).map(i => i.id).sort().join(',');
-    if (currentIds !== initIds) return true;
+    if (existingImages.length !== (initialData.images || []).length) return true; // Check length first
+
+    // Deep comparison for existing images including alt and caption
+    const sortedExistingImages = [...existingImages].sort((a, b) => a.id.localeCompare(b.id));
+    const sortedInitialImages = [...(initialData.images || [])].sort((a, b) => a.id.localeCompare(b.id));
+
+    for (let i = 0; i < sortedExistingImages.length; i++) {
+      const currentImg = sortedExistingImages[i];
+      const initialImg = sortedInitialImages[i];
+      if (currentImg.id !== initialImg.id || currentImg.url !== initialImg.url || currentImg.caption !== initialImg.caption || currentImg.alt !== initialImg.alt) {
+        return true;
+      }
+    }
 
     return false;
   }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, existingImages, newFiles, initialData]);
@@ -183,6 +192,20 @@ export default function ProjectEdit() {
     if (previewToRemove === coverImage) {
       setCoverImage('');
     }
+  };
+
+  const handleImageAltChange = (imageId: string, alt: string) => {
+    setExistingImages(prev =>
+      prev.map(img => (img.id === imageId ? { ...img, alt } : img))
+    );
+  };
+
+  const handleImageCaptionChange = (imageId: string, caption: string) => {
+    setExistingImages(prev =>
+      prev.map(img => (img.id === imageId ? { ...img, caption } : img))
+    );
+    // Also update the coverImage if the caption changes for the current cover image
+    // This might not be necessary if coverImage only stores the URL, but good to consider if it stored the whole object.
   };
 
   const toggleTag = (tag: string) => {
@@ -592,6 +615,8 @@ export default function ProjectEdit() {
             handleFileSelect={handleFileSelect}
             removeExistingImage={removeExistingImage}
             removeNewFile={removeNewFile}
+            handleImageAltChange={handleImageAltChange}
+            handleImageCaptionChange={handleImageCaptionChange}
             expandedSections={expandedSections}
             toggleSection={toggleSection}
           />

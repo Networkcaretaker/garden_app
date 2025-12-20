@@ -12,6 +12,8 @@ interface ProjectImageProps {
   removeNewFile: (index: number) => void;
   expandedSections: Record<string, boolean>;
   toggleSection: (section: string) => void;
+  handleImageAltChange: (imageId: string, alt: string) => void;
+  handleImageCaptionChange: (imageId: string, caption: string) => void;
 }
 
 export default function ProjectImages({
@@ -24,6 +26,8 @@ export default function ProjectImages({
   removeNewFile,
   expandedSections,
   toggleSection,
+  handleImageAltChange,
+  handleImageCaptionChange,
 }: ProjectImageProps) {
   return (
     <div className="space-y-6">
@@ -150,17 +154,17 @@ export default function ProjectImages({
                     <p className="block text-xs font-medium text-teal-500 mb-1">ID: {img.id}</p>
                     <input
                       type="text"
-                      value=""
+                      value={img.alt || ''}
+                      onChange={(e) => handleImageAltChange(img.id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
                       placeholder="Image Title"
-                      disabled
                     />
                     <input
                       type="text"
-                      value=""
+                      value={img.caption || ''}
+                      onChange={(e) => handleImageCaptionChange(img.id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
                       placeholder="Image Caption"
-                      disabled
                     />
                   </div>
                 </div>
