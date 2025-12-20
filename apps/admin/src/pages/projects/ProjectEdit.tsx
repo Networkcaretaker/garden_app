@@ -28,8 +28,8 @@ export default function ProjectEdit() {
     seo: false,
     testimonial: false,
     uploadImages: true,
-    editImages: true,
-    imageGroups: true,
+    editImages: false,
+    imageGroups: false,
   });
 
   const [activeTab, setActiveTab] = useState<'project-info' | 'images'>('project-info');
@@ -371,7 +371,7 @@ export default function ProjectEdit() {
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
-              Images
+              Project Photos
             </button>
           </nav>
         </div>
@@ -576,18 +576,19 @@ export default function ProjectEdit() {
           </div> 
         )}
 
+        {/* Photos Tab */}
         {activeTab === 'images' && (
           <div className="space-y-6">
             <div className="space-y-6">
 
-              {/* uploadImages Accordion */}
+              {/* Upload Images Accordion */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <button 
                   type="button"
                   onClick={() => toggleSection('uploadImages')}
                   className="w-full flex justify-between items-center p-6 bg-white"
                 >
-                  <h2 className="text-lg font-semibold text-gray-800">Upload Images</h2>
+                  <h2 className="text-lg font-semibold text-gray-800">Upload Photos</h2>
                   <ChevronDown 
                     className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['uploadImages'] ? 'rotate-180' : ''}`} 
                   />
@@ -597,7 +598,7 @@ export default function ProjectEdit() {
                   <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
                     <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition-colors aspect-square">
                       <Upload className="h-6 w-6 text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-500">Upload Images</span>
+                      <span className="text-sm text-gray-500">Upload Photos</span>
                       <input
                         type="file"
                         multiple
@@ -674,9 +675,10 @@ export default function ProjectEdit() {
                     ))}
                   </div>
                 </div>
-              </div> {/* End uploadImages Accordion */}
+              </div>
+              {/* End Upload Images Accordion */}
 
-              {/* editImages Accordion */}
+              {/* Edit Images Accordion */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <button 
                   type="button"
@@ -689,7 +691,6 @@ export default function ProjectEdit() {
                   />
                 </button>
                 <div className={`px-6 pb-6 ${expandedSections['editImages'] ? 'block' : 'hidden'}`}>
-                  
                   <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {existingImages.map((img) => (
                       <div key={img.id} className="">
@@ -721,8 +722,10 @@ export default function ProjectEdit() {
                     ))}
                   </div>
                 </div>
-              </div> {/* End editImages Accordion */}
+              </div>
+              {/* End Edit Images Accordion */}
 
+              {/* Image Groups Accordion */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <button 
                   type="button"
@@ -736,8 +739,7 @@ export default function ProjectEdit() {
                 </button>
                 <div className={`px-6 pb-6 ${expandedSections['imageGroups'] ? 'block' : 'hidden'}`}>
                   <div className="space-y-6">
-
-                    {/* Featured Images - default image upload, group cannot be deleted */}
+                    {/* Featured Image Group - default group, cannot be deleted */}
                     <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative mb-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="col-span-2 md:col-span-1">
@@ -778,7 +780,7 @@ export default function ProjectEdit() {
                         </div>
 
                         <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
-
+                          {/* change existingImages with groupImages map */}
                           {existingImages.map((img) => (
                               <div key={img.id} className="relative aspect-square group bg-teal-50">
                                 <img 
@@ -838,6 +840,7 @@ export default function ProjectEdit() {
                           </div>
 
                           <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
+
                             {/* Change existing images to images saved in the group */}
                             {existingImages.map((img) => (
                               <div key={img.id} className="relative aspect-square group bg-teal-50">
@@ -880,6 +883,7 @@ export default function ProjectEdit() {
                   </div>
                 </div>
               </div>
+              {/* End Image Groups Accordion */}
             </div>
           </div>
         )}

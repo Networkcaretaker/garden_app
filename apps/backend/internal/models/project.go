@@ -5,12 +5,19 @@ import "time"
 type ProjectImage struct {
 	ID          string `json:"id" firestore:"id"`
 	URL         string `json:"url" firestore:"url"`
-	StoragePath string `json:"storagePath" firestore:"storagePath"` // Added this field
+	StoragePath string `json:"storagePath" firestore:"storagePath"`
 	Thumbnail   string `json:"thumbnail,omitempty" firestore:"thumbnail,omitempty"`
 	Caption     string `json:"caption,omitempty" firestore:"caption,omitempty"`
 	Alt         string `json:"alt,omitempty" firestore:"alt,omitempty"`
 	Width       int    `json:"width,omitempty" firestore:"width,omitempty"`
 	Height      int    `json:"height,omitempty" firestore:"height,omitempty"`
+}
+
+type ImageGroup struct {
+	Name 		string `json:"name,omitempty" firestore:"name,omitempty"`
+	Description string `json:"description,omitempty" firestore:"description,omitempty"`
+	GroupType 	string `json:"type,omitempty" firestore:"type,omitempty"`
+	Images	 	[]string `json:"images,omitempty" firestore:"images,omitempty"`
 }
 
 // Testimonial represents a client testimonial for a project
@@ -30,6 +37,7 @@ type Project struct {
 	Tags          []string       `json:"tags" firestore:"tags"`
 	CoverImage    string         `json:"coverImage" firestore:"coverImage"`
 	Images        []ProjectImage `json:"images" firestore:"images"`
+	ImageGroups   []ImageGroup   `json:"imageGroups" firestore:"imageGroups"`
 	Featured      bool           `json:"featured" firestore:"featured"`
 	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission
 	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission
@@ -47,7 +55,7 @@ type CreateProjectRequest struct {
 	Category    string         `json:"category"`
 	Tags        []string       `json:"tags"`
 	Status      string         `json:"status"`
-	CoverImage  string         `json:"coverImage"` // Added required field
+	CoverImage  string         `json:"coverImage"`
 	Images      []ProjectImage `json:"images"`
 	HasTestimonial *bool          `json:"hasTestimonial,omitempty"`
 	Testimonial    *Testimonial   `json:"testimonial,omitempty"`
