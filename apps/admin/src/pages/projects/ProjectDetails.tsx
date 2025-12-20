@@ -1,0 +1,1 @@
+import type { ProjectImage } from '@garden/shared';
