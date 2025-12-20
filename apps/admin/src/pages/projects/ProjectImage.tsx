@@ -1,5 +1,88 @@
+import React, { useState } from 'react';
 import { Upload, X, Star, Plus, Minus, ChevronDown, Trash2 } from 'lucide-react';
-import type { ProjectImage } from '@garden/shared';
+import type { ProjectImage, ImageGroup } from '@garden/shared';
+
+interface AddImagesToGroupPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  availableImages: ProjectImage[];
+  currentGroupImageIds: string[]; // IDs of images already in the group
+  onAddImages: (imageIds: string[]) => void;
+}
+
+// It's generally good practice to define helper components outside the main component
+// to prevent re-creation on every render, which can impact performance.
+const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo(({
+  isOpen,
+  onClose,
+  availableImages,
+  currentGroupImageIds,
+  onAddImages,
+}) => {
+  const [selectedImageIds, setSelectedImageIds] = useState<string[]>(currentGroupImageIds);
+  // The `selectedImageIds` state is initialized from `currentGroupImageIds` on mount.
+  // When the `key` prop of `AddImagesToGroupPopup` changes, this component remounts, re-initializing the state.
+  const handleCheckboxChange = (imageId: string, isChecked: boolean) => {
+    setSelectedImageIds(prev =>
+      isChecked ? [...prev, imageId] : prev.filter(id => id !== imageId)
+    );
+  };
+
+  const handleAdd = () => {
+    onAddImages(selectedImageIds);
+    onClose();
+    setSelectedImageIds([]); // Clear selected images after adding
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+      <div className="relative bg-white rounded-lg shadow-xl p-6 w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Images to Group</h3>
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-96 overflow-y-auto p-2 border rounded-md mb-4">
+          {availableImages.length === 0 ? (
+            <p className="col-span-full text-center text-gray-500">No images available to add.</p>
+          ) : (
+            availableImages.map((img) => (
+              <div key={img.id} className="relative aspect-square group">
+                <img
+                  src={img.url}
+                  alt={img.alt || 'Project image'}
+                  className="w-full h-full object-cover rounded-lg border border-gray-200"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                  <input
+                    type="checkbox"
+                    checked={selectedImageIds.includes(img.id)}
+                    onChange={(e) => handleCheckboxChange(img.id, e.target.checked)}
+                    className="form-checkbox h-5 w-5 text-teal-600 rounded focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700"
+          >
+            Add Selected Images
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}); // Memoize the popup component for performance
 
 interface ProjectImageProps {
   existingImages: ProjectImage[];
@@ -10,13 +93,15 @@ interface ProjectImageProps {
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   removeExistingImage: (imageId: string) => void;
   removeNewFile: (index: number) => void;
+  imageGroups: ImageGroup[];
+  setImageGroups: React.Dispatch<React.SetStateAction<ImageGroup[]>>;
   expandedSections: Record<string, boolean>;
   toggleSection: (section: string) => void;
   handleImageAltChange: (imageId: string, alt: string) => void;
   handleImageCaptionChange: (imageId: string, caption: string) => void;
 }
 
-export default function ProjectImages({
+export default function ProjectImages({ // Corrected component name
   existingImages,
   newPreviews,
   coverImage,
@@ -24,11 +109,41 @@ export default function ProjectImages({
   handleFileSelect,
   removeExistingImage,
   removeNewFile,
+  imageGroups,
+  setImageGroups,
   expandedSections,
   toggleSection,
   handleImageAltChange,
   handleImageCaptionChange,
 }: ProjectImageProps) {
+  const [showAddImagesPopup, setShowAddImagesPopup] = useState(false);
+  const [currentGroupToEdit, setCurrentGroupToEdit] = useState<ImageGroup | null>(null);
+
+  const featuredGroup = imageGroups.find(group => group.name === 'Featured');
+  const featuredGroupImageIds = featuredGroup?.images || [];
+  const imagesInFeaturedGroup = existingImages.filter(img => featuredGroupImageIds.includes(img.id));
+  // This function handles updating the featured group's images.
+  // It ensures that if the featured group doesn't exist (which it should, but as a fallback),
+  // it creates it with a default structure.
+  // The `selectedImageIds` here are the IDs of images that *should be* in the group.
+  // It replaces the existing list of image IDs for the featured group.
+  const handleAddImagesToFeaturedGroup = (selectedImageIds: string[]) => {
+    setImageGroups(prevGroups => {
+      const existingFeaturedGroupIndex = prevGroups.findIndex(group => group.name === 'Featured');
+      if (existingFeaturedGroupIndex > -1) {
+        const updatedGroups = [...prevGroups];
+        updatedGroups[existingFeaturedGroupIndex] = {
+          ...updatedGroups[existingFeaturedGroupIndex],
+          images: selectedImageIds,
+        };
+        return updatedGroups;
+      } else {
+        // If for some reason, Featured group doesn't exist, create it.
+        return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: selectedImageIds }];
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Upload Images Accordion */}
@@ -223,6 +338,10 @@ export default function ProjectImages({
                 <div className="col-span-2">
                   <button
                     type="button"
+                    onClick={() => {
+                      setCurrentGroupToEdit(featuredGroup || { name: 'Featured', description: 'Project feature images', type: 'gallery', images: [] });
+                      setShowAddImagesPopup(true);
+                    }}
                     className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border "
                   >
                     <Plus className="h-3 w-3" /> Add images to group
@@ -230,19 +349,21 @@ export default function ProjectImages({
                 </div>
 
                 <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
-                  {/* change existingImages with groupImages map */}
-                  {existingImages.map((img) => (
+                  {imagesInFeaturedGroup.map((img) => (
                     <div key={img.id} className="relative aspect-square group bg-teal-50">
                       <img
                         src={img.url}
-                        alt="Existing"
+                        alt={img.alt || 'Group image'}
                         className={`w-full h-full object-contain rounded-lg border`}
                       />
                       <button
                         type="button"
+                        onClick={() => {
+                          handleAddImagesToFeaturedGroup(featuredGroupImageIds.filter(id => id !== img.id));
+                        }}
                         className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <Minus className="h-3 w-3" /> Remove Image
+                        <Minus className="h-3 w-3" /> Remove
                       </button>
                     </div>
                   ))}
@@ -334,6 +455,15 @@ export default function ProjectImages({
         </div>
       </div>
       {/* End Image Groups Accordion */}
+
+      <AddImagesToGroupPopup
+        isOpen={showAddImagesPopup}
+        key={currentGroupToEdit ? `${currentGroupToEdit.name}-${JSON.stringify(currentGroupToEdit.images)}` : 'default'} // Force remount when group changes
+        onClose={() => setShowAddImagesPopup(false)}
+        availableImages={existingImages}
+        currentGroupImageIds={currentGroupToEdit?.images || []}
+        onAddImages={handleAddImagesToFeaturedGroup}
+      />
     </div>
   );
 }

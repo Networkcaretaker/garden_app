@@ -44,6 +44,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		Status:        req.Status,
 		Images:        req.Images,
 		CoverImage:    req.CoverImage, // Use the provided cover image
+		ImageGroups:   req.ImageGroups,
 		HasTestimonial: req.HasTestimonial,
 		Testimonial:    req.Testimonial,
 		Published:     false,
@@ -222,6 +223,7 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		{Path: "status", Value: req.Status},
 		{Path: "images", Value: req.Images},
 		{Path: "coverImage", Value: finalCoverImage}, // Use calculated cover image
+		{Path: "imageGroups", Value: req.ImageGroups},
 		{Path: "hasTestimonial", Value: req.HasTestimonial},
 		{Path: "testimonial", Value: req.Testimonial},
 		{Path: "updatedAt", Value: time.Now()},

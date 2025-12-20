@@ -5,8 +5,8 @@ import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import ProjectImages from './ProjectImage';
-import type { Project, ProjectCategory, ProjectImage, ProjectSettings } from '@garden/shared';
+import ProjectImages from './ProjectImage'; // Corrected component name
+import type { Project, ProjectCategory, ProjectImage, ProjectSettings, ImageGroup } from '@garden/shared'; // Added ImageGroup
 import DeleteProject from '../../components/popup/DeleteProject';
 import AddCategory from '../../components/popup/AddCategory';
 import AddTag from '../../components/popup/AddTag';
@@ -53,6 +53,7 @@ export default function ProjectEdit() {
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [imageGroups, setImageGroups] = useState<ImageGroup[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
@@ -92,6 +93,7 @@ export default function ProjectEdit() {
       setCoverImage(project.coverImage || '');
       setTags(project.tags || []);
       setHasTestimonial(project.hasTestimonial || false);
+      setImageGroups(project.imageGroups || []);
       setTestimonialName(project.testimonial?.name || '');
       setTestimonialOccupation(project.testimonial?.occupation || '');
       setTestimonialText(project.testimonial?.text || '');
@@ -138,8 +140,30 @@ export default function ProjectEdit() {
       }
     }
 
+    // Image Groups comparison
+    const currentImageGroups = imageGroups;
+    const initialImageGroups = initialData.imageGroups || [];
+
+    if (currentImageGroups.length !== initialImageGroups.length) return true;
+
+    for (let i = 0; i < currentImageGroups.length; i++) {
+      const currentGroup = currentImageGroups[i];
+      const initialGroup = initialImageGroups[i];
+
+      if (currentGroup.name !== initialGroup.name ||
+          currentGroup.description !== initialGroup.description ||
+          currentGroup.type !== initialGroup.type) {
+        return true; // Mark as dirty if name, description, or type differ
+      }
+
+      const currentGroupImageIds = [...(currentGroup.images || [])].sort();
+      const initialGroupImageIds = [...(initialGroup.images || [])].sort();
+
+      if (JSON.stringify(currentGroupImageIds) !== JSON.stringify(initialGroupImageIds)) return true;
+    }
+
     return false;
-  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, existingImages, newFiles, initialData]);
+  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, existingImages, newFiles, imageGroups, initialData]);
 
   // Warn on browser refresh/close if dirty
   useEffect(() => {
@@ -283,6 +307,7 @@ export default function ProjectEdit() {
         tags,
         coverImage: finalCoverImage,
         images: allImages,
+        imageGroups: imageGroups,
         hasTestimonial,
         testimonial: testimonialData,
       });
@@ -615,6 +640,8 @@ export default function ProjectEdit() {
             handleFileSelect={handleFileSelect}
             removeExistingImage={removeExistingImage}
             removeNewFile={removeNewFile}
+            imageGroups={imageGroups}
+            setImageGroups={setImageGroups}
             handleImageAltChange={handleImageAltChange}
             handleImageCaptionChange={handleImageCaptionChange}
             expandedSections={expandedSections}

@@ -38,7 +38,7 @@ export interface Project {
   category: ProjectCategory;
   tags?: string[];
   coverImage: string;
-  images: ProjectImage[]; // to remove later
+  images: ProjectImage[];
   imageGroups?: ImageGroup[];
   hasTestimonial?: boolean;
   testimonial?: Testimonial;

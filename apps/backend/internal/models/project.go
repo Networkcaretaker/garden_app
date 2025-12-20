@@ -57,6 +57,7 @@ type CreateProjectRequest struct {
 	Status      string         `json:"status"`
 	CoverImage  string         `json:"coverImage"`
 	Images      []ProjectImage `json:"images"`
+	ImageGroups []ImageGroup   `json:"imageGroups"`
 	HasTestimonial *bool          `json:"hasTestimonial,omitempty"`
 	Testimonial    *Testimonial   `json:"testimonial,omitempty"`
 }
