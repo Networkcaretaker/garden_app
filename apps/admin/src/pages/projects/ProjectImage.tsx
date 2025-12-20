@@ -85,14 +85,14 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
 }); // Memoize the popup component for performance
 
 interface ProjectImageProps {
-  existingImages: ProjectImage[];
+  existingImages: ProjectImage[]; // These are the images already saved to the project
   newFiles: File[];
   newPreviews: string[];
   coverImage: string;
   setCoverImage: React.Dispatch<React.SetStateAction<string>>;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   removeExistingImage: (imageId: string) => void;
-  removeNewFile: (index: number) => void;
+  removeNewFile: (index: number) => void; // For newly uploaded images not yet saved
   imageGroups: ImageGroup[];
   setImageGroups: React.Dispatch<React.SetStateAction<ImageGroup[]>>;
   expandedSections: Record<string, boolean>;
@@ -116,32 +116,67 @@ export default function ProjectImages({ // Corrected component name
   handleImageAltChange,
   handleImageCaptionChange,
 }: ProjectImageProps) {
-  const [showAddImagesPopup, setShowAddImagesPopup] = useState(false);
-  const [currentGroupToEdit, setCurrentGroupToEdit] = useState<ImageGroup | null>(null);
+  const [showAddImagesPopup, setShowAddImagesPopup] = useState(false); // State to control the image selection popup
+  const [currentGroupToEditName, setCurrentGroupToEditName] = useState<string | null>(null); // Name of the group currently being edited in the popup
 
-  const featuredGroup = imageGroups.find(group => group.name === 'Featured');
+  // Find the 'Featured' group. If it doesn't exist, create a default one for display purposes.
+  const featuredGroup = imageGroups.find(group => group.name === 'Featured') || {
+    name: 'Featured',
+    description: 'Project feature images',
+    type: 'gallery',
+    images: [],
+  };
   const featuredGroupImageIds = featuredGroup?.images || [];
   const imagesInFeaturedGroup = existingImages.filter(img => featuredGroupImageIds.includes(img.id));
-  // This function handles updating the featured group's images.
-  // It ensures that if the featured group doesn't exist (which it should, but as a fallback),
-  // it creates it with a default structure.
-  // The `selectedImageIds` here are the IDs of images that *should be* in the group.
-  // It replaces the existing list of image IDs for the featured group.
-  const handleAddImagesToFeaturedGroup = (selectedImageIds: string[]) => {
+
+  // Function to update any property of an image group
+  const handleUpdateImageGroup = <K extends keyof ImageGroup>(groupName: string, field: K, value: ImageGroup[K]) => {
     setImageGroups(prevGroups => {
-      const existingFeaturedGroupIndex = prevGroups.findIndex(group => group.name === 'Featured');
-      if (existingFeaturedGroupIndex > -1) {
-        const updatedGroups = [...prevGroups];
-        updatedGroups[existingFeaturedGroupIndex] = {
-          ...updatedGroups[existingFeaturedGroupIndex],
-          images: selectedImageIds,
-        };
-        return updatedGroups;
-      } else {
-        // If for some reason, Featured group doesn't exist, create it.
-        return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: selectedImageIds }];
+      // Handle the special case for the 'Featured' group
+      if (groupName === 'Featured' && field === 'images') {
+        const existingFeaturedGroupIndex = prevGroups.findIndex(group => group.name === 'Featured');
+        if (existingFeaturedGroupIndex > -1) {
+          return prevGroups.map(group =>
+            group.name === 'Featured' ? { ...group, [field]: value } : group
+          );
+        } else {
+          // If 'Featured' group doesn't exist, create it with the images
+          return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[] }];
+        } 
       }
+      return prevGroups.map(group =>
+        group.name === groupName ? { ...group, [field]: value } : group
+      );
     });
+  };
+
+  // Function to add a new empty image group
+  const handleAddImageGroup = () => {
+    const newGroup: ImageGroup = {
+      name: `New Group ${imageGroups.filter(g => g.name !== 'Featured').length + 1}`, // Unique default name
+      description: '',
+      type: 'gallery', // Default type
+      images: [],
+    };
+    setImageGroups(prev => [...prev, newGroup]);
+  };
+
+  // Function to delete an image group
+  const handleDeleteImageGroup = (groupName: string) => {
+    setImageGroups(prevGroups => prevGroups.filter(group => group.name !== groupName));
+  };
+
+  // Callback for the AddImagesToGroupPopup to update the images of the current group
+  const handleAddImagesToCurrentGroup = (selectedImageIds: string[]) => { // No LocalImageGroup
+    if (currentGroupToEditName) {
+      // Special handling for the 'Featured' group
+      if (currentGroupToEditName === 'Featured') {
+        handleUpdateImageGroup('Featured', 'images', selectedImageIds); // This will create the 'featured' group if it doesn't exist
+      } else {
+        handleUpdateImageGroup(currentGroupToEditName, 'images', selectedImageIds);
+      }
+    }
+    setCurrentGroupToEditName(null); // Clear the editing state
   };
 
   return (
@@ -339,7 +374,7 @@ export default function ProjectImages({ // Corrected component name
                   <button
                     type="button"
                     onClick={() => {
-                      setCurrentGroupToEdit(featuredGroup || { name: 'Featured', description: 'Project feature images', type: 'gallery', images: [] });
+                      setCurrentGroupToEditName(featuredGroup.name);
                       setShowAddImagesPopup(true);
                     }}
                     className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border "
@@ -354,12 +389,12 @@ export default function ProjectImages({ // Corrected component name
                       <img
                         src={img.url}
                         alt={img.alt || 'Group image'}
-                        className={`w-full h-full object-contain rounded-lg border`}
+                        className={`w-full h-full object-cover rounded-lg border`}
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          handleAddImagesToFeaturedGroup(featuredGroupImageIds.filter(id => id !== img.id));
+                        onClick={() => { // Remove image from featured group
+                          handleUpdateImageGroup('Featured', 'images', featuredGroupImageIds.filter((id: string) => id !== img.id));
                         }}
                         className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -371,23 +406,25 @@ export default function ProjectImages({ // Corrected component name
                 </div>
               </div>
             </div>
-
-            {/* New Image Group */}
-            <div className="space-y-4">
-              <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
-
+            
+            {/* Dynamically rendered Image Groups (excluding 'Featured') */}
+            {imageGroups.filter(group => group.name !== 'Featured').map((group) => (
+              <div key={group.name} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="col-span-2 md:col-span-1">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>
                     <input
                       type="text"
+                      value={group.name}
+                      onChange={(e) => handleUpdateImageGroup(group.name, 'name', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     />
                   </div>
-                  <div >
+                  <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Type</label>
                     <select
-                      value="gallery"
+                      value={group.type} 
+                      onChange={(e) => handleUpdateImageGroup(group.name, 'type', e.target.value as 'gallery' | 'slider')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     >
                       <option value="gallery">Gallery</option>
@@ -398,12 +435,19 @@ export default function ProjectImages({ // Corrected component name
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
                     <textarea
                       rows={2}
+                      value={group.description}
+                      onChange={(e) => handleUpdateImageGroup(group.name, 'description', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     />
                   </div>
                   <div className="col-span-2">
                     <button
                       type="button"
+                      onClick={() => {
+                        // Set the name of the group being edited
+                        setCurrentGroupToEditName(group.name);
+                        setShowAddImagesPopup(true);
+                      }}
                       className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border "
                     >
                       <Plus className="h-3 w-3" /> Add images to group
@@ -411,41 +455,44 @@ export default function ProjectImages({ // Corrected component name
                   </div>
 
                   <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
-
-                    {/* Change existing images to images saved in the group */}
-                    {existingImages.map((img) => (
-                      <div key={img.id} className="relative aspect-square group bg-teal-50">
+                    {(group.images || []).map((imageId: string) => { // Iterate over image IDs in the group
+                      const img = existingImages.find(eImg => eImg.id === imageId); // Find the actual image object
+                      return img ? ( // Only render if image is found
+                      <div key={img.id} className="relative aspect-square group bg-gray-50">
                         <img
                           src={img.url}
-                          alt="Existing"
-                          className={`w-full h-full object-contain rounded-lg border`}
+                          alt={img.alt || 'Group image'}
+                          className={`w-full h-full object-cover rounded-lg border`}
                         />
                         <button
                           type="button"
+                          onClick={() => handleUpdateImageGroup(group.name, 'images', (group.images || []).filter((id: string) => id !== img.id))} // Remove image from group
                           className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <Minus className="h-3 w-3" /> Remove Image
+                          <Minus className="h-3 w-3" /> Remove
                         </button>
                       </div>
-                    ))}
+                    ) : null; })}
                   </div>
 
                   <div className="col-span-2">
                     <button
                       type="button"
                       className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 border border-red-400 "
+                      onClick={() => handleDeleteImageGroup(group.name)}
                     >
                       <Trash2 className="h-3 w-3" /> Delete group
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
 
             {/* Add Image Group */}
             <div className="text-center p-1 text-gray-500 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-300">
               <button
                 type="button"
+                onClick={handleAddImageGroup}
                 className="inline-flex items-center gap-1 w-full px-6 py-6 text-sm font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100"
               >
                 <Plus className="h-4 w-4" /> Add Group
@@ -458,11 +505,11 @@ export default function ProjectImages({ // Corrected component name
 
       <AddImagesToGroupPopup
         isOpen={showAddImagesPopup}
-        key={currentGroupToEdit ? `${currentGroupToEdit.name}-${JSON.stringify(currentGroupToEdit.images)}` : 'default'} // Force remount when group changes
+        key={currentGroupToEditName || 'default'} // Force remount when the group being edited changes
         onClose={() => setShowAddImagesPopup(false)}
         availableImages={existingImages}
-        currentGroupImageIds={currentGroupToEdit?.images || []}
-        onAddImages={handleAddImagesToFeaturedGroup}
+        currentGroupImageIds={imageGroups.find(g => g.name === currentGroupToEditName)?.images || []}
+        onAddImages={handleAddImagesToCurrentGroup}
       />
     </div>
   );

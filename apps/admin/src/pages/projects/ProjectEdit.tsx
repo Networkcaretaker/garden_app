@@ -4,7 +4,7 @@ import { Loader2, Save, ArrowLeft, Trash2, Eye, Plus, ChevronDown } from 'lucide
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; // Removed LocalImageGroup import
 import ProjectImages from './ProjectImage'; // Corrected component name
 import type { Project, ProjectCategory, ProjectImage, ProjectSettings, ImageGroup } from '@garden/shared'; // Added ImageGroup
 import DeleteProject from '../../components/popup/DeleteProject';
@@ -46,15 +46,15 @@ export default function ProjectEdit() {
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [coverImage, setCoverImage] = useState(''); // New state for cover image
   
-  const [hasTestimonial, setHasTestimonial] = useState(false);
+  const [hasTestimonial, setHasTestimonial] = useState(false); // State for testimonial
   const [testimonialName, setTestimonialName] = useState('');
   const [testimonialOccupation, setTestimonialOccupation] = useState('');
   const [testimonialText, setTestimonialText] = useState('');
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
-  const [newFiles, setNewFiles] = useState<File[]>([]);
-  const [newPreviews, setNewPreviews] = useState<string[]>([]);
-  const [imageGroups, setImageGroups] = useState<ImageGroup[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
+  const [newFiles, setNewFiles] = useState<File[]>([]); // For newly uploaded files not yet saved
+  const [newPreviews, setNewPreviews] = useState<string[]>([]); // For newly uploaded images not yet saved
+  const [imageGroups, setImageGroups] = useState<ImageGroup[]>([]); // Directly using ImageGroup[]
+  const [tags, setTags] = useState<string[]>([]); // State for project tags
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
@@ -93,13 +93,12 @@ export default function ProjectEdit() {
       setCoverImage(project.coverImage || '');
       setTags(project.tags || []);
       setHasTestimonial(project.hasTestimonial || false);
-      setImageGroups(project.imageGroups || []);
+      setImageGroups(project.imageGroups || []); // Directly set ImageGroup[]
       setTestimonialName(project.testimonial?.name || '');
       setTestimonialOccupation(project.testimonial?.occupation || '');
       setTestimonialText(project.testimonial?.text || '');
       
       setInitialData(project);
-      
       // Mark as loaded so we don't overwrite user edits if background refetch happens
       dataLoaded.current = true;
     }
@@ -141,24 +140,23 @@ export default function ProjectEdit() {
     }
 
     // Image Groups comparison
-    const currentImageGroups = imageGroups;
-    const initialImageGroups = initialData.imageGroups || [];
+    const currentImageGroups = imageGroups; // Already ImageGroup[]
+    const initialImageGroups = initialData.imageGroups || []; // Already ImageGroup[]
 
     if (currentImageGroups.length !== initialImageGroups.length) return true;
 
     for (let i = 0; i < currentImageGroups.length; i++) {
       const currentGroup = currentImageGroups[i];
       const initialGroup = initialImageGroups[i];
-
       if (currentGroup.name !== initialGroup.name ||
           currentGroup.description !== initialGroup.description ||
-          currentGroup.type !== initialGroup.type) {
-        return true; // Mark as dirty if name, description, or type differ
+          currentGroup.type !== initialGroup.type
+      ) {
+        return true;
       }
 
       const currentGroupImageIds = [...(currentGroup.images || [])].sort();
       const initialGroupImageIds = [...(initialGroup.images || [])].sort();
-
       if (JSON.stringify(currentGroupImageIds) !== JSON.stringify(initialGroupImageIds)) return true;
     }
 
@@ -291,6 +289,17 @@ export default function ProjectEdit() {
         finalCoverImage = allImages[0].url;
       }
 
+      // Map imageGroups back to the original ImageGroup type for the API, omitting frontend-only fields
+      const imageGroupsForApi: ImageGroup[] = imageGroups.map(group => {
+        // Ensure only properties of ImageGroup are sent
+        const { ...rest } = group; // This effectively copies all properties
+        const groupForApi = {
+          ...rest,
+          images: rest.images || [], // Ensure images is always an array, and no sliderLabel1/2 are included
+        };
+        return groupForApi;
+      });
+
       const testimonialData = hasTestimonial ? {
         name: testimonialName,
         occupation: testimonialOccupation,
@@ -306,8 +315,8 @@ export default function ProjectEdit() {
         status,
         tags,
         coverImage: finalCoverImage,
-        images: allImages,
-        imageGroups: imageGroups,
+        images: allImages, // This is for individual images, not groups
+        imageGroups: imageGroupsForApi, // Use the mapped groups for the API
         hasTestimonial,
         testimonial: testimonialData,
       });
