@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "garden-projects"
+    "default": "garden-projects",
+    "client": "aj-gardens"
   },
   "targets": {
     "garden-projects": {
