@@ -13,6 +13,16 @@
           "garden-projects"
         ]
       }
+    },
+    "aj-gardens": {
+      "hosting": {
+        "client-admin": [
+          "aj-gardens"
+        ],
+        "client-web": [
+          "aj-gardens-website"
+        ]
+      }
     }
   },
   "etags": {}

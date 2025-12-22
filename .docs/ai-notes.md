@@ -12,6 +12,12 @@ gcloud builds submit --tag gcr.io/garden-projects/backend
 gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
 
 ## Client deploy
+firebase target:apply hosting client-admin aj-gardens
+firebase target:apply hosting client-web aj-gardens-website
+
+firebase deploy --only hosting:client-admin
+firebase deploy --only hosting:client-web
+
 gcloud config set project aj-gardens
 gcloud builds submit --tag gcr.io/aj-gardens/backend
 gcloud run deploy garden-api --image gcr.io/aj-gardens/go-backend --platform managed --region europe-west1 --allow-unauthenticated
