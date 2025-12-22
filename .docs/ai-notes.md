@@ -51,3 +51,4 @@ Next Tasks
 
 
 
+gcloud storage buckets update gs://aj-gardens.firebasestorage.app --cors-file=cors.json
