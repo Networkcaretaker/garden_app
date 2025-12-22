@@ -7,8 +7,14 @@ firebase deploy --only hosting:website
 firebase deploy --only hosting:admin
 
 ## Deploy Backend
+gcloud config set project garden-projects
 gcloud builds submit --tag gcr.io/garden-projects/backend
 gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
+
+## Client deploy
+gcloud config set project aj-gardens
+gcloud builds submit --tag gcr.io/aj-gardens/backend
+gcloud run deploy garden-api --image gcr.io/aj-gardens/go-backend --platform managed --region europe-west1 --allow-unauthenticated
 
 Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
@@ -35,12 +41,6 @@ Next Tasks
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
 
-
-
-
-I would like you to help me finish adding the functionallity to the New Image Groups section in the ProjectImage.tsx component.
-This will work similar to the Feature Image Group but now we can add and edit the feilds and the group itself can be deleted.
-We need to add a fucntion to add a New Image Group using the Add Image Group button.
 
 
 

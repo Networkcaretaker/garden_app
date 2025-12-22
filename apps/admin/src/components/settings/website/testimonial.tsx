@@ -22,6 +22,7 @@ export function TestimonialSettings({ settings, expanded, onToggle, onChange }: 
       name: '',
       occupation: '',
       text: '',
+      project: '',
       imageType: 'none',
       images: []
     };
