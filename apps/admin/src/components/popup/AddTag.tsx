@@ -38,7 +38,7 @@ export default function AddTag({ isOpen, onClose, onAdded }: AddTagProps) {
         tags: [...settings.tags, normalizedTag]
       };
 
-      await api.put('/settings/projects', updatedSettings);
+      await api.put('/admin/settings/projects', updatedSettings);
       return normalizedTag;
     },
     onSuccess: (tag) => {

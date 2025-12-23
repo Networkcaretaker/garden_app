@@ -1,17 +1,22 @@
 firebase target:apply hosting admin garden-projects-admin
 firebase target:apply hosting web garden-projects
 
+## Local Backend
+go run cmd/server/main.go  
+
 ## Deploy Websites
 firebase deploy --only hosting
 firebase deploy --only hosting:website
 firebase deploy --only hosting:admin
 
 ## Deploy Backend
+firebase use default
 gcloud config set project garden-projects
 gcloud builds submit --tag gcr.io/garden-projects/backend
 gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
 
 ## Client deploy
+firebase use client
 gcloud config set project aj-gardens
 gcloud builds submit --tag gcr.io/aj-gardens/backend
 gcloud run deploy garden-api --image gcr.io/aj-gardens/go-backend --platform managed --region europe-west1 --allow-unauthenticated
