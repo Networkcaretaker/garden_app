@@ -459,7 +459,7 @@ export default function ProjectEdit() {
             </div>
 
             <div>
-              <img src={`${coverImage}`} className="rounded-lg" />
+              <img src={`${coverImage}`} className="max-h-[500px] w-full rounded-lg object-cover" />
             </div>
 
             {/* General Info Accordion */}
@@ -657,7 +657,6 @@ export default function ProjectEdit() {
             toggleSection={toggleSection}
           />
         )}
-
 
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">

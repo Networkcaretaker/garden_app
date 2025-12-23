@@ -89,7 +89,8 @@ export interface TestimonialClients {
 export interface TestimonialContent {
   title: string;
   text: string;
-  clients: TestimonialClients[];
+  project?: string; // this will be from a list of Active projects with hasTestimonial = true
+  clients: TestimonialClients[]; // this can be removed later when the new testinonial section is complete
 }
 
 export interface FootorContent {

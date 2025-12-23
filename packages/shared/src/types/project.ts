@@ -17,7 +17,7 @@ export interface ProjectImage {
   height?: number;
 }
 export interface ImageGroup {
-  name: string;
+  name: string; // This should be unique (no dupliactes). The name will be used as an ID
   description: string;
   type: 'gallery' | 'slider';
   images?: string[];
@@ -27,6 +27,7 @@ export interface Testimonial {
   name: string;
   occupation: string;
   text: string;
+  imageGroup?: string; // the image group that will be added to the testimonial - Default will be Featured
 }
 
 export interface Project {
