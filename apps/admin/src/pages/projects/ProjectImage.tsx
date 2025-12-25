@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, X, Star, Plus, Minus, ChevronDown, Trash2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Upload, X, Star, Plus, Minus, ChevronDown, Trash2, AlertTriangle } from 'lucide-react';
 import type { ProjectImage, ImageGroup } from '@garden/shared';
 
 interface AddImagesToGroupPopupProps {
@@ -8,6 +8,7 @@ interface AddImagesToGroupPopupProps {
   availableImages: ProjectImage[];
   currentGroupImageIds: string[]; // IDs of images already in the group
   onAddImages: (imageIds: string[]) => void;
+  groupType: 'gallery' | 'slider'; // Add this prop to know the group type
 }
 
 // It's generally good practice to define helper components outside the main component
@@ -18,10 +19,24 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
   availableImages,
   currentGroupImageIds,
   onAddImages,
+  groupType, // Destructure the new prop
 }) => {
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>(currentGroupImageIds);
   // The `selectedImageIds` state is initialized from `currentGroupImageIds` on mount.
   // When the `key` prop of `AddImagesToGroupPopup` changes, this component remounts, re-initializing the state.
+  const [popupWarningMessage, setPopupWarningMessage] = useState<string | null>(null); // State for popup-specific warnings
+  const popupWarningTimeoutRef = useRef<number | null>(null);
+
+  const showPopupWarning = (message: string) => {
+    setPopupWarningMessage(message);
+    if (popupWarningTimeoutRef.current !== null) {
+      clearTimeout(popupWarningTimeoutRef.current);
+    }
+    popupWarningTimeoutRef.current = setTimeout(() => {
+      setPopupWarningMessage(null);
+    }, 5000);
+  };
+
   const handleCheckboxChange = (imageId: string, isChecked: boolean) => {
     setSelectedImageIds(prev =>
       isChecked ? [...prev, imageId] : prev.filter(id => id !== imageId)
@@ -29,9 +44,14 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
   };
 
   const handleAdd = () => {
+    if (groupType === 'slider' && selectedImageIds.length > 2) {
+      showPopupWarning(`Slider groups can only have a maximum of 2 images. Please deselect some images.`);
+      return; // Prevent adding and keep popup open with warning
+    }
     onAddImages(selectedImageIds);
     onClose();
     setSelectedImageIds([]); // Clear selected images after adding
+    setPopupWarningMessage(null); // Clear any popup warning on successful add
   };
 
   if (!isOpen) return null;
@@ -40,6 +60,30 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
       <div className="relative bg-white rounded-lg shadow-xl p-6 w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Images to Group</h3>
+        {popupWarningMessage && ( // Render popup-specific warning
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4" role="alert">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">{popupWarningMessage}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <div className="-mx-1.5 -my-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setPopupWarningMessage(null)}
+                    className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                  >
+                    <span className="sr-only">Dismiss</span>
+                    <X className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-96 overflow-y-auto p-2 border rounded-md mb-4">
           {availableImages.length === 0 ? (
             <p className="col-span-full text-center text-gray-500">No images available to add.</p>
@@ -86,7 +130,6 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
 
 interface ProjectImageProps {
   existingImages: ProjectImage[]; // These are the images already saved to the project
-  newFiles: File[];
   newPreviews: string[];
   coverImage: string;
   setCoverImage: React.Dispatch<React.SetStateAction<string>>;
@@ -101,7 +144,7 @@ interface ProjectImageProps {
   handleImageCaptionChange: (imageId: string, caption: string) => void;
 }
 
-export default function ProjectImages({ // Corrected component name
+export default function ProjectImages({
   existingImages,
   newPreviews,
   coverImage,
@@ -118,6 +161,18 @@ export default function ProjectImages({ // Corrected component name
 }: ProjectImageProps) {
   const [showAddImagesPopup, setShowAddImagesPopup] = useState(false); // State to control the image selection popup
   const [currentGroupToEditName, setCurrentGroupToEditName] = useState<string | null>(null); // Name of the group currently being edited in the popup
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
+  const warningTimeoutRef = useRef<number | null>(null);
+
+  const showWarning = (message: string) => {
+    setWarningMessage(message);
+    if (warningTimeoutRef.current !== null) {
+      clearTimeout(warningTimeoutRef.current);
+    }
+    warningTimeoutRef.current = setTimeout(() => {
+      setWarningMessage(null);
+    }, 5000); // Clear warning after 5 seconds
+  };
 
   // Find the 'Featured' group. If it doesn't exist, create a default one for display purposes.
   const featuredGroup = imageGroups.find(group => group.name === 'Featured') || {
@@ -127,13 +182,13 @@ export default function ProjectImages({ // Corrected component name
     images: [],
     order: 0, // Default order for featured group
   };
-  const featuredGroupImageIds = featuredGroup?.images || [];
+  const featuredGroupImageIds = featuredGroup.images || [];
   const imagesInFeaturedGroup = existingImages.filter(img => featuredGroupImageIds.includes(img.id));
 
   // Function to update any property of an image group
   const handleUpdateImageGroup = <K extends keyof ImageGroup>(groupName: string, field: K, value: ImageGroup[K]) => {
-    setImageGroups(prevGroups => {
-      // Handle the special case for the 'Featured' group
+    setImageGroups((prevGroups: ImageGroup[]) => {
+      // Special handling for the 'Featured' group
       if (groupName === 'Featured' && field === 'images') {
         const existingFeaturedGroupIndex = prevGroups.findIndex(group => group.name === 'Featured');
         if (existingFeaturedGroupIndex > -1) {
@@ -143,8 +198,18 @@ export default function ProjectImages({ // Corrected component name
         } else {
           // If 'Featured' group doesn't exist, create it with the images
           return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[], order: 0 }];
-        } 
+        }
       }
+
+      // Validation for changing group type to 'slider'
+      if (field === 'type' && value === 'slider') {
+        const groupToUpdate = prevGroups.find(group => group.name === groupName);
+        if (groupToUpdate && (groupToUpdate.images || []).length > 2) {
+          showWarning(`Cannot change group type to Slider. Please remove images from "${groupName}" until only 2 remain.`);
+          return prevGroups; // Return previous state, preventing the update
+        }
+      }
+
       return prevGroups.map(group =>
         group.name === groupName ? { ...group, [field]: value } : group
       );
@@ -159,8 +224,8 @@ export default function ProjectImages({ // Corrected component name
       type: 'gallery', // Default type
       images: [],
       order: imageGroups.length > 0 ? Math.max(...imageGroups.map(g => g.order || 0)) + 1 : 1, // Suggest next available order, starting from 1
-    };
-    setImageGroups(prev => [...prev, newGroup]);
+    }; 
+    setImageGroups((prev: ImageGroup[]) => [...prev, newGroup]);
   };
 
   // Function to delete an image group
@@ -171,6 +236,8 @@ export default function ProjectImages({ // Corrected component name
   // Callback for the AddImagesToGroupPopup to update the images of the current group
   const handleAddImagesToCurrentGroup = (selectedImageIds: string[]) => { // No LocalImageGroup
     if (currentGroupToEditName) {
+      // The validation for slider image count is now handled within AddImagesToGroupPopup.
+      // This function will only be called if the validation passes in the popup.
       // Special handling for the 'Featured' group
       if (currentGroupToEditName === 'Featured') {
         handleUpdateImageGroup('Featured', 'images', selectedImageIds); // This will create the 'featured' group if it doesn't exist
@@ -179,10 +246,36 @@ export default function ProjectImages({ // Corrected component name
       }
     }
     setCurrentGroupToEditName(null); // Clear the editing state
+    setShowAddImagesPopup(false); // Close the popup
   };
 
   return (
     <div className="space-y-6">
+      {warningMessage && (
+        <div key={warningMessage} className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 sticky top-0 z-50" role="alert">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">{warningMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  onClick={() => setWarningMessage(null)}
+                  className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Upload Images Accordion */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <button
@@ -536,10 +629,11 @@ export default function ProjectImages({ // Corrected component name
       <AddImagesToGroupPopup
         isOpen={showAddImagesPopup}
         key={currentGroupToEditName || 'default'} // Force remount when the group being edited changes
-        onClose={() => setShowAddImagesPopup(false)}
+        onClose={() => { setShowAddImagesPopup(false); setCurrentGroupToEditName(null); }}
         availableImages={existingImages}
         currentGroupImageIds={imageGroups.find(g => g.name === currentGroupToEditName)?.images || []}
         onAddImages={handleAddImagesToCurrentGroup}
+        groupType={imageGroups.find(g => g.name === currentGroupToEditName)?.type || 'gallery'} // Pass the group type
       />
     </div>
   );

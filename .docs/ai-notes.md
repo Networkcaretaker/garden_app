@@ -22,3 +22,7 @@ Next Tasks
 15. Add contact details to website
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
+
+
+I would like to add some logic to the Dynamically rendered Image Groups to limit the amount of images that can be added if the Group Type is "Slider". If a slider is selected only the first 2 images added to the group will be used in the slider function later on the website frontend. We need some cleaver logic that limits the amunt of images that can be added but also if an image group is saved as gallery with more than 2 images and the user tries to change the type to slider, we need a warning that says somthing like "too many images in group, please remove images from the group and try again (max 2 images for slider)".
+What are your thoughts on this feature?

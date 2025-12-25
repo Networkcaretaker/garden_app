@@ -653,7 +653,6 @@ export default function ProjectEdit() {
         {activeTab === 'images' && ( 
           <ProjectImages
             existingImages={existingImages}
-            newFiles={newFiles}
             newPreviews={newPreviews}
             coverImage={coverImage}
             setCoverImage={setCoverImage}
