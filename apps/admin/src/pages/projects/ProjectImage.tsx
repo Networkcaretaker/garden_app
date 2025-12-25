@@ -142,7 +142,7 @@ export default function ProjectImages({ // Corrected component name
           );
         } else {
           // If 'Featured' group doesn't exist, create it with the images
-          return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[] }];
+          return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[], order: 0 }];
         } 
       }
       return prevGroups.map(group =>
@@ -446,7 +446,7 @@ export default function ProjectImages({ // Corrected component name
                   <div className="col-span-4 md:col-span-1">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Order</label>
                     <select
-                      value={group.order === undefined ? '' : group.order}
+                      value={group.order === undefined ? '1' : group.order}
                       onChange={(e) => {
                         const val = parseInt(e.target.value, 10);
                         // Ensure order is at least 1 for non-featured groups

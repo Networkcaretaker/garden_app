@@ -21,7 +21,7 @@ export interface ImageGroup {
   description: string;
   type: 'gallery' | 'slider';
   images?: string[];
-  order?: number; // Featured will always be 0. Created groups must be >= 1
+  order: number; // Featured will always be 0. Created groups must be >= 1
 }
 
 export interface Testimonial {

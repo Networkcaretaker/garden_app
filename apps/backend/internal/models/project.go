@@ -18,7 +18,7 @@ type ImageGroup struct {
 	Description string   `json:"description,omitempty" firestore:"description,omitempty"`
 	GroupType   string   `json:"type,omitempty" firestore:"type,omitempty"`
 	Images      []string `json:"images,omitempty" firestore:"images,omitempty"`
-	Order       int      `json:"order,omitempty" firestore:"order,omitempty"`
+	Order       int      `json:"order" firestore:"order"` // Removed omitempty from firestore tag
 }
 
 // Testimonial represents a client testimonial for a project

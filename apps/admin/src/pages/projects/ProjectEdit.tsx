@@ -93,7 +93,13 @@ export default function ProjectEdit() {
       setCoverImage(project.coverImage || '');
       setTags(project.tags || []);
       setHasTestimonial(project.hasTestimonial || false);
-      setImageGroups(project.imageGroups || []); // Directly set ImageGroup[]
+      // Ensure image group orders are correctly initialized, especially for non-featured groups
+      setImageGroups(project.imageGroups ? project.imageGroups.map(group => {
+        if (group.name !== 'Featured' && (group.order === undefined || group.order === 0)) {
+          return { ...group, order: 1 }; // Default to 1 for non-featured groups if order is 0 or undefined
+        }
+        return group;
+      }) : []);
       setTestimonialName(project.testimonial?.name || '');
       setTestimonialOccupation(project.testimonial?.occupation || '');
       setTestimonialText(project.testimonial?.text || '');
@@ -151,6 +157,7 @@ export default function ProjectEdit() {
       if (currentGroup.name !== initialGroup.name ||
           currentGroup.description !== initialGroup.description ||
           currentGroup.type !== initialGroup.type
+          || currentGroup.order !== initialGroup.order // Added order comparison
       ) {
         return true;
       }
@@ -296,6 +303,10 @@ export default function ProjectEdit() {
         const groupForApi = {
           ...rest,
           images: rest.images || [], // Ensure images is always an array, and no sliderLabel1/2 are included
+        };
+        // Ensure order is always a number, defaulting to 1 for non-featured groups if undefined or 0
+        if (groupForApi.name !== 'Featured' && (groupForApi.order === undefined || groupForApi.order === 0)) {
+          groupForApi.order = 1;
         };
         return groupForApi;
       });
