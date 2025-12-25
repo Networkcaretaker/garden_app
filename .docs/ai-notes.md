@@ -1,26 +1,3 @@
-firebase target:apply hosting admin garden-projects-admin
-firebase target:apply hosting web garden-projects
-
-## Local Backend
-go run cmd/server/main.go  
-
-## Deploy Websites
-firebase deploy --only hosting
-firebase deploy --only hosting:website
-firebase deploy --only hosting:admin
-
-## Deploy Backend
-firebase use default
-gcloud config set project garden-projects
-gcloud builds submit --tag gcr.io/garden-projects/backend
-gcloud run deploy garden-api --image gcr.io/garden-projects/backend --platform managed --region europe-west1 --allow-unauthenticated
-
-## Client deploy
-firebase use client
-gcloud config set project aj-gardens
-gcloud builds submit --tag gcr.io/aj-gardens/backend
-gcloud run deploy garden-api --image gcr.io/aj-gardens/go-backend --platform managed --region europe-west1 --allow-unauthenticated
-
 Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
 2. Header with navigation on website project and projects pages
@@ -45,13 +22,3 @@ Next Tasks
 15. Add contact details to website
 16. Accordian setting on mobile **DONE**
 17. Add contact details to website Config
-
-
-I have added a new field to the ImageGroup type in the @projects called "order"
-We need to update the backend handler and model file to include this new feild.
-We will then need to add the field to the admin app in the ProjectImage.tsx (I have added placeholders with a comment)
-
-Important things to consider:
-- The default "featured" image group will have the order value 0 and cannot be edited,
-- A created image group can not have the value 0. the min value that can be set will be 1
-The reason for this is that the featured image group will always be first when we display on the website.
