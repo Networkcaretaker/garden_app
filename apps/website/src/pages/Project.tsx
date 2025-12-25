@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import type { Project } from '@garden/shared';
+import { BeforeAfterSlider } from '../components/ImageSlider'; // Import the BeforeAfterSlider component
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 
@@ -69,6 +70,16 @@ export default function ProjectPage() {
     );
   }
 
+  // Helper function to get image object from an image item (ID string or object with ID)
+  const getImageFromItem = (item: string | { id: string }, allImages: Project['images']) => {
+    let actualId: string | undefined;
+    if (typeof item === 'string') {
+      actualId = item;
+    } else if (typeof item === 'object' && item !== null && 'id' in item) {
+      actualId = (item as { id: string }).id;
+    }
+    return actualId ? allImages?.find(img => img.id === actualId) : undefined;
+  };
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
     const isLandscape = img.naturalWidth > img.naturalHeight;
@@ -82,7 +93,7 @@ export default function ProjectPage() {
   // Use the first image as the hero background if available
   const heroImage = project.images && project.images.length > 0 ? project.images[0] : null;
   // The rest of the images for the gallery
-  const galleryImages = project.images || [];
+  // const galleryImages = project.images || [];
 
   return (
     <div className="relative min-h-screen">
@@ -116,6 +127,7 @@ export default function ProjectPage() {
           </div>
 
           {/* Gallery from image url */}
+          {/*
           {galleryImages.length > 0 && (
             <div className="mx-auto max-w-6xl">
               <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
@@ -133,6 +145,83 @@ export default function ProjectPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+          */}
+
+          {/* Image Groups */}
+          {project.imageGroups && project.imageGroups.length > 0 && (
+            <div className="mx-auto max-w-6xl mt-12">
+              {project.imageGroups.map((group, groupIndex) => (
+                <div key={groupIndex} className="mb-12 text-center">
+                  {group.name === 'Featured' ? '' : (
+                    <div>
+                      <h2 className="text-3xl font-bold text-white drop-shadow-lg mb-4">{group.name}</h2>
+                      {group.description && (
+                        <p className="text-lg text-white/80 mb-8">{group.description}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {group.type === 'slider' && group.images && group.images.length >= 2 ? (
+                    (() => {
+                      const allProjectImages = project.images || [];
+                      const beforeImage = getImageFromItem(group.images[0], allProjectImages);
+                      const afterImage = getImageFromItem(group.images[1], allProjectImages);
+
+                      if (beforeImage?.url && afterImage?.url) {
+                        return (
+                          <BeforeAfterSlider
+                            key={groupIndex} // Added key for the slider component
+                            beforeImage={beforeImage.url}
+                            afterImage={afterImage.url}
+                            altText={group.name}
+                            className="mt-8" // Add some top margin for spacing
+                          />
+                        );
+                      } else {
+                        console.warn(
+                          `Slider group "${group.name}" is missing required images or URLs. ` +
+                          `Before image ID: ${typeof group.images[0] === 'object' ? (group.images[0] as { id: string }).id : group.images[0]}, ` +
+                          `After image ID: ${typeof group.images[1] === 'object' ? (group.images[1] as { id: string }).id : group.images[1]}.`
+                        );
+                        return null;
+                      }
+                    })()
+                  ) : (
+                    // Default to gallery if type is not slider or if conditions for slider are not met
+                    group.images && group.images.length > 0 && (
+                      <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+                        {group.images.map((imageItem, imageIndex) => {
+                          const allProjectImages = project.images || [];
+                          const image = getImageFromItem(imageItem, allProjectImages);
+
+                          if (!image || !image.url) {
+                            console.warn(
+                              `Image with ID "${typeof imageItem === 'object' ? (imageItem as { id: string }).id : imageItem}" not found or missing URL in project.images for group "${group.name}".`
+                            );
+                            return null;
+                          }
+
+                          return (
+                            <div
+                              key={image.id || imageIndex}
+                              className="mb-6 break-inside-avoid cursor-pointer overflow-hidden rounded-lg shadow-xl transition-transform hover:scale-[1.02]"
+                              onClick={() => setSelectedImage(image.url)}
+                            >
+                              <img
+                                src={image.url}
+                                alt={image.alt || `${group.name} - Image ${imageIndex + 1}`}
+                                className="w-full object-cover"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -24,5 +24,10 @@ Next Tasks
 17. Add contact details to website Config
 
 
-I would like to add some logic to the Dynamically rendered Image Groups to limit the amount of images that can be added if the Group Type is "Slider". If a slider is selected only the first 2 images added to the group will be used in the slider function later on the website frontend. We need some cleaver logic that limits the amunt of images that can be added but also if an image group is saved as gallery with more than 2 images and the user tries to change the type to slider, we need a warning that says somthing like "too many images in group, please remove images from the group and try again (max 2 images for slider)".
-What are your thoughts on this feature?
+
+- Save Project - After saving a project on the ProjectEdit page the ProjectList page loads. I would prefer if the ProjectEdit reloads after saving.
+- Add new images to the Feature Image Group when a new image is saved to a project
+- Dont allow delete project while Active. Show warning that says "Cannot delete Project. This project is Active on website, please deactivate the project and update the website before you delete the project"#
+- add image groups to frontend website.
+
+I want to add the imageGroups to the projects in the website app. On the Project.tsx page I have added a placeholder where I would like to add the image groups below the gallery images. Each group should be in order using the order field and display the group name, group description and the images in the group.
