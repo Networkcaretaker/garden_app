@@ -2,7 +2,7 @@
   {
     "id": "Q3JIJc5qhaXyczJtUIlz",
     "title": "Tropical Gardens",
-    "description": "Tropical Gardens",
+    "description": "Tropical Gardens in Mallorca",
     "location": "Mallorca",
     "completedDate": "",
     "category": "residential",
@@ -35,12 +35,24 @@
         "storagePath": "project-images/Q3JIJc5qhaXyczJtUIlz/1764973018403-fwhnwjc.webp"
       }
     ],
-    "imageGroups": null,
+    "imageGroups": [
+      {
+        "name": "Featured",
+        "description": "Project feature images",
+        "type": "gallery",
+        "images": [
+          "1764973014398-ub7l0b0jf",
+          "1764973012660-1hd0p3zjy",
+          "1764973016289-c2704ejjv"
+        ]
+      }
+    ],
     "featured": false,
+    "hasTestimonial": false,
     "published": false,
     "status": "active",
     "createdAt": "2025-12-05T22:16:58.966961Z",
-    "updatedAt": "2025-12-06T08:08:08.060989Z"
+    "updatedAt": "2025-12-23T06:58:38.061953Z"
   },
   {
     "id": "nnmCNVUHVvhsngUwI3cC",
@@ -48,22 +60,36 @@
     "description": "A small terrace garden at a finca in Calvia",
     "location": "Calvia, Mallorca",
     "completedDate": "",
-    "category": "residential",
-    "tags": null,
+    "category": "Countryside",
+    "tags": [
+      "urban"
+    ],
     "coverImage": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FnnmCNVUHVvhsngUwI3cC%2F1764674569196-epuup96.webp?alt=media\u0026token=11b9a5d0-cb47-49ea-a963-1bdfb472d1a4",
     "images": [
       {
         "id": "1764674570854-vask7o8d0",
         "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FnnmCNVUHVvhsngUwI3cC%2F1764674569196-epuup96.webp?alt=media\u0026token=11b9a5d0-cb47-49ea-a963-1bdfb472d1a4",
-        "storagePath": "project-images/nnmCNVUHVvhsngUwI3cC/1764674569196-epuup96.webp"
+        "storagePath": "project-images/nnmCNVUHVvhsngUwI3cC/1764674569196-epuup96.webp",
+        "caption": "Rustic Cottage",
+        "alt": "Rustic Cottage"
       }
     ],
-    "imageGroups": null,
+    "imageGroups": [
+      {
+        "name": "Featured",
+        "description": "Project feature images",
+        "type": "gallery",
+        "images": [
+          "1764674570854-vask7o8d0"
+        ]
+      }
+    ],
     "featured": false,
+    "hasTestimonial": false,
     "published": false,
     "status": "active",
     "createdAt": "2025-12-02T11:22:50.866602Z",
-    "updatedAt": "2025-12-06T12:08:20.169712Z"
+    "updatedAt": "2025-12-23T06:55:29.982587Z"
   },
   {
     "id": "KmoAclgKom2BJcyZdmpO",
@@ -78,12 +104,16 @@
       {
         "id": "1764672199142-8b2psm86u",
         "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672197279-dfx3mor.webp"
+        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672197279-dfx3mor.webp",
+        "caption": "Reform Project",
+        "alt": "Reform After"
       },
       {
         "id": "1764672200679-prwioxc37",
         "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672199395-273gl6t.webp"
+        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672199395-273gl6t.webp",
+        "caption": "Reform Project",
+        "alt": "Reform Before"
       }
     ],
     "imageGroups": [
@@ -94,6 +124,15 @@
         "images": [
           "1764672199142-8b2psm86u",
           "1764672200679-prwioxc37"
+        ]
+      },
+      {
+        "name": "Before \u0026 After",
+        "description": "Before \u0026 After",
+        "type": "slider",
+        "images": [
+          "1764672200679-prwioxc37",
+          "1764672199142-8b2psm86u"
         ]
       }
     ],
@@ -107,7 +146,7 @@
     "published": false,
     "status": "active",
     "createdAt": "2025-12-02T10:43:20.692936Z",
-    "updatedAt": "2025-12-20T03:05:52.239762Z"
+    "updatedAt": "2025-12-23T07:00:22.450925Z"
   },
   {
     "id": "zcsPzGP7G89GSGIbyTVW",
@@ -145,12 +184,23 @@
         "storagePath": "project-images/zcsPzGP7G89GSGIbyTVW/1764670950827-igj7ov9.webp"
       }
     ],
-    "imageGroups": null,
+    "imageGroups": [
+      {
+        "name": "Featured",
+        "description": "Project feature images",
+        "type": "gallery",
+        "images": [
+          "1764670945472-7mks86zg7",
+          "1764670947419-2891rtuoj"
+        ]
+      }
+    ],
     "featured": false,
+    "hasTestimonial": false,
     "published": false,
     "status": "active",
     "createdAt": "2025-12-02T10:22:32.149636Z",
-    "updatedAt": "2025-12-06T12:08:13.82621Z"
+    "updatedAt": "2025-12-23T07:00:40.559924Z"
   },
   {
     "id": "owFm7zPtT75HLuBpeizj",

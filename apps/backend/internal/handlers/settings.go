@@ -200,7 +200,17 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 	// --- OPERATION 1: PROJECTS JSON ---
 
 	// 1. Fetch all 'active' projects
-	var projects []models.Project
+	var projectsForJSON []map[string]interface{} // This will hold the transformed projects
+
+	// Define a local struct that mirrors the necessary fields of models.Image.
+	// This is used to create a lookup map for image details, bypassing potential
+	// compiler issues with directly referencing models.Image in this context.
+	type imageDetails struct {
+		ID      string `json:"id"`
+		URL     string `json:"url"`
+		Caption string `json:"caption"`
+		Alt     string `json:"alt"`
+	}
 	iter := h.Client.Firestore.Collection("projects").
 		Where("status", "==", "active").
 		OrderBy("createdAt", firestore.Desc).
@@ -222,11 +232,63 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 			c.Logger().Warnf("Failed to parse project %s: %v", doc.Ref.ID, err)
 			continue
 		}
-		p.ID = doc.Ref.ID
-		projects = append(projects, p)
+		p.ID = doc.Ref.ID // Ensure ID is set from Firestore document ID
+
+		// Create a map for quick lookup of image details by ID using the local struct.
+		// We populate this map from the 'p.Images' (which are of type models.Image).
+		imageDetailsMap := make(map[string]imageDetails)
+		for _, img := range p.Images {
+			imageDetailsMap[img.ID] = imageDetails{
+				ID:      img.ID,
+				URL:     img.URL,
+				Caption: img.Caption,
+				Alt:     img.Alt,
+			}
+		}
+
+		// Convert the models.Project struct to a generic map[string]interface{}
+		// This allows us to modify the structure of imageGroups before marshaling to JSON.
+		projectBytes, err := json.Marshal(p)
+		if err != nil {
+			c.Logger().Warnf("Failed to marshal project %s to JSON: %v", p.ID, err)
+			continue
+		}
+		var projectMap map[string]interface{}
+		if err := json.Unmarshal(projectBytes, &projectMap); err != nil {
+			c.Logger().Warnf("Failed to unmarshal project %s JSON to map: %v", p.ID, err)
+			continue
+		}
+
+		// Transform the 'imageGroups' field
+		if rawImageGroups, ok := projectMap["imageGroups"].([]interface{}); ok {
+			transformedImageGroups := make([]map[string]interface{}, 0, len(rawImageGroups))
+			for _, rawGroup := range rawImageGroups {
+				if groupMap, isMap := rawGroup.(map[string]interface{}); isMap {
+					if rawImages, hasImages := groupMap["images"].([]interface{}); hasImages {
+						var newImages []map[string]interface{}
+						for _, imgIDInterface := range rawImages {
+							if imgID, isString := imgIDInterface.(string); isString {
+								if imgDetail, found := imageDetailsMap[imgID]; found {
+									newImages = append(newImages, map[string]interface{}{
+										"id":      imgDetail.ID,
+										"url":     imgDetail.URL,
+										"caption": imgDetail.Caption,
+										"alt":     imgDetail.Alt,
+									})
+								}
+							}
+						}
+						groupMap["images"] = newImages // Replace the images array with the transformed one
+					}
+					transformedImageGroups = append(transformedImageGroups, groupMap)
+				}
+			}
+			projectMap["imageGroups"] = transformedImageGroups // Replace the project's imageGroups
+		}
+		projectsForJSON = append(projectsForJSON, projectMap)
 	}
 
-	if err := uploadJSON("website/projects.json", projects); err != nil {
+	if err := uploadJSON("website/projects.json", projectsForJSON); err != nil {
 		c.Logger().Errorf("Failed to upload projects JSON: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload projects data"})
 	}

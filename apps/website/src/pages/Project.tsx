@@ -115,6 +115,7 @@ export default function ProjectPage() {
             )}
           </div>
 
+          {/* Gallery from image url */}
           {galleryImages.length > 0 && (
             <div className="mx-auto max-w-6xl">
               <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">

@@ -35,7 +35,7 @@ export interface Project {
   title: string;
   description: string;
   location: string;
-  completedDate: string;
+  completedDate: string; // NOT USED can remove
   category: ProjectCategory;
   tags?: string[];
   coverImage: string;
@@ -46,7 +46,7 @@ export interface Project {
   comments?: string[];
   aiGenerated?: AIGeneratedContent;
   featured: boolean;
-  published: boolean;
+  published: boolean; // NOT USED can remove
   createdAt: string;
   updatedAt: string;
   status: 'active' | 'inactive';
