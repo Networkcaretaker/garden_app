@@ -125,6 +125,7 @@ export default function ProjectImages({ // Corrected component name
     description: 'Project feature images',
     type: 'gallery',
     images: [],
+    order: 0, // Default order for featured group
   };
   const featuredGroupImageIds = featuredGroup?.images || [];
   const imagesInFeaturedGroup = existingImages.filter(img => featuredGroupImageIds.includes(img.id));
@@ -137,7 +138,7 @@ export default function ProjectImages({ // Corrected component name
         const existingFeaturedGroupIndex = prevGroups.findIndex(group => group.name === 'Featured');
         if (existingFeaturedGroupIndex > -1) {
           return prevGroups.map(group =>
-            group.name === 'Featured' ? { ...group, [field]: value } : group
+            group.name === 'Featured' ? { ...group, [field]: value, order: 0 } : group // Ensure featured group order remains 0
           );
         } else {
           // If 'Featured' group doesn't exist, create it with the images
@@ -157,6 +158,7 @@ export default function ProjectImages({ // Corrected component name
       description: '',
       type: 'gallery', // Default type
       images: [],
+      order: imageGroups.length > 0 ? Math.max(...imageGroups.map(g => g.order || 0)) + 1 : 1, // Suggest next available order, starting from 1
     };
     setImageGroups(prev => [...prev, newGroup]);
   };
@@ -341,8 +343,8 @@ export default function ProjectImages({ // Corrected component name
           <div className="space-y-6">
             {/* Featured Image Group - default group, cannot be deleted */}
             <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-2 md:col-span-1">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="col-span-2 md:col-span-2">
                   <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>
                   <input
                     type="text"
@@ -360,17 +362,27 @@ export default function ProjectImages({ // Corrected component name
                     disabled
                   />
                 </div>
-                <div className="col-span-2 md:col-span-2">
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Group Order</label>
+                  <input
+                    type="number"
+                    value={0}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
+                    disabled
+                    title="Featured group order is always 0 and cannot be changed."
+                  />
+                </div>
+                <div className="col-span-2 md:col-span-4">
                   <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
-                  <textarea
-                    rows={1}
+                  <input
+                    type="text"
                     value="Project feature images"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     disabled
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-2 md:col-span-4">
                   <button
                     type="button"
                     onClick={() => {
@@ -383,7 +395,7 @@ export default function ProjectImages({ // Corrected component name
                   </button>
                 </div>
 
-                <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
+                <div className="col-span-2 md:col-span-4 grid grid-cols-2 md:grid-cols-6 gap-4">
                   {imagesInFeaturedGroup.map((img) => (
                     <div key={img.id} className="relative aspect-square group bg-teal-50">
                       <img
@@ -410,8 +422,8 @@ export default function ProjectImages({ // Corrected component name
             {/* Dynamically rendered Image Groups (excluding 'Featured') */}
             {imageGroups.filter(group => group.name !== 'Featured').map((group) => (
               <div key={group.name} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="col-span-2 md:col-span-1">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="col-span-4 md:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>
                     <input
                       type="text"
@@ -420,7 +432,7 @@ export default function ProjectImages({ // Corrected component name
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     />
                   </div>
-                  <div>
+                  <div className="col-span-4 md:col-span-1">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Type</label>
                     <select
                       value={group.type} 
@@ -428,19 +440,37 @@ export default function ProjectImages({ // Corrected component name
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     >
                       <option value="gallery">Gallery</option>
-                      <option value="slider">Slider</option>
+                      <option value="slider">Slider</option> 
                     </select>
                   </div>
-                  <div className="col-span-2 md:col-span-2">
+                  <div className="col-span-4 md:col-span-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Group Order</label>
+                    <select
+                      value={group.order === undefined ? '' : group.order}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        // Ensure order is at least 1 for non-featured groups
+                        handleUpdateImageGroup(group.name, 'order', isNaN(val) || val < 1 ? 1 : val);
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
+                      title="Order must be 1 or greater."
+                    >
+                      <option value="">Select Order</option>
+                      {[...Array(10)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-4 md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
                     <textarea
-                      rows={2}
+                      rows={3}
                       value={group.description}
                       onChange={(e) => handleUpdateImageGroup(group.name, 'description', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
                     />
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-4 md:col-span-4">
                     <button
                       type="button"
                       onClick={() => {
@@ -454,7 +484,7 @@ export default function ProjectImages({ // Corrected component name
                     </button>
                   </div>
 
-                  <div className="col-span-2 grid grid-cols-2 md:grid-cols-6 gap-4">
+                  <div className="col-span-4 md:col-span-4 grid grid-cols-2 md:grid-cols-6 gap-4">
                     {(group.images || []).map((imageId: string) => { // Iterate over image IDs in the group
                       const img = existingImages.find(eImg => eImg.id === imageId); // Find the actual image object
                       return img ? ( // Only render if image is found
@@ -475,7 +505,7 @@ export default function ProjectImages({ // Corrected component name
                     ) : null; })}
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-4">
                     <button
                       type="button"
                       className="inline-flex items-center gap-1 w-full px-3 py-3 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 border border-red-400 "

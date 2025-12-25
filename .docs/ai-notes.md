@@ -47,80 +47,11 @@ Next Tasks
 17. Add contact details to website Config
 
 
-I would like to improve the PublishWebsiteData function in the backend @settings.go
-You can see an example of the projects json file that gets created here: @projects.json
+I have added a new field to the ImageGroup type in the @projects called "order"
+We need to update the backend handler and model file to include this new feild.
+We will then need to add the field to the admin app in the ProjectImage.tsx (I have added placeholders with a comment)
 
-What I want to do is to pre-prepare some of the project data when we create the project json
-
-In the "imageGroups" section we have an array of image ids. in the function before the json file is saved I would like to replace the image ids with a map array of the image details "id", "url", "caption" and "alt"
-
-Here is an example from the project json using the current setup: You can see we use image ids in the imageGroups section. 
-
-"images": [
-      {
-        "id": "1764672199142-8b2psm86u",
-        "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672197279-dfx3mor.webp",
-        "caption": "Reform Project",
-        "alt": "Reform After"
-      },
-      {
-        "id": "1764672200679-prwioxc37",
-        "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672199395-273gl6t.webp",
-        "caption": "Reform Project",
-        "alt": "Reform Before"
-      }
-    ],
-    "imageGroups": [
-      {
-        "name": "Featured",
-        "description": "Project feature images",
-        "type": "gallery",
-        "images": [
-          "1764672199142-8b2psm86u",
-          "1764672200679-prwioxc37"
-        ]
-      }
-
-Here is an example of how I would like the json file to look like:
-
-"images": [
-      {
-        "id": "1764672199142-8b2psm86u",
-        "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672197279-dfx3mor.webp",
-        "caption": "Reform Project",
-        "alt": "Reform After"
-      },
-      {
-        "id": "1764672200679-prwioxc37",
-        "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48",
-        "storagePath": "project-images/KmoAclgKom2BJcyZdmpO/1764672199395-273gl6t.webp",
-        "caption": "Reform Project",
-        "alt": "Reform Before"
-      }
-    ],
-    "imageGroups": [
-      {
-        "name": "Featured",
-        "description": "Project feature images",
-        "type": "gallery",
-        "images": [
-          {
-                "id": "1764672199142-8b2psm86u",
-                "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
-                "caption": "Reform Project",
-                "alt": "Reform After"
-            },
-            {
-                "id": "1764672200679-prwioxc37",
-                "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48",
-                "caption": "Reform Project",
-                "alt": "Reform Before"
-            }
-        ]
-      }
-
-
-Please note, I do not want to change the images field in the database this is just for the created projects.json file.
+Important things to consider:
+- The default "featured" image group will have the order value 0 and cannot be edited,
+- A created image group can not have the value 0. the min value that can be set will be 1
+The reason for this is that the featured image group will always be first when we display on the website.
