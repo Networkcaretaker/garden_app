@@ -30,24 +30,102 @@ Next Tasks
 17. Add contact details to website Config
 
 
+I want to update the testimonials in website setting json. We will make the changes in a few steps to make sure everything works as i want.
 
-- Save Project - After saving a project on the ProjectEdit page the ProjectList page loads. I would prefer if the ProjectEdit reloads after saving. **DONE**
+Here is an example of the testimonials section in the website config json file.
 
-- Dont allow delete project while Active. Show warning that says "Cannot delete this project. This project is Active on website, please deactivate the project and update the website before you delete the project"
+"testimonials": {
+      "clients": [
+        {
+          "imageType": "slider",
+          "images": [],
+          "name": "Jonh Dow",
+          "occupation": "Mallorca Resident",
+          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
+        }
+      ],
+      "projects": [
+        "KmoAclgKom2BJcyZdmpO"
+      ],
+      "text": "Here is what our clients have to say",
+      "title": "Client Testimonials"
+    }
 
+Task 1. add project data to testimonial.
 
-I have decided to add an "id" field to the ImageGroup interface in the project types.
-I have added this field because I want to be able to select and add an image group to a Testimonial on the ProjectEdit page.
-I have added an imageType feild in the Testimonial Interface and also an imageGallery feild to save an id if the imageType is gallery.
+When the website setting json file is created I would like a function to lookup the projects that are saved in the projects array and add some project data to the projects object. I would like the projects to look like this in the json file.
 
-I have added two select feilds in the ProjectEdit testimonial section as placeholders. If "featured" is selected in Testimonial Image, the Image Gallery field whould be hidden. This fild will be accesable if the option "gallery" is selected. In the Image gallery feild we will select a single group from a list of saved image groups in the project.
+"testimonials": {
+      "clients": [
+        {
+          "imageType": "slider",
+          "images": [],
+          "name": "Jonh Dow",
+          "occupation": "Mallorca Resident",
+          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
+        }
+      ],
+      "projects": [
+        {
+            "id": "KmoAclgKom2BJcyZdmpO",
+            "coverImage": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
+            "testimonial": {
+                "image": "gallery",
+                "imageGroup": "4cbdb7b1-ca7a-49e3-9ed5-68b39d30fb42",
+                "name": "John Dow",
+                "occupation": "Mallorca resident",
+                "text": "A great job, my garden is completly transformed. Thank you Mallorca Gardens."
+            }
+        }
+      ],
+      "text": "Here is what our clients have to say",
+      "title": "Client Testimonials"
+    }
 
-File you will need to acesss
-projects.go
-projects.go
-projects.ts
-ProjectEdit.tsx
+Task 2. Add testimonial data to projects
+In this task I now want to take the imageGroup ID's in the project testimonial and add the image data like so:
 
-first I need you to add the new feilds to the backend go project. you may need to update the handler file and model file
-make sure you fully understand the project and dont overcomplicate the task, dont make assumtions if you need more information please ask.
-After you have updated the backend we can then update the ProjectEdit page to use the new fields.
+"testimonials": {
+      "clients": [
+        {
+          "imageType": "slider",
+          "images": [],
+          "name": "Jonh Dow",
+          "occupation": "Mallorca Resident",
+          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
+        }
+      ],
+      "projects": [
+        {
+            "id": "KmoAclgKom2BJcyZdmpO"
+            "testimonial": {
+                "image": "gallery",
+                "imageGroup": {
+                    "id": "4cbdb7b1-ca7a-49e3-9ed5-68b39d30fb42",
+                    "type": "gallery",
+                    "images": [
+                        {
+                            "alt": "Reform Before",
+                            "caption": "Reform Project",
+                            "id": "1764672200679-prwioxc37",
+                            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48"
+                        },
+                        {
+                            "alt": "Reform After",
+                            "caption": "Reform Project",
+                            "id": "1764672199142-8b2psm86u",
+                            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9"
+                        }
+                    ]
+                },
+                "name": "John Dow",
+                "occupation": "Mallorca resident",
+                "text": "A great job, my garden is completly transformed. Thank you Mallorca Gardens."
+            }
+        }
+      ],
+      "text": "Here is what our clients have to say",
+      "title": "Client Testimonials"
+    }
+
+Task 3. Update frontend website to add the testimonials to the homepage.

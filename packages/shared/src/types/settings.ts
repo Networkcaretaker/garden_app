@@ -19,7 +19,7 @@ export interface CallToAction {
 export interface WebsiteImage {
   id: string;
   url: string;
-  storagePath: string; // store the internal path for deletion
+  storagePath: string;
   caption?: string;
   alt?: string;
   width?: number;
@@ -89,7 +89,7 @@ export interface TestimonialClients {
 export interface TestimonialContent {
   title: string;
   text: string;
-  project?: string; // this will be from a list of Active projects with hasTestimonial = true
+  projects?: string[]; // select projects from a list of Active projects with hasTestimonial = true. Then store project ids in this array.
   clients: TestimonialClients[]; // this can be removed later when the new testinonial section is complete
 }
 
