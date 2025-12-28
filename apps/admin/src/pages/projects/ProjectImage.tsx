@@ -176,6 +176,7 @@ export default function ProjectImages({
 
   // Find the 'Featured' group. If it doesn't exist, create a default one for display purposes.
   const featuredGroup = imageGroups.find(group => group.name === 'Featured') || {
+    id: 'featured-default', // Provide a default ID for the placeholder
     name: 'Featured',
     description: 'Project feature images',
     type: 'gallery',
@@ -197,7 +198,7 @@ export default function ProjectImages({
           );
         } else {
           // If 'Featured' group doesn't exist, create it with the images
-          return [...prevGroups, { name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[], order: 0 }];
+          return [...prevGroups, { id: crypto.randomUUID(), name: 'Featured', description: 'Project feature images', type: 'gallery', images: value as string[], order: 0 }];
         }
       }
 
@@ -210,15 +211,17 @@ export default function ProjectImages({
         }
       }
 
-      return prevGroups.map(group =>
+      return prevGroups.map((group: ImageGroup) =>
         group.name === groupName ? { ...group, [field]: value } : group
       );
     });
   };
 
   // Function to add a new empty image group
+  // Function to add a new empty image group
   const handleAddImageGroup = () => {
     const newGroup: ImageGroup = {
+      id: crypto.randomUUID(), // Assign a unique ID to the new image group
       name: `New Group ${imageGroups.filter(g => g.name !== 'Featured').length + 1}`, // Unique default name
       description: '',
       type: 'gallery', // Default type

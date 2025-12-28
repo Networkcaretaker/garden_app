@@ -14,6 +14,7 @@ type ProjectImage struct {
 }
 
 type ImageGroup struct {
+	ID          string   `json:"id" firestore:"id"`
 	Name        string   `json:"name,omitempty" firestore:"name,omitempty"`
 	Description string   `json:"description,omitempty" firestore:"description,omitempty"`
 	GroupType   string   `json:"type,omitempty" firestore:"type,omitempty"`
@@ -21,11 +22,14 @@ type ImageGroup struct {
 	Order       int      `json:"order" firestore:"order"` // Removed omitempty from firestore tag
 }
 
-// Testimonial represents a client testimonial for a project
+// Testimonial represents a client testimonial for a project.
+// The 'Image' field corresponds to 'imageType' in the user's description, and 'ImageGroup' corresponds to 'imageGallery'.
 type Testimonial struct {
 	Name       string `json:"name" firestore:"name"`
 	Occupation string `json:"occupation" firestore:"occupation"`
 	Text       string `json:"text" firestore:"text"`
+	Image      string `json:"image,omitempty" firestore:"image,omitempty"`         // Corresponds to imageType
+	ImageGroup string `json:"imageGroup,omitempty" firestore:"imageGroup,omitempty"` // Corresponds to imageGallery
 }
 
 // Project represents the data structure for a gardening project
@@ -41,9 +45,9 @@ type Project struct {
 	Images         []ProjectImage `json:"images" firestore:"images"`
 	ImageGroups    []ImageGroup   `json:"imageGroups" firestore:"imageGroups"`
 	Featured       bool           `json:"featured" firestore:"featured"`
-	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission
-	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission
-	Published      bool           `json:"published" firestore:"published"`
+	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission for boolean
+	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission for struct
+	Published      bool           `json:"published" firestore:"published"`                               // NOT USED can remove
 	Status         string         `json:"status" firestore:"status,omitempty"`
 	CreatedAt      time.Time      `json:"createdAt" firestore:"createdAt"`
 	UpdatedAt      time.Time      `json:"updatedAt" firestore:"updatedAt"`

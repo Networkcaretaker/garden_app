@@ -8,7 +8,6 @@ export interface AIGeneratedContent {
 export interface ProjectImage {
   id: string;
   url: string;
-  // New field: store the internal path for deletion
   storagePath: string; 
   thumbnail?: string;
   caption?: string;
@@ -17,18 +16,20 @@ export interface ProjectImage {
   height?: number;
 }
 export interface ImageGroup {
-  name: string; // This should be unique (no dupliactes). The name will be used as an ID
+  id: string; // need you update backend to add this new feild.
+  name: string;
   description: string;
   type: 'gallery' | 'slider';
   images?: string[];
-  order: number; // Featured will always be 0. Created groups must be >= 1
+  order: number;
 }
 
 export interface Testimonial {
   name: string;
   occupation: string;
   text: string;
-  imageGroup?: string; // the image group that will be added to the testimonial - Default will be Featured
+  image: 'featured' | 'gallery';
+  imageGroup?: string; // the image group id that will be added to the testimonial if gallery is selected
 }
 
 export interface Project {

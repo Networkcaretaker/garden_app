@@ -35,3 +35,19 @@ Next Tasks
 
 - Dont allow delete project while Active. Show warning that says "Cannot delete this project. This project is Active on website, please deactivate the project and update the website before you delete the project"
 
+
+I have decided to add an "id" field to the ImageGroup interface in the project types.
+I have added this field because I want to be able to select and add an image group to a Testimonial on the ProjectEdit page.
+I have added an imageType feild in the Testimonial Interface and also an imageGallery feild to save an id if the imageType is gallery.
+
+I have added two select feilds in the ProjectEdit testimonial section as placeholders. If "featured" is selected in Testimonial Image, the Image Gallery field whould be hidden. This fild will be accesable if the option "gallery" is selected. In the Image gallery feild we will select a single group from a list of saved image groups in the project.
+
+File you will need to acesss
+projects.go
+projects.go
+projects.ts
+ProjectEdit.tsx
+
+first I need you to add the new feilds to the backend go project. you may need to update the handler file and model file
+make sure you fully understand the project and dont overcomplicate the task, dont make assumtions if you need more information please ask.
+After you have updated the backend we can then update the ProjectEdit page to use the new fields.

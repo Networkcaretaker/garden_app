@@ -50,6 +50,8 @@ export default function ProjectEdit() {
   const [hasTestimonial, setHasTestimonial] = useState(false); // State for testimonial
   const [testimonialName, setTestimonialName] = useState('');
   const [testimonialOccupation, setTestimonialOccupation] = useState('');
+  const [testimonialImage, setTestimonialImage] = useState<'featured' | 'gallery'>('featured');
+  const [testimonialImageGalleryId, setTestimonialImageGalleryId] = useState<string | undefined>(undefined);
   const [testimonialText, setTestimonialText] = useState('');
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]); // For newly uploaded files not yet saved
@@ -104,6 +106,8 @@ export default function ProjectEdit() {
       setTestimonialName(project.testimonial?.name || '');
       setTestimonialOccupation(project.testimonial?.occupation || '');
       setTestimonialText(project.testimonial?.text || '');
+      setTestimonialImage(project.testimonial?.image || 'featured');
+      setTestimonialImageGalleryId(project.testimonial?.imageGroup || undefined);
       
       setInitialData(project);
       // Mark as loaded so we don't overwrite user edits if background refetch happens
@@ -124,8 +128,10 @@ export default function ProjectEdit() {
     if (hasTestimonial !== (initialData.hasTestimonial || false)) return true;
     if (testimonialName !== (initialData.testimonial?.name || '')) return true;
     if (testimonialOccupation !== (initialData.testimonial?.occupation || '')) return true;
+    if (testimonialImage !== (initialData.testimonial?.image || 'featured')) return true;
+    if (testimonialImageGalleryId !== (initialData.testimonial?.imageGroup || undefined)) return true;
     if (testimonialText !== (initialData.testimonial?.text || '')) return true;
-    
+
     // Tags comparison
     const currentTags = [...tags].sort();
     const initTags = [...(initialData.tags || [])].sort();
@@ -168,8 +174,8 @@ export default function ProjectEdit() {
       if (JSON.stringify(currentGroupImageIds) !== JSON.stringify(initialGroupImageIds)) return true;
     }
 
-    return false;
-  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, existingImages, newFiles, imageGroups, initialData]);
+    return false; // If no changes detected, return false
+  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, testimonialImage, testimonialImageGalleryId, existingImages, newFiles, imageGroups, initialData]);
 
   // Warn on browser refresh/close if dirty
   useEffect(() => {
@@ -327,6 +333,8 @@ export default function ProjectEdit() {
         name: testimonialName,
         occupation: testimonialOccupation,
         text: testimonialText,
+        image: testimonialImage,
+        imageGroup: testimonialImage === 'gallery' ? testimonialImageGalleryId : undefined,
       } : undefined;
 
 
@@ -517,10 +525,11 @@ export default function ProjectEdit() {
                   </button>
               </div>
             </div>
-
-            <div>
-              <img src={`${coverImage}`} className="max-h-[500px] w-full rounded-lg object-cover" />
-            </div>
+            {coverImage && (
+              <div>
+                <img src={`${coverImage}`} className="max-h-[500px] w-full rounded-lg object-cover" />
+              </div>
+            )}
 
             {/* General Info Accordion */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -691,6 +700,41 @@ export default function ProjectEdit() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                       />
                     </div>
+                      <div>
+                        <label htmlFor="testimonialImage" className="block text-sm font-medium text-gray-700 mb-1">Testimonial Image</label>
+                        <select
+                          id="testimonialImage"
+                          value={testimonialImage}
+                          onChange={(e) => setTestimonialImage(e.target.value as 'featured' | 'gallery')}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                        >
+                          <option value="featured">Use Featured Image</option>
+                          <option value="gallery">Image Gallery</option>
+                        </select>
+                      </div>
+                      {testimonialImage === 'gallery' && (
+                        <div>
+                          <label htmlFor="testimonialImageGallery" className="block text-sm font-medium text-gray-700 mb-1">Image Gallery</label>
+                          <select
+                            id="testimonialImageGallery"
+                            value={testimonialImageGalleryId || ''}
+                            onChange={(e) => setTestimonialImageGalleryId(e.target.value || undefined)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                          >
+                            <option value="">Select Image group...</option>
+                            {imageGroups
+                              .filter(group => group.name !== 'Featured' && group.type === 'gallery') // Only show non-featured gallery groups
+                              .map(group => (
+                                <option key={group.id} value={group.id}>
+                                  {group.name}
+                                </option>
+                              ))}
+                          </select>
+                          {imageGroups.filter(group => group.name !== 'Featured' && group.type === 'gallery').length === 0 && (
+                            <p className="mt-1 text-xs text-gray-500">No suitable image galleries found. Create one in the "Project Photos" tab.</p>
+                          )}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

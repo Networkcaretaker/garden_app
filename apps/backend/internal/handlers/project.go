@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
 	"github.com/networkcaretaker/garden_app/backend/internal/config"
@@ -76,9 +77,11 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 
 	if featuredGroup == nil {
 		// If "Featured" group doesn't exist, create it and append
+		// Assign a new UUID for the ImageGroup ID
 		newProject.ImageGroups = append(newProject.ImageGroups, models.ImageGroup{
-			Name:    "Featured", // Corrected: "Featured" (uppercase F)
-			Images: []string{}, // Initialize with an empty slice, using the correct field name
+			ID:      uuid.New().String(), // Generate a new ID for the featured group
+			Name:    "Featured",
+			Images:  []string{}, // Initialize with an empty slice
 		})
 		// Point featuredGroup to the newly added group
 		featuredGroup = &newProject.ImageGroups[len(newProject.ImageGroups)-1]
@@ -288,9 +291,11 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 
 	if featuredGroup == nil {
 		// If "Featured" group doesn't exist in the request, create it and append
+		// Assign a new UUID for the ImageGroup ID
 		req.ImageGroups = append(req.ImageGroups, models.ImageGroup{
-			Name:    "Featured", // Corrected: "Featured" (uppercase F)
-			Images: []string{}, // Initialize with an empty slice
+			ID:      uuid.New().String(), // Generate a new ID for the featured group
+			Name:    "Featured",
+			Images:  []string{}, // Initialize with an empty slice
 		})
 		// Point featuredGroup to the newly added group
 		featuredGroup = &req.ImageGroups[len(req.ImageGroups)-1]
