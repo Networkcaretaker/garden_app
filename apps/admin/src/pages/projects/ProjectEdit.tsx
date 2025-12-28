@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, Save, ArrowLeft, Trash2, Eye, Plus, ChevronDown } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Trash2, Eye, Plus, ChevronDown, AlertTriangle, X } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
@@ -21,6 +21,7 @@ export default function ProjectEdit() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [initialData, setInitialData] = useState<Project | null>(null);
+  const [deleteWarningMessage, setDeleteWarningMessage] = useState<string | null>(null);
   const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
 
   // Accordion state for Project Info tab
@@ -182,6 +183,17 @@ export default function ProjectEdit() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  const showDeleteWarning = (message: string) => {
+    setDeleteWarningMessage(message);
+    // Temporarily remove auto-clear for debugging
+    // if (deleteWarningTimeoutRef.current !== null) {
+    //   clearTimeout(deleteWarningTimeoutRef.current);
+    // }
+    // deleteWarningTimeoutRef.current = window.setTimeout(() => {
+    //   setDeleteWarningMessage(null);
+    // }, 5000); // Clear warning after 5 seconds
+  };
+
   // Toggle accordion section
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -332,8 +344,12 @@ export default function ProjectEdit() {
         testimonial: testimonialData,
       });
 
+      // Invalidate and refetch the projects query to update the cache
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      navigate('/projects');
+      // Reset states to reflect saved data and clear dirty flag
+      setNewFiles([]);
+      setNewPreviews([]);
+      dataLoaded.current = false; // Trigger useEffect to re-initialize form with fresh data
       
     } catch (err: unknown) {
       console.error(err);
@@ -346,9 +362,17 @@ export default function ProjectEdit() {
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault(); 
+    console.log("handleDeleteClick called.");
+    console.log("initialData:", initialData);
+    console.log("initialData.status:", initialData?.status);
+    if (initialData && initialData.status === 'active') {
+      console.log("Project is active, showing warning.");
+      showDeleteWarning("Cannot delete this project. This project is Active on website, please deactivate the project and update the website before you delete the project.");
+      return; // Prevent opening the delete confirmation popup
+    }
+    console.log("Project is inactive or initialData is null, showing delete popup.");
     setShowDeletePopup(true);
   };
-
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
@@ -410,6 +434,31 @@ export default function ProjectEdit() {
           </div>
         </div>
       </div>
+
+      {deleteWarningMessage && (
+        <div key={deleteWarningMessage} className="fixed top-0 left-0 right-0 z-50 bg-yellow-50 border-l-4 border-yellow-400 p-4 shadow-md" role="alert">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">{deleteWarningMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  onClick={() => setDeleteWarningMessage(null)}
+                  className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">

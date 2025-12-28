@@ -31,9 +31,7 @@ Next Tasks
 
 
 
-- Save Project - After saving a project on the ProjectEdit page the ProjectList page loads. I would prefer if the ProjectEdit reloads after saving.
-- Add new images to the Feature Image Group when a new image is saved to a project
-- Dont allow delete project while Active. Show warning that says "Cannot delete Project. This project is Active on website, please deactivate the project and update the website before you delete the project"
+- Save Project - After saving a project on the ProjectEdit page the ProjectList page loads. I would prefer if the ProjectEdit reloads after saving. **DONE**
 
+- Dont allow delete project while Active. Show warning that says "Cannot delete this project. This project is Active on website, please deactivate the project and update the website before you delete the project"
 
-In the project.go handler file when we save a new image I would like to add the new image id to the featured image group in the images array. So biscally when I load a new image in the admin app the image is automaticaly added to the featured image group
