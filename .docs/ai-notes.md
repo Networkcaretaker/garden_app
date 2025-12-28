@@ -30,9 +30,10 @@ Next Tasks
 17. Add contact details to website Config
 
 
-I want to update the testimonials in website setting json. We will make the changes in a few steps to make sure everything works as i want.
+I want to update the testimonials section in the websiteConfig.json when it is created in the @settings.co file.
+We will make the changes in a few steps to make sure everything works as i want.
 
-Here is an example of the testimonials section in the website config json file.
+Here is an example of the current testimonials section in the websiteConfig.json file:
 
 "testimonials": {
       "clients": [
@@ -51,9 +52,9 @@ Here is an example of the testimonials section in the website config json file.
       "title": "Client Testimonials"
     }
 
-Task 1. add project data to testimonial.
+Task 1. Add project data to testimonial.
 
-When the website setting json file is created I would like a function to lookup the projects that are saved in the projects array and add some project data to the projects object. I would like the projects to look like this in the json file.
+When the websiteConfig.json file is created I would like a function to lookup the projects in the database that are saved in the projects array and then add selected project data to the projects object. I would like the projects in the testimonials object to look like this in the json file.
 
 "testimonials": {
       "clients": [
@@ -82,8 +83,10 @@ When the website setting json file is created I would like a function to lookup 
       "title": "Client Testimonials"
     }
 
+
+
 Task 2. Add testimonial data to projects
-In this task I now want to take the imageGroup ID's in the project testimonial and add the image data like so:
+In this task I now want to lookup the imageGroup ID from the project imageGroups and add the image data to the testimonial section. I would like the setting json to then look like this:
 
 "testimonials": {
       "clients": [

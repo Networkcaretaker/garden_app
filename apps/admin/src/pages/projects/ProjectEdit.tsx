@@ -704,7 +704,7 @@ export default function ProjectEdit() {
                         <label htmlFor="testimonialImage" className="block text-sm font-medium text-gray-700 mb-1">Testimonial Image</label>
                         <select
                           id="testimonialImage"
-                          value={testimonialImage}
+                          value={testimonialImage || 'featured'}
                           onChange={(e) => setTestimonialImage(e.target.value as 'featured' | 'gallery')}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                         >
@@ -723,7 +723,6 @@ export default function ProjectEdit() {
                           >
                             <option value="">Select Image group...</option>
                             {imageGroups
-                              .filter(group => group.name !== 'Featured' && group.type === 'gallery') // Only show non-featured gallery groups
                               .map(group => (
                                 <option key={group.id} value={group.id}>
                                   {group.name}

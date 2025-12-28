@@ -16,7 +16,7 @@ export interface ProjectImage {
   height?: number;
 }
 export interface ImageGroup {
-  id: string; // need you update backend to add this new feild.
+  id: string; 
   name: string;
   description: string;
   type: 'gallery' | 'slider';
