@@ -1,14 +1,20 @@
+Say this to gemini before every prompt.
+
+DO NOT MAKE ANY ASSUMPTIONS
+DO NOT OVERCOMPLICATE THE TASK
+
+
 Next Tasks
 1. Delete projects (including project images) in admin and backend **DONE**
-2. Header with navigation on website project and projects pages
+2. Header with navigation on website project and projects pages **DONE**
 3. Project settings page (taxonomies) with editible Catagories and Tags (include remove function) **DONE**
 4. Create pop up on create and edit projects page to add new category or tag **DONE**
 5. Add testimonials to homepage **DONE**
 6. Create website footer with contact and social links
-7. Add Groups to images and group type (collection, slider)
-    - Groups should have editable title and description fields
+7. Add Groups to images and group type (collection, slider) **DONE**
+    - Groups should have editable title and description fields **DONE**
     - Collection groups will have an option for small or large image layouts
-    - Slider groups can only have 2 images in group
+    - Slider groups can only have 2 images in group **DONE**
     - Slider groups have two editable label fields (Before / After)
 7. Add image reordering inside groups
 8. Add option to set feature image for projects
@@ -27,7 +33,7 @@ Next Tasks
 
 - Save Project - After saving a project on the ProjectEdit page the ProjectList page loads. I would prefer if the ProjectEdit reloads after saving.
 - Add new images to the Feature Image Group when a new image is saved to a project
-- Dont allow delete project while Active. Show warning that says "Cannot delete Project. This project is Active on website, please deactivate the project and update the website before you delete the project"#
-- add image groups to frontend website.
+- Dont allow delete project while Active. Show warning that says "Cannot delete Project. This project is Active on website, please deactivate the project and update the website before you delete the project"
 
-I want to add the imageGroups to the projects in the website app. On the Project.tsx page I have added a placeholder where I would like to add the image groups below the gallery images. Each group should be in order using the order field and display the group name, group description and the images in the group.
+
+In the project.go handler file when we save a new image I would like to add the new image id to the featured image group in the images array. So biscally when I load a new image in the admin app the image is automaticaly added to the featured image group
