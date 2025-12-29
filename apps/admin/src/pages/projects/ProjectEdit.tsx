@@ -474,9 +474,9 @@ export default function ProjectEdit() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="max-w-7xl mx-auto mt-4">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-4" aria-label="Tabs">
             <button
               type="button"
               onClick={() => setActiveTab('project-info')}
@@ -484,7 +484,7 @@ export default function ProjectEdit() {
                 activeTab === 'project-info'
                   ? 'border-teal-500 text-teal-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              } whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm`}
             >
               Project Info
             </button>
@@ -495,7 +495,7 @@ export default function ProjectEdit() {
                 activeTab === 'images'
                   ? 'border-teal-500 text-teal-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              } whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm`}
             >
               Project Photos
             </button>
@@ -503,7 +503,7 @@ export default function ProjectEdit() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm max-w-7xl mx-auto mt-4">
+      <form onSubmit={handleSubmit} className="space-y-8 bg-white rounded-lg max-w-7xl mx-auto mt-8">
         {activeTab === 'project-info' && (
           <div className="space-y-6">
             {/* Project Status (kept outside accordion) */}

@@ -284,7 +284,6 @@ export default function ProjectCreate() {
 
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
-          <p className="text-sm text-gray-500 mb-4">Click the star icon to set the cover image for the project.</p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {previews.map((src, index) => (

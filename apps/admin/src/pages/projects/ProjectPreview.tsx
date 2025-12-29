@@ -180,6 +180,15 @@ const ProjectPreview: React.FC = () => {
                     {project.description || "No description provided."}
                   </p>
                 </div>
+                <div className="flex items-center my-6">
+                  <Link
+                    to={`/projects/${project.id}/edit`}
+                    className="inline-flex items-center m-auto px-8 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Project
+                  </Link>
+                </div>
               </div>
 
               {/* AI Details (Conditional) */}

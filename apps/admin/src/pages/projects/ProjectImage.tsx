@@ -392,7 +392,7 @@ export default function ProjectImages({
           <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             {existingImages.map((img) => (
               <div key={img.id} className="">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-2 border rounded-md">
                   <img
                     src={img.url}
                     alt="Existing"
