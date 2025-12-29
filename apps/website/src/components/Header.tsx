@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { WhatsAppButton } from './ui/WhatsApp';
+import {FacebookButton} from './ui/Facebook';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
 import type { WebsiteSettings } from '@garden/shared';
 
@@ -37,6 +38,13 @@ export function Header() {
             message="Hola! I need a gardener"
             variant="solid"
           />
+          <FacebookButton
+            action="follow"
+            pageId="100004995376382" 
+            variant="solid"
+            label="follow us on facebook"
+            iconOnly = {true}
+          />
         </nav>
 
         {/* Mobile Menu Button */}
@@ -59,6 +67,12 @@ export function Header() {
               phoneNumber={WebsiteSettings.social.whatsapp} 
               message="Hola! I need a gardener"
               variant="solid"
+            />
+            <FacebookButton
+              action="follow"
+              pageId="100004995376382" 
+              variant="solid"
+              label="follow us on facebook"
             />
           </nav>
         </div>

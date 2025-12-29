@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { BeforeAfterSlider } from '../components/ImageSlider';
 import { Header } from '../components/Header';
@@ -13,8 +13,7 @@ export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
   const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [heroProjects, setHeroProjects] = useState<Project[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);  
 
   useEffect(() => {
     const loadData = async () => {
@@ -38,14 +37,14 @@ export default function Home() {
     fetchProjects();
   }, []);
 
-  // Filter hero projects based on the IDs in WebsiteSettings
-  useEffect(() => {
+  // Filter hero projects based on the IDs in WebsiteSettings using useMemo
+  const heroProjects = useMemo(() => {
     if (projects.length > 0 && WebsiteSettings.content.hero.projects) {
-      const filteredProjects = projects.filter(project => 
+      return projects.filter(project => 
         WebsiteSettings.content.hero.projects.includes(project.id)
       );
-      setHeroProjects(filteredProjects);
     }
+    return [];
   }, [projects, WebsiteSettings.content.hero.projects]);
 
   // Rotate through hero project images every 5 seconds
@@ -281,7 +280,7 @@ export default function Home() {
           </div>
           <Link
             to="/projects"
-            className="mt-8 inline-block rounded-full border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+            className="mt-8 inline-block rounded-full border-2 border-teal-600 w-full py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
           >
             View All Projects
           </Link>

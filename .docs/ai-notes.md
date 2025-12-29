@@ -30,105 +30,15 @@ Next Tasks
 17. Add contact details to website Config
 
 
-I want to update the testimonials section in the websiteConfig.json when it is created in the @settings.co file.
-We will make the changes in a few steps to make sure everything works as i want.
-
-Here is an example of the current testimonials section in the websiteConfig.json file:
-
-"testimonials": {
-      "clients": [
-        {
-          "imageType": "slider",
-          "images": [],
-          "name": "Jonh Dow",
-          "occupation": "Mallorca Resident",
-          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
-        }
-      ],
-      "projects": [
-        "KmoAclgKom2BJcyZdmpO"
-      ],
-      "text": "Here is what our clients have to say",
-      "title": "Client Testimonials"
-    }
-
-Task 1. Add project data to testimonial.
-
-When the websiteConfig.json file is created I would like a function to lookup the projects in the database that are saved in the projects array and then add selected project data to the projects object. I would like the projects in the testimonials object to look like this in the json file.
-
-"testimonials": {
-      "clients": [
-        {
-          "imageType": "slider",
-          "images": [],
-          "name": "Jonh Dow",
-          "occupation": "Mallorca Resident",
-          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
-        }
-      ],
-      "projects": [
-        {
-            "id": "KmoAclgKom2BJcyZdmpO",
-            "coverImage": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9",
-            "testimonial": {
-                "image": "gallery",
-                "imageGroup": "4cbdb7b1-ca7a-49e3-9ed5-68b39d30fb42",
-                "name": "John Dow",
-                "occupation": "Mallorca resident",
-                "text": "A great job, my garden is completly transformed. Thank you Mallorca Gardens."
-            }
-        }
-      ],
-      "text": "Here is what our clients have to say",
-      "title": "Client Testimonials"
-    }
-
-
-
-Task 2. Add testimonial data to projects
-In this task I now want to lookup the imageGroup ID from the project imageGroups and add the image data to the testimonial section. I would like the setting json to then look like this:
-
-"testimonials": {
-      "clients": [
-        {
-          "imageType": "slider",
-          "images": [],
-          "name": "Jonh Dow",
-          "occupation": "Mallorca Resident",
-          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
-        }
-      ],
-      "projects": [
-        {
-            "id": "KmoAclgKom2BJcyZdmpO"
-            "testimonial": {
-                "image": "gallery",
-                "imageGroup": {
-                    "id": "4cbdb7b1-ca7a-49e3-9ed5-68b39d30fb42",
-                    "type": "gallery",
-                    "images": [
-                        {
-                            "alt": "Reform Before",
-                            "caption": "Reform Project",
-                            "id": "1764672200679-prwioxc37",
-                            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672199395-273gl6t.webp?alt=media\u0026token=8cbae3a8-e231-47bb-8d88-f7f81a689c48"
-                        },
-                        {
-                            "alt": "Reform After",
-                            "caption": "Reform Project",
-                            "id": "1764672199142-8b2psm86u",
-                            "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/project-images%2FKmoAclgKom2BJcyZdmpO%2F1764672197279-dfx3mor.webp?alt=media\u0026token=48250739-55a0-4e13-ae9d-5c58154d62c9"
-                        }
-                    ]
-                },
-                "name": "John Dow",
-                "occupation": "Mallorca resident",
-                "text": "A great job, my garden is completly transformed. Thank you Mallorca Gardens."
-            }
-        }
-      ],
-      "text": "Here is what our clients have to say",
-      "title": "Client Testimonials"
-    }
-
 Task 3. Update frontend website to add the testimonials to the homepage.
+
+
+
+I would like you to create some components in the Facebook.tsk file similar to how we created the WhatsApp.tsx components.
+I need some facebook buttons that can:
+1. Link to follow us on Facebook
+2. Link to join our facebook group
+3. Share a project on facebook
+4. Link to contact us on messanger
+
+I would like a few variations including a version with text and icon, and another with just the icon
