@@ -119,7 +119,7 @@ export default function ProjectPage() {
         
         <div className="container mx-auto flex-grow px-4 py-12">
           <div className="mb-16 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white drop-shadow-lg md:text-6xl">{project.title}</h1>
+            <h1 className="mb-4 text-4xl font-bold text-teal-200 drop-shadow-lg md:text-6xl">{project.title}</h1>
             <p className="text-xl text-white/90 drop-shadow-md">{project.location}</p>
             {project.description && (
               <p className="whitespace-pre-line border-t border-b my-10 py-6 text-lg font-thin leading-relaxed text-white/90 italic">{project.description}</p>
@@ -224,6 +224,26 @@ export default function ProjectPage() {
               ))}
             </div>
           )}
+          {/* Testimonial */}
+          {project.hasTestimonial && (
+            <div className="my-16 text-center bg-teal-800/40 border-t border-b py-6">
+              <p className="whitespace-pre-line text-2xl font-thin leading-relaxed text-white italic">
+                "{project.testimonial?.text}"
+              </p>
+              <p className="whitespace-pre-line text-xl font-bold leading-relaxed text-gray-300 italic">
+                {project.testimonial?.name}<span className="text-teal-500 font-medium"> - {project.testimonial?.occupation}</span>
+              </p>
+            </div>
+          )}
+          {/* CTA BUTTON */}
+          <div className="flex items-center mb-6">
+            <Link
+              to="/projects"
+              className="inline-block rounded-full mx-auto border-2 border-teal-600 px-8 py-3 bg-teal-600 font-bold text-white transition-colors hover:bg-teal-800 hover:text-white"
+            >
+            Back to Projects
+            </Link>
+          </div>
         </div>
         <Footer />
       </div>

@@ -52,7 +52,7 @@ export function Header() {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="absolute left-0 right-0 top-20 border-t border-gray-100 bg-white px-4 py-6 shadow-lg md:hidden">
-          <nav className="flex flex-col gap-4">
+          <nav className="flex flex-col gap-4 text-center">
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Home</Link>
             <Link to="/projects" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Projects</Link>
             <WhatsAppButton 

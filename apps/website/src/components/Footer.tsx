@@ -1,19 +1,33 @@
 import { WhatsAppButton } from './ui/WhatsApp';
+import { useState, useEffect } from 'react';
+import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
+import type { WebsiteSettings } from '@garden/shared';
 
 export function Footer() {
+  const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
+
+  useEffect(() => {
+    getWebsiteConfig().then(setWebsiteSettings);
+  }, []);
+
   return (
-    <footer className="bg-teal-800 py-16 text-white">
+    <footer className="bg-teal-800 pt-16 text-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold">Get in Touch with Our Skilled Gardeners for a Free Consultation</h2>
-        <p className="mt-4 text-lg text-teal-100 mb-4">
-          Our expert team specializes in custom and sustainable gardening solutions across beautiful Mallorca.<br />
-          Contact us for a free consultation and let us bring your unique vision to life.
+        <h2 className="text-3xl font-bold">{WebsiteSettings.content.footer.title}</h2>
+        <p className="mt-4 text-lg text-teal-200 mb-4">
+          {WebsiteSettings.content.footer.text}<br />{WebsiteSettings.content.footer.cta.text}
         </p>
-        <WhatsAppButton 
-            phoneNumber="34123456789" 
-            message="Hola James! I need a website built."
+        <div className="my-6">
+          <WhatsAppButton 
+            phoneNumber={WebsiteSettings.social.whatsapp} 
             variant="solid"
+            label={WebsiteSettings.content.footer.cta.buttonText}
+            message={WebsiteSettings.social.whatsappMessage} 
           />
+        </div>
+      </div>
+      <div className="container mx-auto px-4 text-xs text-center py-8 text-teal-400">
+        Copyright © 2026 NETWORKCARETAKER. All Rights Reserved.
       </div>
     </footer>
   );
