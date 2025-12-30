@@ -14,7 +14,8 @@ export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
   const [WebsiteSettings, setWebsiteSettings] = useState<PublishedWebsiteSettings>(DEFAULT_WEBSITE_DATA  as PublishedWebsiteSettings);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
@@ -60,6 +61,20 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [heroProjects.length]);
+
+  const handlePreviousTestimonial = () => {
+    const totalTestimonials = WebsiteSettings.content.testimonials.projects?.length || 0;
+    setCurrentTestimonialIndex((prev) => 
+      prev === 0 ? totalTestimonials - 1 : prev - 1
+    );
+  };
+
+  const handleNextTestimonial = () => {
+    const totalTestimonials = WebsiteSettings.content.testimonials.projects?.length || 0;
+    setCurrentTestimonialIndex((prev) => 
+      prev === totalTestimonials - 1 ? 0 : prev + 1
+    );
+  };
 
   return (
     <main className="bg-white text-gray-800">
@@ -390,69 +405,106 @@ export default function Home() {
               {WebsiteSettings.content.testimonials.text}
             </p>
           )}
+          
+          {/* Testimonial Display with Fade Transition */}
           {WebsiteSettings.content.testimonials.projects && (
-            WebsiteSettings.content.testimonials.projects.map((project, projectIndex) => (
-              <div key={projectIndex} className='max-w-6xl items-center mx-auto'>
-                <div className='p-4 border border-teal-500 rounded-lg'>
-                  {project.testimonial.image === 'gallery' && project.testimonial.imageGroup && (
-                    <div>
-                      {project.testimonial.imageGroup.type === 'slider' && (
-                        <div>
-                          <BeforeAfterSlider 
-                            beforeImage={project.testimonial.imageGroup.images[0].url}
-                            afterImage={project.testimonial.imageGroup.images[1].url}
-                            altText="Testimonial Image"
-                            className='w-full lg:w-full'
-                          />
-                        </div>
-                      )}
-                      {project.testimonial.imageGroup.type === 'gallery' && (
-                        <div className="mx-auto columns-2 gap-0">
-                          {project.testimonial.imageGroup.images?.map((imageItem: ProjectImage, imageIndex: number) => (
-                            <div
-                              key={imageItem.id || imageIndex}
-                              className="break-inside-avoid cursor-pointer overflow-hidden"
-                            >
-                              <img
-                                src={imageItem.url}
-                                alt={imageItem.alt || 'Testimonial image'}
-                                className="w-full object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+            <div className="relative min-h-[400px]">
+              {WebsiteSettings.content.testimonials.projects.map((project, projectIndex) => (
+                <div
+                  key={projectIndex}
+                  className={`max-w-6xl mx-auto transition-opacity duration-700 ease-in-out ${
+                    projectIndex === currentTestimonialIndex
+                      ? 'opacity-100 relative'
+                      : 'opacity-0 absolute inset-0 pointer-events-none'
+                  }`}
+                >
+                  <div className='p-4 border border-teal-500 rounded-lg'>
+                    {project.testimonial.image === 'gallery' && project.testimonial.imageGroup && (
+                      <div>
+                        {project.testimonial.imageGroup.type === 'slider' && (
+                          <div>
+                            <BeforeAfterSlider 
+                              beforeImage={project.testimonial.imageGroup.images[0].url}
+                              afterImage={project.testimonial.imageGroup.images[1].url}
+                              altText="Testimonial Image"
+                              className='w-full lg:w-full'
+                            />
+                          </div>
+                        )}
+                        {project.testimonial.imageGroup.type === 'gallery' && (
+                          <div className="mx-auto columns-2 gap-0">
+                            {project.testimonial.imageGroup.images?.map((imageItem: ProjectImage, imageIndex: number) => (
+                              <div
+                                key={imageItem.id || imageIndex}
+                                className="break-inside-avoid cursor-pointer overflow-hidden"
+                              >
+                                <img
+                                  src={imageItem.url}
+                                  alt={imageItem.alt || 'Testimonial image'}
+                                  className="w-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                  {project.testimonial.image === 'featured' && (
-                    <div className="items-center">
-                      <img
-                        src={project.coverImage}
-                        alt='Testimonial Image'
-                        className="m-auto object-cover"
-                      />
-                    </div>
-                  )}
+                    {project.testimonial.image === 'featured' && (
+                      <div className="items-center">
+                        <img
+                          src={project.coverImage}
+                          alt='Testimonial Image'
+                          className="m-auto object-cover"
+                        />
+                      </div>
+                    )}
 
-                  <h2 className="text-2xl font-light text-teal-600 md:text-4xl mt-4">
-                    <i>"{project.testimonial.text}"</i>
-                  </h2>
-                  <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-800">
-                    <b>{project.testimonial.name}</b> - {project.testimonial.occupation}
-                  </p>
+                    <h2 className="text-2xl font-light text-teal-600 md:text-4xl mt-4">
+                      <i>"{project.testimonial.text}"</i>
+                    </h2>
+                    <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-800">
+                      <b>{project.testimonial.name}</b> - {project.testimonial.occupation}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
+
+          {/* Navigation Buttons */}
           <div className="grid grid-cols-2 gap-4 max-w-6xl mx-auto">
-            <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
+            <button 
+              onClick={handlePreviousTestimonial}
+              className="p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600 transition-colors"
+            >
               <ArrowLeft size={16}/>Previous
             </button>
-            <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
+            <button 
+              onClick={handleNextTestimonial}
+              className="p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600 transition-colors"
+            >
               Next<ArrowRight size={16}/>
             </button>
           </div>
+
+          {/* Indicator dots */}
+          {WebsiteSettings.content.testimonials.projects && (
+            <div className="flex justify-center gap-2 mt-4">
+              {WebsiteSettings.content.testimonials.projects.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonialIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentTestimonialIndex 
+                      ? 'bg-teal-600 w-8' 
+                      : 'bg-teal-300 hover:bg-teal-400'
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
