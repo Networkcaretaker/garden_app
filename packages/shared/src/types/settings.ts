@@ -1,4 +1,5 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { Testimonial, ProjectImage } from './project';
 
 export type buttonVariants = 'solid' | 'outline' | 'projects' | 'none';
 
@@ -93,6 +94,34 @@ export interface TestimonialContent {
   clients: TestimonialClients[]; // this can be removed later when the new testinonial section is complete
 }
 
+// New type for the frontend published data
+export interface PublishedTestimonialContent {
+  title: string;
+  text: string;
+  projects?: PublishedTestimonialProject[]; // For frontend - stores full project objects
+  clients: TestimonialClients[];
+}
+
+export interface PublishedTestimonial {
+  name: string;
+  occupation: string;
+  text: string;
+  image: 'featured' | 'gallery';
+  imageGroup?: {
+    id: string;
+    type: 'gallery' | 'slider';
+    name: string;
+    description: string;
+    order: number;
+    images: ProjectImage[];
+  };
+}
+export interface PublishedTestimonialProject {
+  id: string;
+  coverImage: string;
+  testimonial: PublishedTestimonial; // Use PublishedTestimonial, not Testimonial
+}
+
 export interface FootorContent {
   title: string;
   text: string;
@@ -124,6 +153,13 @@ export interface WebsiteSettings {
   updatedAt: Timestamp;
   publishedAt?: Timestamp;
   projectUpdatedAt?: Timestamp;
+}
+
+// Add a new type for published/frontend data
+export interface PublishedWebsiteSettings extends Omit<WebsiteSettings, 'content'> {
+  content: Omit<WebsiteContent, 'testimonials'> & {
+    testimonials: PublishedTestimonialContent;
+  };
 }
 
 export interface ProjectSettings {

@@ -6,20 +6,20 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
-import type { WebsiteSettings, Project } from '@garden/shared';
+import type { PublishedWebsiteSettings, Project, ProjectImage } from '@garden/shared';
 
 const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
 export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
-  const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
+  const [WebsiteSettings, setWebsiteSettings] = useState<PublishedWebsiteSettings>(DEFAULT_WEBSITE_DATA  as PublishedWebsiteSettings);
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);  
 
   useEffect(() => {
     const loadData = async () => {
       const data = await getWebsiteConfig();
-      setWebsiteSettings(data);
+      setWebsiteSettings(data as PublishedWebsiteSettings);
     };
 
     const fetchProjects = async () => {
@@ -392,9 +392,9 @@ export default function Home() {
           )}
           {WebsiteSettings.content.testimonials.projects && (
             WebsiteSettings.content.testimonials.projects.map((project, projectIndex) => (
-                <div key={projectIndex} className='max-w-6xl items-center mx-auto'>
-                  <div className='p-4 border border-teal-500 rounded-lg'>
-                  {project.testimonial.image === 'gallery' && (
+              <div key={projectIndex} className='max-w-6xl items-center mx-auto'>
+                <div className='p-4 border border-teal-500 rounded-lg'>
+                  {project.testimonial.image === 'gallery' && project.testimonial.imageGroup && (
                     <div>
                       {project.testimonial.imageGroup.type === 'slider' && (
                         <div>
@@ -408,23 +408,20 @@ export default function Home() {
                       )}
                       {project.testimonial.imageGroup.type === 'gallery' && (
                         <div className="mx-auto columns-2 gap-0">
-                          {project.testimonial.imageGroup.images.map((imageItem, imageIndex) => {
-                            return (
+                          {project.testimonial.imageGroup.images?.map((imageItem: ProjectImage, imageIndex: number) => (
                             <div
                               key={imageItem.id || imageIndex}
                               className="break-inside-avoid cursor-pointer overflow-hidden"
                             >
                               <img
                                 src={imageItem.url}
-                                alt={imageItem.alt}
+                                alt={imageItem.alt || 'Testimonial image'}
                                 className="w-full object-cover"
                               />
                             </div>
-                          );
-                        })}
+                          ))}
                         </div>
                       )}
-
                     </div>
                   )}
 
@@ -445,16 +442,17 @@ export default function Home() {
                     <b>{project.testimonial.name}</b> - {project.testimonial.occupation}
                   </p>
                 </div>
-                </div>
-            )))}
-            <div className="grid grid-cols-2 gap-4 max-w-6xl mx-auto">
-              <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
-                <ArrowLeft size={16}/>Previous
-              </button>
-              <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
-                Next<ArrowRight size={16}/>
-              </button>
-            </div>
+              </div>
+            ))
+          )}
+          <div className="grid grid-cols-2 gap-4 max-w-6xl mx-auto">
+            <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
+              <ArrowLeft size={16}/>Previous
+            </button>
+            <button className=" p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600">
+              Next<ArrowRight size={16}/>
+            </button>
+          </div>
         </div>
       </section>
 
