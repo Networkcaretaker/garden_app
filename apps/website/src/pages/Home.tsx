@@ -129,7 +129,7 @@ export default function Home() {
           {WebsiteSettings.content.hero.showCTA && (
             <div className="space-y-4">
               {WebsiteSettings.content.hero.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.hero.cta.text}
                 </p>
               )}
@@ -187,7 +187,7 @@ export default function Home() {
           {WebsiteSettings.content.about.showCTA && (
             <div className="space-y-4">
               {WebsiteSettings.content.about.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.about.cta.text}
                 </p>
               )}
@@ -321,7 +321,7 @@ export default function Home() {
           )}
 
           {WebsiteSettings.content.location.text && (
-            <p className="mt-4 text-lg font-light text-white md:text-2xl mb-4">
+            <p className="mt-4 text-lg font-light text-white md:text-xl mb-4">
               {WebsiteSettings.content.location.text}
             </p>
           )}
@@ -329,7 +329,7 @@ export default function Home() {
           {WebsiteSettings.content.location.showCTA && (
             <div className="space-y-4">
               {WebsiteSettings.content.location.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.location.cta.text}
                 </p>
               )}
