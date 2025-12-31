@@ -2,13 +2,22 @@ import type { Timestamp } from 'firebase/firestore';
 import type { Testimonial, ProjectImage } from './project';
 
 export type buttonVariants = 'solid' | 'outline' | 'projects' | 'none';
+export type ctaButtonVariants = 'whatsapp' | 'projects';
+export type fbLinks = 'user' | 'page' | 'group';
 
 export interface SocialLinks {
   facebook: string;
+  facebookPage: string;
+  facebookGroup: string;
   instagram: string;
   linkedin: string;
   whatsapp: string;
   whatsappMessage: string;
+}
+
+export interface Facebook {
+  buttonText: string;
+  linkPage: fbLinks;
 }
 
 export interface CallToAction {
@@ -78,20 +87,10 @@ export interface GalleryContent {
   projects: string[];
 }
 
-export interface TestimonialClients {
-  project: string;
-  name: string;
-  occupation: string;
-  text: string;
-  imageType: string;
-  images: WebsiteImage[];
-}
-
 export interface TestimonialContent {
   title: string;
   text: string;
-  projects?: string[]; // select projects from a list of Active projects with hasTestimonial = true. Then store project ids in this array.
-  clients: TestimonialClients[]; // this can be removed later when the new testinonial section is complete
+  projects?: string[];
 }
 
 // New type for the frontend published data
@@ -99,7 +98,6 @@ export interface PublishedTestimonialContent {
   title: string;
   text: string;
   projects?: PublishedTestimonialProject[]; // For frontend - stores full project objects
-  clients: TestimonialClients[];
 }
 
 export interface PublishedTestimonial {
@@ -127,6 +125,8 @@ export interface FootorContent {
   text: string;
   showCTA: boolean;
   cta: CallToAction;
+  showFacebook: boolean;
+  facebook: Facebook;
 }
 
 export interface WebsiteContent {

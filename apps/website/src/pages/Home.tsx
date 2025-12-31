@@ -127,7 +127,7 @@ export default function Home() {
 
           {/* CTA BUTTON */}
           {WebsiteSettings.content.hero.showCTA && (
-            <div className="space-y-4">
+            <div className="space-y-4 pt-8">
               {WebsiteSettings.content.hero.cta.text && (
                 <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.hero.cta.text}

@@ -65,7 +65,7 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
     testimonials: {
       title: '',
       text: '',
-      clients: []
+      projects: []
     },
     footer: {
       title: '',
@@ -75,11 +75,18 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
         text: '',
         buttonText: '',
         buttonVariant: 'none'
+      },
+      showFacebook: false,
+      facebook: {
+        buttonText: '',
+        linkPage: 'user'
       }
     }
   },
   social: {
     facebook: '',
+    facebookPage: '',
+    facebookGroup: '',
     instagram: '',
     linkedin: '',
     whatsapp: '',

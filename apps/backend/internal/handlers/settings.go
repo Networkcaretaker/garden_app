@@ -61,6 +61,8 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	// Define structs to match the Typescript interfaces
 	type SocialLinks struct {
 		Facebook        string `json:"facebook"`
+		FacebookPage    string `json:"facebookPage"`
+		FacebookGroup   string `json:"facebookGroup"`
 		Instagram       string `json:"instagram"`
 		Linkedin        string `json:"linkedin"`
 		Whatsapp        string `json:"whatsapp"`
@@ -97,6 +99,8 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 		"logo":        req.Logo,
 		"social": map[string]string{
 			"facebook":        req.Social.Facebook,
+			"facebookPage":    req.Social.FacebookPage,
+			"facebookGroup":   req.Social.FacebookGroup,
 			"instagram":       req.Social.Instagram,
 			"linkedin":        req.Social.Linkedin,
 			"whatsapp":        req.Social.Whatsapp,

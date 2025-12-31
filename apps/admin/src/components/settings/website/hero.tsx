@@ -193,7 +193,6 @@ export function HeroSettings({ settings, expanded, onToggle, onContentChange, on
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                                         >
                                         <option value="solid">Solid</option>
-                                        <option value="outline">Outline</option>
                                         <option value="projects">Projects</option>
                                         <option value="none">None</option>
                                     </select>

@@ -20,7 +20,7 @@ export function Header() {
         {/* Logo & Brand */}
         <Link to="/" className="group flex items-center gap-3">
           <img 
-            src="/icons/icon-128.png" 
+            src={WebsiteSettings.logo.url}
             alt={`${WebsiteSettings.title} Logo`} 
             className="h-10 w-10 md:h-12 md:w-12" 
           />
@@ -35,12 +35,12 @@ export function Header() {
           <Link to="/projects" className="font-medium text-gray-600 transition-colors hover:text-teal-700">Projects</Link>
           <WhatsAppButton 
             phoneNumber={WebsiteSettings.social.whatsapp}
-            message="Hola! I need a gardener"
+            message={WebsiteSettings.social.whatsappMessage}
             variant="solid"
           />
           <FacebookButton
             action="follow"
-            pageId="100004995376382" 
+            pageId={WebsiteSettings.social.facebook} 
             variant="solid"
             label="follow us on facebook"
             iconOnly = {true}
@@ -61,16 +61,28 @@ export function Header() {
       {isMenuOpen && (
         <div className="absolute left-0 right-0 top-20 border-t border-gray-100 bg-white px-4 py-6 shadow-lg md:hidden">
           <nav className="flex flex-col gap-4 text-center">
-            <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Home</Link>
-            <Link to="/projects" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-medium text-gray-600 hover:text-teal-700">Projects</Link>
+            <Link 
+              to="/" 
+              onClick={() => setIsMenuOpen(false)} 
+              className="block py-3 text-md font-medium text-teal-50 hover:text-white hover:bg-teal-600 bg-teal-800 rounded-3xl"
+            >
+              Home
+            </Link>
+            <Link 
+              to="/projects" 
+              onClick={() => setIsMenuOpen(false)} 
+              className="block py-3 text-md font-medium text-teal-50 hover:text-white hover:bg-teal-600 bg-teal-800 rounded-3xl"
+            >
+              Projects
+            </Link>
             <WhatsAppButton 
               phoneNumber={WebsiteSettings.social.whatsapp} 
-              message="Hola! I need a gardener"
+              message={WebsiteSettings.social.whatsappMessage}
               variant="solid"
             />
             <FacebookButton
               action="follow"
-              pageId="100004995376382" 
+              pageId={WebsiteSettings.social.facebook}  
               variant="solid"
               label="follow us on facebook"
             />

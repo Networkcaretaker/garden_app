@@ -517,7 +517,7 @@ export default function ProjectImages({
             
             {/* Dynamically rendered Image Groups (excluding 'Featured') */}
             {imageGroups.filter(group => group.name !== 'Featured').map((group) => (
-              <div key={group.name} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
+              <div key={group.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50 relative">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="col-span-4 md:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Name</label>

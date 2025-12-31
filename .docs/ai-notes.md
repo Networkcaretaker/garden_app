@@ -30,15 +30,7 @@ Next Tasks
 17. Add contact details to website Config
 
 
-Task 3. Update frontend website to add the testimonials to the homepage.
-
-
-
-I would like you to create some components in the Facebook.tsk file similar to how we created the WhatsApp.tsx components.
-I need some facebook buttons that can:
-1. Link to follow us on Facebook
-2. Link to join our facebook group
-3. Share a project on facebook
-4. Link to contact us on messanger
-
-I would like a few variations including a version with text and icon, and another with just the icon
+I am having an issue with an input field on my react component.
+In the Dynamic image group section, when I start to type the name field, the cursor disappears after i type a single letter. I cannot write a full word in one go I need to click back in the field to add a single character at a time.
+The problem is with the input section starting on Line 524. All other feilds are working properly.
+Any idea what could be cuasing this problem?

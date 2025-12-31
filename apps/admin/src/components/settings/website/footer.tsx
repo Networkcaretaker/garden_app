@@ -1,5 +1,5 @@
 import { FootprintsIcon, ChevronDown } from 'lucide-react';
-import type { WebsiteSettings, CallToAction, buttonVariants } from '@garden/shared';
+import type { WebsiteSettings, CallToAction, Facebook, buttonVariants, fbLinks } from '@garden/shared';
 
 interface FooterSettingsProps {
   settings: WebsiteSettings;
@@ -7,9 +7,10 @@ interface FooterSettingsProps {
   onToggle: () => void;
   onContentChange: (section: 'footer', field: string, value: unknown) => void;
   onCtaChange: (field: keyof CallToAction, value: string) => void;
+  onFbChange: (field: keyof Facebook, value: string) => void;
 }
 
-export function FooterSettings({ settings, expanded, onToggle, onContentChange, onCtaChange }: FooterSettingsProps) {
+export function FooterSettings({ settings, expanded, onToggle, onContentChange, onCtaChange, onFbChange }: FooterSettingsProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <button 
@@ -92,9 +93,52 @@ export function FooterSettings({ settings, expanded, onToggle, onContentChange, 
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                   >
                     <option value="solid">Solid</option>
-                    <option value="outline">Outline</option>
                     <option value="projects">Projects</option>
                     <option value="none">None</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Facebook Button */}
+          <div className="md:col-span-2 flex items-center justify-between">
+            <label htmlFor="status" className="text-sm font-medium text-gray-700">
+              Show Facebook Link
+            </label>
+            <button
+              type="button"
+              onClick={() => onContentChange('footer', 'showFacebook', !settings.content?.footer?.showFacebook)}
+              className={`${settings.content?.footer?.showFacebook ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+              role="switch"
+              aria-checked={settings.content?.footer?.showFacebook}>
+              <span className={`${settings.content?.footer?.showFacebook ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+            </button>
+          </div>
+          {settings.content?.footer?.showFacebook && (
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 mt-2">
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                  <input
+                    type="text"
+                    value={settings.content?.footer?.facebook?.buttonText || ''}
+                    onChange={(e) => onFbChange('buttonText', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                    placeholder="Contact Us"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Linked Page</label>
+                  <select
+                    value={settings.content?.footer?.facebook?.linkPage || 'user'}
+                    onChange={(e) => onFbChange('linkPage', e.target.value as fbLinks)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                  >
+                    <option value="user">User</option>
+                    <option value="page">Page</option>
+                    <option value="group">Group</option>
                   </select>
                 </div>
               </div>
