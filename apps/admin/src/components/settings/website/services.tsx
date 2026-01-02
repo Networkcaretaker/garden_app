@@ -106,7 +106,7 @@ export function ServicesSettings({ settings, expanded, onToggle, onChange, proje
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
             <textarea
-              rows={2}
+              rows={5}
               value={settings.content?.services?.text || ''}
               onChange={(e) => onChange('services', 'text', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -137,7 +137,7 @@ export function ServicesSettings({ settings, expanded, onToggle, onChange, proje
                     <Trash2 className="h-4 w-4" />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="col-span-1 md:col-span-2">
                       <label className="block text-xs font-medium text-gray-500 mb-1">Card Image</label>
                       <div className="flex items-center gap-4 p-3 border border-gray-200 rounded-md bg-white">
@@ -192,7 +192,7 @@ export function ServicesSettings({ settings, expanded, onToggle, onChange, proje
                     <div className="col-span-1 md:col-span-2">
                       <label className="block text-xs font-medium text-gray-500 mb-1">Card Text</label>
                       <textarea
-                        rows={2}
+                        rows={4}
                         value={card.text}
                         onChange={(e) => handleCardChange(index, 'text', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"

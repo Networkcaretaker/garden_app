@@ -594,7 +594,7 @@ export default function ProjectEdit() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea
-                      rows={4}
+                      rows={5}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -611,7 +611,7 @@ export default function ProjectEdit() {
                 onClick={() => toggleSection('seo')}
                 className="w-full flex justify-between items-center p-6 bg-white"
               >
-                <h2 className="text-lg font-semibold text-gray-800">SEO (Tags)</h2>
+                <h2 className="text-lg font-semibold text-gray-800">SEO Tags</h2>
                 <ChevronDown 
                   className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
                 />
@@ -694,7 +694,7 @@ export default function ProjectEdit() {
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Testimonial Text</label>
                       <textarea
-                        rows={4}
+                        rows={5}
                         value={testimonialText}
                         onChange={(e) => setTestimonialText(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -723,6 +723,7 @@ export default function ProjectEdit() {
                           >
                             <option value="">Select Image group...</option>
                             {imageGroups
+                              .filter(group => group.name !== 'Featured' && group.type === 'gallery') // Only show non-featured gallery groups
                               .map(group => (
                                 <option key={group.id} value={group.id}>
                                   {group.name}
@@ -763,12 +764,12 @@ export default function ProjectEdit() {
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <a
-                href={`/projects/${id}`}
+               href={`/projects/${id}`}
                 className={`flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2 px-5 rounded-lg hover:bg-gray-50 font-medium `}
             >
                 <Eye className="h-5 w-5" />
                 <span className="inline">Project Preview</span>
-            </a>
+            </a> 
             <button
               onClick={handleDeleteClick}
               className="flex items-center justify-center gap-2 bg-red-600 text-white py-2.5 px-6 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LayoutGrid, ChevronDown, Trash2 } from 'lucide-react';
+import { LayoutGrid, ChevronDown, Trash2, Plus } from 'lucide-react';
 import type { WebsiteSettings, Project } from '@garden/shared';
 
 interface GallerySettingsProps {
@@ -58,7 +58,7 @@ export function GallerySettings({ settings, expanded, onToggle, onChange, projec
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
             <textarea
-              rows={2}
+              rows={5}
               value={settings.content?.gallery?.text || ''}
               onChange={(e) => onChange('gallery', 'text', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -86,7 +86,8 @@ export function GallerySettings({ settings, expanded, onToggle, onChange, projec
                 return (
                   <div key={projectId} className="flex justify-between items-center p-3 bg-gray-50 border border-gray-200 rounded-md">
                     <span className={`text-sm font-medium ${project ? 'text-gray-700' : (!projects ? 'text-gray-400' : 'text-red-500')}`}>
-                      {project ? project.title : (!projects ? 'Loading...' : 'Unknown Project')}
+                      {project ? 
+                        <div className="flex gap-2 items-center"><Plus className="h-4 w-4 bg-teal-600 rounded-full text-white" />{project.title}</div> : (!projects ? 'Loading...' : 'Unknown Project')}
                     </span>
                     <button
                       type="button"

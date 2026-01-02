@@ -87,7 +87,7 @@ export function GeneralSettings({ settings, expanded, onToggle, onChange }: Gene
                     <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                         <textarea
-                            rows={3}
+                            rows={5}
                             value={settings.description || ''}
                             onChange={(e) => onChange('description', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -99,7 +99,7 @@ export function GeneralSettings({ settings, expanded, onToggle, onChange }: Gene
                         <label className="block text-sm font-medium text-gray-700 mb-2">Website Logo</label>
                         {settings.logo?.url ? (
                             <div className="flex flex-col sm:flex-row gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 flex flex-col items-center gap-2">
                                     <div className="w-32 h-32 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
                                         <img 
                                             src={settings.logo.url} 
@@ -107,11 +107,31 @@ export function GeneralSettings({ settings, expanded, onToggle, onChange }: Gene
                                             className="max-w-full max-h-full object-contain"
                                         />
                                     </div>
+                                    <label className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-xs text-gray-700 hover:bg-gray-50 cursor-pointer shadow-sm transition-colors w-full justify-center">
+                                        {isUploading ? (
+                                            <>
+                                                <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                                                Uploading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ImageIcon className="h-3 w-3 mr-2" />
+                                                Change Image
+                                            </>
+                                        )}
+                                        <input 
+                                            type="file" 
+                                            className="sr-only" 
+                                            accept="image/*"
+                                            onChange={handleLogoUpload}
+                                            disabled={isUploading}
+                                        />
+                                    </label>
                                 </div>
                                 <div className="flex-grow space-y-3">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-500 mb-1">URL (Read-only)</label>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">URL</label>
                                             <input 
                                                 type="text" 
                                                 readOnly 
@@ -120,7 +140,7 @@ export function GeneralSettings({ settings, expanded, onToggle, onChange }: Gene
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-500 mb-1">Storage Path (Read-only)</label>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">Storage Path</label>
                                             <input 
                                                 type="text" 
                                                 readOnly 

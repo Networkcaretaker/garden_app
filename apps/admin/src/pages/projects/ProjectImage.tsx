@@ -501,7 +501,7 @@ export default function ProjectImages({
                       />
                       <button
                         type="button"
-                        onClick={() => { // Remove image from featured group
+                        onClick={() => {
                           handleUpdateImageGroup('Featured', 'images', featuredGroupImageIds.filter((id: string) => id !== img.id));
                         }}
                         className="absolute bottom-0 flex items-center justify-center gap-1 w-full mx-auto py-2 text-xs font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100 border border-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -540,23 +540,39 @@ export default function ProjectImages({
                     </select>
                   </div>
                   <div className="col-span-4 md:col-span-1">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Group Order</label>
-                    <select
-                      value={group.order === undefined ? '1' : group.order}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        // Ensure order is at least 1 for non-featured groups
-                        handleUpdateImageGroup(group.name, 'order', isNaN(val) || val < 1 ? 1 : val);
-                      }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
-                      title="Order must be 1 or greater."
-                    >
-                      <option value="">Select Order</option>
-                      {[...Array(10)].map((_, i) => (
-                        <option key={i + 1} value={i + 1}>{i + 1}</option>
-                      ))}
-                    </select>
+                    <div className="grid grid-cols-4 gap-4">
+                      <div className="col-span-3">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Group Order</label>
+                        <select
+                          value={group.order === undefined ? '1' : group.order}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            // Ensure order is at least 1 for non-featured groups
+                            handleUpdateImageGroup(group.name, 'order', isNaN(val) || val < 1 ? 1 : val);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-teal-500 focus:border-teal-500"
+                          title="Order must be 1 or greater."
+                        >
+                          <option value="">Select Order</option>
+                          {[...Array(10)].map((_, i) => (
+                            <option key={i + 1} value={i + 1}>{i + 1}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* TODO - add function and upadte type for Image Group Visibility field */}
+                      <div className="col-span-1">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Visible</label>
+                        <button
+                          type="button"
+                          className={`${group.id ? 'bg-teal-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                          role="switch"
+                          >
+                          <span className={`${group.id ? 'translate-x-5' : 'translate-x-0'} inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+
                   <div className="col-span-4 md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Group Description</label>
                     <textarea
