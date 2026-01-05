@@ -16,9 +16,12 @@ export function Footer() {
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold">{WebsiteSettings.content.footer.title}</h2>
         <p className="mt-4 text-lg text-teal-200 mb-4">
-          {WebsiteSettings.content.footer.text}<br />{WebsiteSettings.content.footer.cta.text}
+          {WebsiteSettings.content.footer.text}
         </p>
-        <div className="my-6 grid gap-4 max-w-xl mx-auto justify-items-center">
+        <p className="mt-4 text-lg text-yellow-500 font-bold mb-4">
+          {WebsiteSettings.content.footer.cta.text}
+        </p>
+        <div className="my-6 grid gap-4 max-w-xl mx-auto lg:grid-cols-2">
           <WhatsAppButton 
             phoneNumber={WebsiteSettings.social.whatsapp} 
             variant="solid"
@@ -27,14 +30,14 @@ export function Footer() {
           />
           <FacebookButton
             action="follow"
-            pageId="100004995376382" 
+            pageId={WebsiteSettings.social.facebook} 
             variant="solid"
-            label="follow us on facebook"
+            label={WebsiteSettings.content.footer.facebook?.buttonText}
           />
         </div>
       </div>
       <div className="container mx-auto px-4 text-xs text-center py-8 text-teal-400">
-        Copyright © 2026 NETWORKCARETAKER. All Rights Reserved.
+        &copy; {new Date().getFullYear()} {WebsiteSettings.title}. All Rights Reserved.
       </div>
     </footer>
   );

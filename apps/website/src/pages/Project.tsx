@@ -191,7 +191,7 @@ export default function ProjectPage() {
                   ) : (
                     // Default to gallery if type is not slider or if conditions for slider are not met
                     group.images && group.images.length > 0 && (
-                      <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+                      <div className="columns-1 gap-6 sm:columns-2 lg:columns-2">
                         {group.images.map((imageItem, imageIndex) => {
                           const allProjectImages = project.images || [];
                           const image = getImageFromItem(imageItem, allProjectImages);
@@ -239,7 +239,7 @@ export default function ProjectPage() {
           <div className="flex items-center mb-6">
             <Link
               to="/projects"
-              className="inline-block rounded-full mx-auto border-2 border-teal-600 px-8 py-3 bg-teal-600 font-bold text-white transition-colors hover:bg-teal-800 hover:text-white"
+              className="inline-block rounded-full mx-auto border-2 border-teal-600 px-16 py-3 bg-teal-600 font-bold text-white transition-colors hover:bg-teal-800 hover:text-white"
             >
             Back to Projects
             </Link>
