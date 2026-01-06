@@ -10,6 +10,7 @@ Add project gallery hero section to the projects page
 Correct Facebook link in Footer
 
 ## Admin App
+Floating save button when settings page is dirty
 Add Analytics features to admin app
 Add User feature to admin app
 Add FAQ section
