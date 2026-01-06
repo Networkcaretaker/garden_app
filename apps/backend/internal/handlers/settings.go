@@ -61,6 +61,8 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 	// Define structs to match the Typescript interfaces
 	type SocialLinks struct {
 		Facebook        string `json:"facebook"`
+		FacebookPage    string `json:"facebookPage"`
+		FacebookGroup   string `json:"facebookGroup"`
 		Instagram       string `json:"instagram"`
 		Linkedin        string `json:"linkedin"`
 		Whatsapp        string `json:"whatsapp"`
@@ -97,6 +99,8 @@ func (h *SettingsHandler) UpdateWebsiteSettings(c echo.Context) error {
 		"logo":        req.Logo,
 		"social": map[string]string{
 			"facebook":        req.Social.Facebook,
+			"facebookPage":    req.Social.FacebookPage,
+			"facebookGroup":   req.Social.FacebookGroup,
 			"instagram":       req.Social.Instagram,
 			"linkedin":        req.Social.Linkedin,
 			"whatsapp":        req.Social.Whatsapp,
@@ -200,7 +204,17 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 	// --- OPERATION 1: PROJECTS JSON ---
 
 	// 1. Fetch all 'active' projects
-	var projects []models.Project
+	var projectsForJSON []map[string]interface{} // This will hold the transformed projects
+
+	// Define a local struct that mirrors the necessary fields of models.Image.
+	// This is used to create a lookup map for image details, bypassing potential
+	// compiler issues with directly referencing models.Image in this context.
+	type imageDetails struct {
+		ID      string `json:"id"`
+		URL     string `json:"url"`
+		Caption string `json:"caption"`
+		Alt     string `json:"alt"`
+	}
 	iter := h.Client.Firestore.Collection("projects").
 		Where("status", "==", "active").
 		OrderBy("createdAt", firestore.Desc).
@@ -222,11 +236,63 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 			c.Logger().Warnf("Failed to parse project %s: %v", doc.Ref.ID, err)
 			continue
 		}
-		p.ID = doc.Ref.ID
-		projects = append(projects, p)
+		p.ID = doc.Ref.ID // Ensure ID is set from Firestore document ID
+
+		// Create a map for quick lookup of image details by ID using the local struct.
+		// We populate this map from the 'p.Images' (which are of type models.Image).
+		imageDetailsMap := make(map[string]imageDetails)
+		for _, img := range p.Images {
+			imageDetailsMap[img.ID] = imageDetails{
+				ID:      img.ID,
+				URL:     img.URL,
+				Caption: img.Caption,
+				Alt:     img.Alt,
+			}
+		}
+
+		// Convert the models.Project struct to a generic map[string]interface{}
+		// This allows us to modify the structure of imageGroups before marshaling to JSON.
+		projectBytes, err := json.Marshal(p)
+		if err != nil {
+			c.Logger().Warnf("Failed to marshal project %s to JSON: %v", p.ID, err)
+			continue
+		}
+		var projectMap map[string]interface{}
+		if err := json.Unmarshal(projectBytes, &projectMap); err != nil {
+			c.Logger().Warnf("Failed to unmarshal project %s JSON to map: %v", p.ID, err)
+			continue
+		}
+
+		// Transform the 'imageGroups' field
+		if rawImageGroups, ok := projectMap["imageGroups"].([]interface{}); ok {
+			transformedImageGroups := make([]map[string]interface{}, 0, len(rawImageGroups))
+			for _, rawGroup := range rawImageGroups {
+				if groupMap, isMap := rawGroup.(map[string]interface{}); isMap {
+					if rawImages, hasImages := groupMap["images"].([]interface{}); hasImages {
+						var newImages []map[string]interface{}
+						for _, imgIDInterface := range rawImages {
+							if imgID, isString := imgIDInterface.(string); isString {
+								if imgDetail, found := imageDetailsMap[imgID]; found {
+									newImages = append(newImages, map[string]interface{}{
+										"id":      imgDetail.ID,
+										"url":     imgDetail.URL,
+										"caption": imgDetail.Caption,
+										"alt":     imgDetail.Alt,
+									})
+								}
+							}
+						}
+						groupMap["images"] = newImages // Replace the images array with the transformed one
+					}
+					transformedImageGroups = append(transformedImageGroups, groupMap)
+				}
+			}
+			projectMap["imageGroups"] = transformedImageGroups // Replace the project's imageGroups
+		}
+		projectsForJSON = append(projectsForJSON, projectMap)
 	}
 
-	if err := uploadJSON("website/projects.json", projects); err != nil {
+	if err := uploadJSON("website/projects.json", projectsForJSON); err != nil {
 		c.Logger().Errorf("Failed to upload projects JSON: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to upload projects data"})
 	}
@@ -247,6 +313,105 @@ func (h *SettingsHandler) PublishWebsiteData(c echo.Context) error {
 		c.Logger().Errorf("Failed to parse settings for publish: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to parse website settings"})
 	}
+
+	// --- START: New logic for enriching testimonials.projects ---
+	if content, ok := settingsData["content"].(map[string]interface{}); ok {
+		if testimonials, ok := content["testimonials"].(map[string]interface{}); ok {
+			if projectIDsRaw, ok := testimonials["projects"].([]interface{}); ok {
+				var enrichedTestimonialProjects []map[string]interface{}
+				for _, projectIDInterface := range projectIDsRaw {
+					if projectID, isString := projectIDInterface.(string); isString {
+						projectDoc, err := h.Client.Firestore.Collection("projects").Doc(projectID).Get(ctx)
+						if err != nil {
+							if strings.Contains(err.Error(), "NotFound") {
+								c.Logger().Warnf("Testimonial project with ID %s not found, skipping.", projectID)
+								continue
+							}
+							c.Logger().Errorf("Failed to fetch testimonial project %s: %v", projectID, err)
+							// Decide whether to fail the whole publish or just skip this project.
+							// For now, let's skip and log a warning.
+							continue
+						}
+
+						var project models.Project
+						if err := projectDoc.DataTo(&project); err != nil {
+							c.Logger().Warnf("Failed to parse testimonial project %s data: %v", projectID, err)
+							continue
+						}
+						// Ensure the project ID is set from the document reference
+						project.ID = projectDoc.Ref.ID
+
+						// Create a map for quick lookup of image details by ID
+					// This ensures we use the JSON-friendly structure defined locally.
+					testimonialImageDetailsMap := make(map[string]imageDetails)
+						for _, img := range project.Images {
+						testimonialImageDetailsMap[img.ID] = imageDetails{
+							ID:      img.ID,
+							URL:     img.URL,
+							Caption: img.Caption,
+							Alt:     img.Alt,
+						}
+						}
+
+						if project.Testimonial != nil {
+							testimonialImageGroup := make(map[string]interface{})
+
+							// Create the testimonial object as requested
+							testimonialMap := map[string]interface{}{
+								"name":       project.Testimonial.Name,
+								"occupation": project.Testimonial.Occupation,
+								"text":       project.Testimonial.Text,
+								"image":      project.Testimonial.Image,
+							}
+							// Only add imageGroup if it's present and image type is 'gallery'
+							if project.Testimonial.Image == "gallery" && project.Testimonial.ImageGroup != "" && len(project.ImageGroups) > 0 {
+								for _, imgGroup := range project.ImageGroups {
+									if imgGroup.ID == project.Testimonial.ImageGroup {
+										// Found the matching image group
+										var imagesInGroup []map[string]interface{}
+										for _, imgID := range imgGroup.Images {
+											if imgDetail, found := testimonialImageDetailsMap[imgID]; found {
+												imagesInGroup = append(imagesInGroup, map[string]interface{}{
+													"id":      imgDetail.ID,
+													"url":     imgDetail.URL,
+													"caption": imgDetail.Caption,
+													"alt":     imgDetail.Alt,
+												})
+											}
+										}
+										testimonialImageGroup = map[string]interface{}{
+											"id":          imgGroup.ID,
+											"type":        imgGroup.GroupType, // Use the actual GroupType from the project's ImageGroup
+											"name":        imgGroup.Name,
+											"description": imgGroup.Description,
+											"order":       imgGroup.Order,
+											"images":      imagesInGroup,
+										}
+										break // Found the group, no need to continue iterating
+									}
+								}
+								// Add the enriched image group to the testimonial map
+								if len(testimonialImageGroup) > 0 {
+									testimonialMap["imageGroup"] = testimonialImageGroup
+								}
+							}
+
+							enrichedProject := map[string]interface{}{
+								"id":         project.ID,
+								"coverImage": project.CoverImage,
+								"testimonial": testimonialMap,
+							}
+							enrichedTestimonialProjects = append(enrichedTestimonialProjects, enrichedProject)
+						} else {
+							c.Logger().Warnf("Project %s listed in testimonials.projects does not have testimonial data, skipping.", projectID)
+						}
+					}
+				}
+				testimonials["projects"] = enrichedTestimonialProjects
+			}
+		}
+	}
+	// --- END: New logic for enriching testimonials.projects ---
 
 	if err := uploadJSON("website/websiteConfig.json", settingsData); err != nil {
 		c.Logger().Errorf("Failed to upload settings JSON: %v", err)

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
 	"github.com/networkcaretaker/garden_app/backend/internal/config"
@@ -57,6 +58,56 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		newProject.CoverImage = newProject.Images[0].URL
 	}
 
+	c.Logger().Debugf("CreateProject: Initial newProject.Images count: %d", len(newProject.Images))
+
+	// --- Start of new logic to add new image IDs to the "featured" group ---
+	// Ensure ImageGroups is not nil to avoid panics if it's an uninitialized slice
+	if newProject.ImageGroups == nil {
+		newProject.ImageGroups = []models.ImageGroup{}
+	}
+
+	// Find or create the "featured" image group
+	var featuredGroup *models.ImageGroup
+	for i := range newProject.ImageGroups {
+		if newProject.ImageGroups[i].Name == "Featured" { // Corrected: "Featured" (uppercase F)
+			featuredGroup = &newProject.ImageGroups[i]
+			break
+		}
+	}
+
+	if featuredGroup == nil {
+		// If "Featured" group doesn't exist, create it and append
+		// Assign a new UUID for the ImageGroup ID
+		newProject.ImageGroups = append(newProject.ImageGroups, models.ImageGroup{
+			ID:      uuid.New().String(), // Generate a new ID for the featured group
+			Name:    "Featured",
+			Images:  []string{}, // Initialize with an empty slice
+		})
+		// Point featuredGroup to the newly added group
+		featuredGroup = &newProject.ImageGroups[len(newProject.ImageGroups)-1]
+	}
+
+	c.Logger().Debugf("CreateProject: Before adding images to featured group. Featured group images: %v", featuredGroup.Images)
+
+	// Add IDs of all new images to the "featured" group
+	// This assumes that `models.Image` has an `ID` field.
+	for _, img := range newProject.Images {
+		c.Logger().Debugf("CreateProject: Processing image with ID: '%s', URL: '%s'", img.ID, img.URL)
+		if img.ID != "" {
+			// Check if the ID is already in the featured group to avoid duplicates
+			if !containsString(featuredGroup.Images, img.ID) {
+				featuredGroup.Images = append(featuredGroup.Images, img.ID)
+				c.Logger().Debugf("CreateProject: Added image ID '%s' to featured group. Current featured group images: %v", img.ID, featuredGroup.Images)
+			} else {
+				c.Logger().Debugf("CreateProject: Image ID '%s' already exists in featured group. Skipping.", img.ID)
+			}
+		} else {
+			c.Logger().Warnf("CreateProject: Image has empty ID, skipping for featured group: %v", img)
+		}
+	}
+	c.Logger().Debugf("CreateProject: After adding images to featured group. Final featured group images: %v", featuredGroup.Images)
+	// --- End of new logic ---
+
 	ctx := context.Background()
 	var err error
 
@@ -85,6 +136,16 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, newProject)
+}
+
+// Helper function to check if a string exists in a slice of strings
+func containsString(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }
 
 // GetProjects handles GET /projects
@@ -206,9 +267,68 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		c.Logger().Errorf("Failed to get bucket handle: %v", err)
 	}
 
+	// Create a map of existing image IDs for quick lookup
+	oldImageIDs := make(map[string]bool)
+	for _, img := range oldProject.Images {
+		oldImageIDs[img.ID] = true
+	}
+	c.Logger().Debugf("UpdateProject: Old image IDs: %v", oldImageIDs)
+
+	// 3. Process ImageGroups for the update request
+	// Ensure req.ImageGroups is not nil to avoid panics
+	if req.ImageGroups == nil {
+		req.ImageGroups = []models.ImageGroup{}
+	}
+
+	// Find or create the "featured" image group within the request's ImageGroups
+	var featuredGroup *models.ImageGroup
+	for i := range req.ImageGroups {
+		if req.ImageGroups[i].Name == "Featured" { // Corrected: "Featured" (uppercase F)
+			featuredGroup = &req.ImageGroups[i]
+			break
+		}
+	}
+
+	if featuredGroup == nil {
+		// If "Featured" group doesn't exist in the request, create it and append
+		// Assign a new UUID for the ImageGroup ID
+		req.ImageGroups = append(req.ImageGroups, models.ImageGroup{
+			ID:      uuid.New().String(), // Generate a new ID for the featured group
+			Name:    "Featured",
+			Images:  []string{}, // Initialize with an empty slice
+		})
+		// Point featuredGroup to the newly added group
+		featuredGroup = &req.ImageGroups[len(req.ImageGroups)-1]
+	}
+
+	c.Logger().Debugf("UpdateProject: Before adding images to featured group. Featured group images: %v", featuredGroup.Images)
+
+	// Add IDs of all images from the request to the "featured" group
+	// ONLY add images that are NEW (i.e., not present in oldProject.Images)
+	for _, img := range req.Images {
+		if img.ID != "" { // Ensure image has an ID
+			if !oldImageIDs[img.ID] { // This is a NEW image
+				// Only add if it's not already in the featured group (to prevent duplicates)
+				if !containsString(featuredGroup.Images, img.ID) {
+					featuredGroup.Images = append(featuredGroup.Images, img.ID)
+					c.Logger().Debugf("UpdateProject: Added NEW image ID '%s' to featured group. Current featured group images: %v", img.ID, featuredGroup.Images)
+				} else {
+					c.Logger().Debugf("UpdateProject: NEW image ID '%s' already exists in featured group. Skipping duplicate addition.", img.ID)
+				}
+			} else { // This is an OLD image
+				c.Logger().Debugf("UpdateProject: Processing OLD image with ID: '%s', URL: '%s'. It is already in the project.", img.ID, img.URL)
+			}
+		} else { // Image has an empty ID
+			c.Logger().Warnf("UpdateProject: Image has empty ID, skipping for featured group: %v", img)
+		}
+	}
+	c.Logger().Debugf("UpdateProject: After adding images to featured group. Final featured group images: %v", featuredGroup.Images)
+
 	// 3. Perform the Database Update
 	
 	// Determine correct cover image
+	// This logic should ideally be applied to the `req` object before it's used in the update.
+	// However, for now, we'll keep it here to ensure `finalCoverImage` is correctly set for the update.
 	finalCoverImage := req.CoverImage
 	if finalCoverImage == "" && len(req.Images) > 0 {
 		finalCoverImage = req.Images[0].URL
@@ -223,15 +343,16 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		{Path: "status", Value: req.Status},
 		{Path: "images", Value: req.Images},
 		{Path: "coverImage", Value: finalCoverImage}, // Use calculated cover image
-		{Path: "imageGroups", Value: req.ImageGroups},
+		{Path: "imageGroups", Value: req.ImageGroups}, // Use the modified req.ImageGroups
 		{Path: "hasTestimonial", Value: req.HasTestimonial},
 		{Path: "testimonial", Value: req.Testimonial},
 		{Path: "updatedAt", Value: time.Now()},
 	}
 
 	_, err = docRef.Update(ctx, updates)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update project"})
+	if err != nil { // Log the actual Firestore error for debugging
+		c.Logger().Errorf("Failed to update project in Firestore: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update project. Check server logs for details."})
 	}
 
 	// Update website settings timestamp if active or was active

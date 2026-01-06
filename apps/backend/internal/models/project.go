@@ -14,50 +14,56 @@ type ProjectImage struct {
 }
 
 type ImageGroup struct {
-	Name 		string `json:"name,omitempty" firestore:"name,omitempty"`
-	Description string `json:"description,omitempty" firestore:"description,omitempty"`
-	GroupType 	string `json:"type,omitempty" firestore:"type,omitempty"`
-	Images	 	[]string `json:"images,omitempty" firestore:"images,omitempty"`
+	ID          string   `json:"id" firestore:"id"`
+	Name        string   `json:"name,omitempty" firestore:"name,omitempty"`
+	Description string   `json:"description,omitempty" firestore:"description,omitempty"`
+	GroupType   string   `json:"type,omitempty" firestore:"type,omitempty"`
+	Images      []string `json:"images,omitempty" firestore:"images,omitempty"`
+	Order       int      `json:"order" firestore:"order"` // Removed omitempty from firestore tag
 }
 
-// Testimonial represents a client testimonial for a project
+// Testimonial represents a client testimonial for a project.
+// The 'Image' field corresponds to 'imageType' in the user's description, and 'ImageGroup' corresponds to 'imageGallery'.
 type Testimonial struct {
-	Name      string `json:"name" firestore:"name"`
+	Name       string `json:"name" firestore:"name"`
 	Occupation string `json:"occupation" firestore:"occupation"`
-	Text      string `json:"text" firestore:"text"`
+	Text       string `json:"text" firestore:"text"`
+	Image      string `json:"image,omitempty" firestore:"image,omitempty"`         // Corresponds to imageType
+	ImageGroup string `json:"imageGroup,omitempty" firestore:"imageGroup,omitempty"` // Corresponds to imageGallery
 }
+
 // Project represents the data structure for a gardening project
 type Project struct {
-	ID            string         `json:"id" firestore:"id"`
-	Title         string         `json:"title" firestore:"title"`
-	Description   string         `json:"description" firestore:"description"`
-	Location      string         `json:"location" firestore:"location"`
-	CompletedDate string         `json:"completedDate" firestore:"completedDate"`
-	Category      string         `json:"category" firestore:"category"`
-	Tags          []string       `json:"tags" firestore:"tags"`
-	CoverImage    string         `json:"coverImage" firestore:"coverImage"`
-	Images        []ProjectImage `json:"images" firestore:"images"`
-	ImageGroups   []ImageGroup   `json:"imageGroups" firestore:"imageGroups"`
-	Featured      bool           `json:"featured" firestore:"featured"`
-	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission
-	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission
-	Published     bool           `json:"published" firestore:"published"`
-	Status        string         `json:"status" firestore:"status,omitempty"`
-	CreatedAt     time.Time      `json:"createdAt" firestore:"createdAt"`
-	UpdatedAt     time.Time      `json:"updatedAt" firestore:"updatedAt"`
+	ID             string         `json:"id" firestore:"id"`
+	Title          string         `json:"title" firestore:"title"`
+	Description    string         `json:"description" firestore:"description"`
+	Location       string         `json:"location" firestore:"location"`
+	CompletedDate  string         `json:"completedDate" firestore:"completedDate"`
+	Category       string         `json:"category" firestore:"category"`
+	Tags           []string       `json:"tags" firestore:"tags"`
+	CoverImage     string         `json:"coverImage" firestore:"coverImage"`
+	Images         []ProjectImage `json:"images" firestore:"images"`
+	ImageGroups    []ImageGroup   `json:"imageGroups" firestore:"imageGroups"`
+	Featured       bool           `json:"featured" firestore:"featured"`
+	HasTestimonial *bool          `json:"hasTestimonial,omitempty" firestore:"hasTestimonial,omitempty"` // Pointer to allow nil/omission for boolean
+	Testimonial    *Testimonial   `json:"testimonial,omitempty" firestore:"testimonial,omitempty"`       // Pointer to allow nil/omission for struct
+	Published      bool           `json:"published" firestore:"published"`                               // NOT USED can remove
+	Status         string         `json:"status" firestore:"status,omitempty"`
+	CreatedAt      time.Time      `json:"createdAt" firestore:"createdAt"`
+	UpdatedAt      time.Time      `json:"updatedAt" firestore:"updatedAt"`
 }
 
 type CreateProjectRequest struct {
-	ID          string         `json:"id"`
-	Title       string         `json:"title"`
-	Description string         `json:"description"`
-	Location    string         `json:"location"`
-	Category    string         `json:"category"`
-	Tags        []string       `json:"tags"`
-	Status      string         `json:"status"`
-	CoverImage  string         `json:"coverImage"`
-	Images      []ProjectImage `json:"images"`
-	ImageGroups []ImageGroup   `json:"imageGroups"`
+	ID             string         `json:"id"`
+	Title          string         `json:"title"`
+	Description    string         `json:"description"`
+	Location       string         `json:"location"`
+	Category       string         `json:"category"`
+	Tags           []string       `json:"tags"`
+	Status         string         `json:"status"`
+	CoverImage     string         `json:"coverImage"`
+	Images         []ProjectImage `json:"images"`
+	ImageGroups    []ImageGroup   `json:"imageGroups"`
 	HasTestimonial *bool          `json:"hasTestimonial,omitempty"`
 	Testimonial    *Testimonial   `json:"testimonial,omitempty"`
 }

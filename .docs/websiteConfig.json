@@ -94,7 +94,8 @@
       "projects": [
         "owFm7zPtT75HLuBpeizj",
         "Q3JIJc5qhaXyczJtUIlz",
-        "zcsPzGP7G89GSGIbyTVW"
+        "zcsPzGP7G89GSGIbyTVW",
+        "KmoAclgKom2BJcyZdmpO"
       ],
       "showCTA": true,
       "tagline": true,
@@ -189,8 +190,11 @@
           "images": [],
           "name": "Jonh Dow",
           "occupation": "Mallorca Resident",
-          "text": "What a fantastic team, thank you Mallorca Gardens"
+          "text": "What a fantastic team. Our new lawns are bright and vibrant throughout the year. thank you Mallorca Gardens"
         }
+      ],
+      "projects": [
+        "KmoAclgKom2BJcyZdmpO"
       ],
       "text": "Here is what our clients have to say",
       "title": "Client Testimonials"
@@ -207,8 +211,8 @@
     "url": "https://firebasestorage.googleapis.com/v0/b/garden-projects.firebasestorage.app/o/website%2Fimages%2FWebsiteLogo.webp?alt=media\u0026token=4378c1c2-24a8-4191-a666-0557e622543f",
     "width": 512
   },
-  "projectUpdatedAt": "2025-12-14T14:42:25.704859Z",
-  "publishedAt": "2025-12-18T11:37:52.781841Z",
+  "projectUpdatedAt": "2025-12-28T08:55:41.23264Z",
+  "publishedAt": "2025-12-28T08:58:19.348232Z",
   "seo": [
     "Mallorca Gardens",
     "Garden Company Mallorca"
@@ -222,6 +226,6 @@
   },
   "tagline": "Gardening \u0026 Landscaping Experts",
   "title": "Mallorca Gardens",
-  "updatedAt": "2025-12-19T10:45:34.214572Z",
+  "updatedAt": "2025-12-28T09:33:19.465577Z",
   "websiteURL": "https://garden-projects.web.app"
 }

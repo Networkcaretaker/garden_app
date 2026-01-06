@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, Save, ArrowLeft, Trash2, Eye, Plus, ChevronDown } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Trash2, Eye, Plus, ChevronDown, AlertTriangle, X } from 'lucide-react';
 import { api } from '../../services/api';
 import { resizeImage } from '../../utils/imageResize'; 
 import { uploadImage } from '../../services/storage';
@@ -21,6 +21,7 @@ export default function ProjectEdit() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [initialData, setInitialData] = useState<Project | null>(null);
+  const [deleteWarningMessage, setDeleteWarningMessage] = useState<string | null>(null);
   const [showUnsavedPopup, setShowUnsavedPopup] = useState(false);
 
   // Accordion state for Project Info tab
@@ -49,6 +50,8 @@ export default function ProjectEdit() {
   const [hasTestimonial, setHasTestimonial] = useState(false); // State for testimonial
   const [testimonialName, setTestimonialName] = useState('');
   const [testimonialOccupation, setTestimonialOccupation] = useState('');
+  const [testimonialImage, setTestimonialImage] = useState<'featured' | 'gallery'>('featured');
+  const [testimonialImageGalleryId, setTestimonialImageGalleryId] = useState<string | undefined>(undefined);
   const [testimonialText, setTestimonialText] = useState('');
   const [existingImages, setExistingImages] = useState<ProjectImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]); // For newly uploaded files not yet saved
@@ -93,10 +96,18 @@ export default function ProjectEdit() {
       setCoverImage(project.coverImage || '');
       setTags(project.tags || []);
       setHasTestimonial(project.hasTestimonial || false);
-      setImageGroups(project.imageGroups || []); // Directly set ImageGroup[]
+      // Ensure image group orders are correctly initialized, especially for non-featured groups
+      setImageGroups(project.imageGroups ? project.imageGroups.map(group => {
+        if (group.name !== 'Featured' && (group.order === undefined || group.order === 0)) {
+          return { ...group, order: 1 }; // Default to 1 for non-featured groups if order is 0 or undefined
+        }
+        return group;
+      }) : []);
       setTestimonialName(project.testimonial?.name || '');
       setTestimonialOccupation(project.testimonial?.occupation || '');
       setTestimonialText(project.testimonial?.text || '');
+      setTestimonialImage(project.testimonial?.image || 'featured');
+      setTestimonialImageGalleryId(project.testimonial?.imageGroup || undefined);
       
       setInitialData(project);
       // Mark as loaded so we don't overwrite user edits if background refetch happens
@@ -117,8 +128,10 @@ export default function ProjectEdit() {
     if (hasTestimonial !== (initialData.hasTestimonial || false)) return true;
     if (testimonialName !== (initialData.testimonial?.name || '')) return true;
     if (testimonialOccupation !== (initialData.testimonial?.occupation || '')) return true;
+    if (testimonialImage !== (initialData.testimonial?.image || 'featured')) return true;
+    if (testimonialImageGalleryId !== (initialData.testimonial?.imageGroup || undefined)) return true;
     if (testimonialText !== (initialData.testimonial?.text || '')) return true;
-    
+
     // Tags comparison
     const currentTags = [...tags].sort();
     const initTags = [...(initialData.tags || [])].sort();
@@ -151,6 +164,7 @@ export default function ProjectEdit() {
       if (currentGroup.name !== initialGroup.name ||
           currentGroup.description !== initialGroup.description ||
           currentGroup.type !== initialGroup.type
+          || currentGroup.order !== initialGroup.order // Added order comparison
       ) {
         return true;
       }
@@ -160,8 +174,8 @@ export default function ProjectEdit() {
       if (JSON.stringify(currentGroupImageIds) !== JSON.stringify(initialGroupImageIds)) return true;
     }
 
-    return false;
-  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, existingImages, newFiles, imageGroups, initialData]);
+    return false; // If no changes detected, return false
+  }, [title, description, category, location, status, tags, coverImage, hasTestimonial, testimonialName, testimonialOccupation, testimonialText, testimonialImage, testimonialImageGalleryId, existingImages, newFiles, imageGroups, initialData]);
 
   // Warn on browser refresh/close if dirty
   useEffect(() => {
@@ -174,6 +188,17 @@ export default function ProjectEdit() {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
+
+  const showDeleteWarning = (message: string) => {
+    setDeleteWarningMessage(message);
+    // Temporarily remove auto-clear for debugging
+    // if (deleteWarningTimeoutRef.current !== null) {
+    //   clearTimeout(deleteWarningTimeoutRef.current);
+    // }
+    // deleteWarningTimeoutRef.current = window.setTimeout(() => {
+    //   setDeleteWarningMessage(null);
+    // }, 5000); // Clear warning after 5 seconds
+  };
 
   // Toggle accordion section
   const toggleSection = (section: string) => {
@@ -297,6 +322,10 @@ export default function ProjectEdit() {
           ...rest,
           images: rest.images || [], // Ensure images is always an array, and no sliderLabel1/2 are included
         };
+        // Ensure order is always a number, defaulting to 1 for non-featured groups if undefined or 0
+        if (groupForApi.name !== 'Featured' && (groupForApi.order === undefined || groupForApi.order === 0)) {
+          groupForApi.order = 1;
+        };
         return groupForApi;
       });
 
@@ -304,6 +333,8 @@ export default function ProjectEdit() {
         name: testimonialName,
         occupation: testimonialOccupation,
         text: testimonialText,
+        image: testimonialImage,
+        imageGroup: testimonialImage === 'gallery' ? testimonialImageGalleryId : undefined,
       } : undefined;
 
 
@@ -321,8 +352,12 @@ export default function ProjectEdit() {
         testimonial: testimonialData,
       });
 
+      // Invalidate and refetch the projects query to update the cache
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      navigate('/projects');
+      // Reset states to reflect saved data and clear dirty flag
+      setNewFiles([]);
+      setNewPreviews([]);
+      dataLoaded.current = false; // Trigger useEffect to re-initialize form with fresh data
       
     } catch (err: unknown) {
       console.error(err);
@@ -335,9 +370,17 @@ export default function ProjectEdit() {
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault(); 
+    console.log("handleDeleteClick called.");
+    console.log("initialData:", initialData);
+    console.log("initialData.status:", initialData?.status);
+    if (initialData && initialData.status === 'active') {
+      console.log("Project is active, showing warning.");
+      showDeleteWarning("Cannot delete this project. This project is Active on website, please deactivate the project and update the website before you delete the project.");
+      return; // Prevent opening the delete confirmation popup
+    }
+    console.log("Project is inactive or initialData is null, showing delete popup.");
     setShowDeletePopup(true);
   };
-
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
@@ -400,15 +443,40 @@ export default function ProjectEdit() {
         </div>
       </div>
 
+      {deleteWarningMessage && (
+        <div key={deleteWarningMessage} className="fixed top-0 left-0 right-0 z-50 bg-yellow-50 border-l-4 border-yellow-400 p-4 shadow-md" role="alert">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">{deleteWarningMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  onClick={() => setDeleteWarningMessage(null)}
+                  className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
           {error}
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="max-w-7xl mx-auto mt-4">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-4" aria-label="Tabs">
             <button
               type="button"
               onClick={() => setActiveTab('project-info')}
@@ -416,7 +484,7 @@ export default function ProjectEdit() {
                 activeTab === 'project-info'
                   ? 'border-teal-500 text-teal-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              } whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm`}
             >
               Project Info
             </button>
@@ -427,7 +495,7 @@ export default function ProjectEdit() {
                 activeTab === 'images'
                   ? 'border-teal-500 text-teal-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              } whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm`}
             >
               Project Photos
             </button>
@@ -435,7 +503,7 @@ export default function ProjectEdit() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm max-w-7xl mx-auto mt-4">
+      <form onSubmit={handleSubmit} className="space-y-8 bg-white rounded-lg max-w-7xl mx-auto mt-8">
         {activeTab === 'project-info' && (
           <div className="space-y-6">
             {/* Project Status (kept outside accordion) */}
@@ -457,10 +525,11 @@ export default function ProjectEdit() {
                   </button>
               </div>
             </div>
-
-            <div>
-              <img src={`${coverImage}`} className="rounded-lg" />
-            </div>
+            {coverImage && (
+              <div>
+                <img src={`${coverImage}`} className="max-h-[500px] w-full rounded-lg object-cover" />
+              </div>
+            )}
 
             {/* General Info Accordion */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -525,7 +594,7 @@ export default function ProjectEdit() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea
-                      rows={4}
+                      rows={5}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -542,7 +611,7 @@ export default function ProjectEdit() {
                 onClick={() => toggleSection('seo')}
                 className="w-full flex justify-between items-center p-6 bg-white"
               >
-                <h2 className="text-lg font-semibold text-gray-800">SEO (Tags)</h2>
+                <h2 className="text-lg font-semibold text-gray-800">SEO Tags</h2>
                 <ChevronDown 
                   className={`h-5 w-5 text-gray-400 transition-transform ${expandedSections['seo'] ? 'rotate-180' : ''}`} 
                 />
@@ -625,12 +694,47 @@ export default function ProjectEdit() {
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Testimonial Text</label>
                       <textarea
-                        rows={4}
+                        rows={5}
                         value={testimonialText}
                         onChange={(e) => setTestimonialText(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                       />
                     </div>
+                      <div>
+                        <label htmlFor="testimonialImage" className="block text-sm font-medium text-gray-700 mb-1">Testimonial Image</label>
+                        <select
+                          id="testimonialImage"
+                          value={testimonialImage || 'featured'}
+                          onChange={(e) => setTestimonialImage(e.target.value as 'featured' | 'gallery')}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                        >
+                          <option value="featured">Use Featured Image</option>
+                          <option value="gallery">Image Gallery</option>
+                        </select>
+                      </div>
+                      {testimonialImage === 'gallery' && (
+                        <div>
+                          <label htmlFor="testimonialImageGallery" className="block text-sm font-medium text-gray-700 mb-1">Image Gallery</label>
+                          <select
+                            id="testimonialImageGallery"
+                            value={testimonialImageGalleryId || ''}
+                            onChange={(e) => setTestimonialImageGalleryId(e.target.value || undefined)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                          >
+                            <option value="">Select Image group...</option>
+                            {imageGroups
+                              .filter(group => group.name !== 'Featured' && group.type === 'gallery') // Only show non-featured gallery groups
+                              .map(group => (
+                                <option key={group.id} value={group.id}>
+                                  {group.name}
+                                </option>
+                              ))}
+                          </select>
+                          {imageGroups.filter(group => group.name !== 'Featured' && group.type === 'gallery').length === 0 && (
+                            <p className="mt-1 text-xs text-gray-500">No suitable image galleries found. Create one in the "Project Photos" tab.</p>
+                          )}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
@@ -642,7 +746,6 @@ export default function ProjectEdit() {
         {activeTab === 'images' && ( 
           <ProjectImages
             existingImages={existingImages}
-            newFiles={newFiles}
             newPreviews={newPreviews}
             coverImage={coverImage}
             setCoverImage={setCoverImage}
@@ -658,16 +761,15 @@ export default function ProjectEdit() {
           />
         )}
 
-
         <div className="flex flex-col-reverse md:flex-row justify-end items-center pt-6 pb-12 gap-4 md:gap-0">
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <a
-                href={`/projects/${id}`}
+               href={`/projects/${id}`}
                 className={`flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2 px-5 rounded-lg hover:bg-gray-50 font-medium `}
             >
                 <Eye className="h-5 w-5" />
                 <span className="inline">Project Preview</span>
-            </a>
+            </a> 
             <button
               onClick={handleDeleteClick}
               className="flex items-center justify-center gap-2 bg-red-600 text-white py-2.5 px-6 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"

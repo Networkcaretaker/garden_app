@@ -1,6 +1,6 @@
 //import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MapPin, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, MapPin, Calendar, Loader2, AlertCircle, Eye, Edit } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery } from '@tanstack/react-query';
 import type { Project } from '@garden/shared';
@@ -62,22 +62,19 @@ export default function ProjectList() {
               {/* Image Aspect Ratio Container */}
               <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {project.images && project.images.length > 0 ? (
-                  <a href={`/projects/${project.id}`}>
+
                   <img
                     // Update: Access .url property of the object
                     src={project.coverImage}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  </a>
+
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     No Image
                   </div>
                 )}
-                <span className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-2 py-1 rounded-full uppercase tracking-wider">
-                  {project.category}
-                </span>
                 <span className={`absolute top-2 left-2 text-white text-xs font-medium px-2.5 py-1 rounded-full ${
                   project.status === 'active' ? 'bg-teal-500' : 'bg-gray-500'
                 }`}
@@ -92,10 +89,10 @@ export default function ProjectList() {
                   {project.title}
                 </h3>
                 
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                <div className="flex items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
-                    <span className="truncate max-w-[100px]">{project.location}</span>
+                    <span className="truncate max-w-[200px]">{project.location}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
@@ -103,14 +100,23 @@ export default function ProjectList() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 flex justify-end">
-                   <Link 
-                     to={`/projects/${project.id}/edit`}
-                     className="text-sm font-medium text-teal-600 hover:text-teal-700"
-                   >
-                     Edit Details &rarr;
-                   </Link>
-                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                <a
+                  href={`/projects/${project.id}`}
+                    className={`flex items-center justify-center gap-2 bg-teal-600 text-white py-3 px-5  hover:bg-teal-700 text-sm `}
+                >
+                    <Eye className="h-4 w-4" />
+                    <span className="inline">Preview</span>
+                </a>
+                <a
+                  href={`/projects/${project.id}/edit`}
+                    className={`flex items-center justify-center gap-2 bg-teal-600 text-white py-3 px-5 hover:bg-teal-700 text-sm `}
+                >
+                    <Edit className="h-4 w-4" />
+                    <span className="inline">Edit Project</span>
+                </a>
+
               </div>
             </div>
           ))}

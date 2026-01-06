@@ -1,25 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { BeforeAfterSlider } from '../components/ImageSlider';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
-import type { WebsiteSettings, Project } from '@garden/shared';
+import type { PublishedWebsiteSettings, Project, ProjectImage } from '@garden/shared';
 
 const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
 export default function Home() {
   // Initialize with your existing hardcoded values as a fallback
-  const [WebsiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(DEFAULT_WEBSITE_DATA);
+  const [WebsiteSettings, setWebsiteSettings] = useState<PublishedWebsiteSettings>(DEFAULT_WEBSITE_DATA  as PublishedWebsiteSettings);
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [heroProjects, setHeroProjects] = useState<Project[]>([]);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
       const data = await getWebsiteConfig();
-      setWebsiteSettings(data);
+      setWebsiteSettings(data as PublishedWebsiteSettings);
     };
 
     const fetchProjects = async () => {
@@ -38,14 +39,14 @@ export default function Home() {
     fetchProjects();
   }, []);
 
-  // Filter hero projects based on the IDs in WebsiteSettings
-  useEffect(() => {
+  // Filter hero projects based on the IDs in WebsiteSettings using useMemo
+  const heroProjects = useMemo(() => {
     if (projects.length > 0 && WebsiteSettings.content.hero.projects) {
-      const filteredProjects = projects.filter(project => 
+      return projects.filter(project => 
         WebsiteSettings.content.hero.projects.includes(project.id)
       );
-      setHeroProjects(filteredProjects);
     }
+    return [];
   }, [projects, WebsiteSettings.content.hero.projects]);
 
   // Rotate through hero project images every 5 seconds
@@ -60,6 +61,20 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [heroProjects.length]);
+
+  const handlePreviousTestimonial = () => {
+    const totalTestimonials = WebsiteSettings.content.testimonials.projects?.length || 0;
+    setCurrentTestimonialIndex((prev) => 
+      prev === 0 ? totalTestimonials - 1 : prev - 1
+    );
+  };
+
+  const handleNextTestimonial = () => {
+    const totalTestimonials = WebsiteSettings.content.testimonials.projects?.length || 0;
+    setCurrentTestimonialIndex((prev) => 
+      prev === totalTestimonials - 1 ? 0 : prev + 1
+    );
+  };
 
   return (
     <main className="bg-white text-gray-800">
@@ -112,9 +127,9 @@ export default function Home() {
 
           {/* CTA BUTTON */}
           {WebsiteSettings.content.hero.showCTA && (
-            <div className="space-y-4">
+            <div className="space-y-4 pt-8">
               {WebsiteSettings.content.hero.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.hero.cta.text}
                 </p>
               )}
@@ -172,7 +187,7 @@ export default function Home() {
           {WebsiteSettings.content.about.showCTA && (
             <div className="space-y-4">
               {WebsiteSettings.content.about.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.about.cta.text}
                 </p>
               )}
@@ -281,7 +296,7 @@ export default function Home() {
           </div>
           <Link
             to="/projects"
-            className="mt-8 inline-block rounded-full border-2 border-teal-600 px-8 py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
+            className="mt-8 inline-block rounded-full border-2 border-teal-600 w-full py-3 font-bold text-teal-600 transition-colors hover:bg-teal-600 hover:text-white"
           >
             View All Projects
           </Link>
@@ -306,7 +321,7 @@ export default function Home() {
           )}
 
           {WebsiteSettings.content.location.text && (
-            <p className="mt-4 text-lg font-light text-white md:text-2xl mb-4">
+            <p className="mt-4 text-lg font-light text-white md:text-xl mb-4">
               {WebsiteSettings.content.location.text}
             </p>
           )}
@@ -314,7 +329,7 @@ export default function Home() {
           {WebsiteSettings.content.location.showCTA && (
             <div className="space-y-4">
               {WebsiteSettings.content.location.cta.text && (
-                <p className=" max-w-2xl *:text-lg font-light text-yellow-500 md:text-lg drop-shadow-lg rounded-b-xl">
+                <p className=" max-w-2xl *:text-xl font-bold text-yellow-500 md:text-xl drop-shadow-lg rounded-b-xl">
                   {WebsiteSettings.content.location.cta.text}
                 </p>
               )}
@@ -390,19 +405,106 @@ export default function Home() {
               {WebsiteSettings.content.testimonials.text}
             </p>
           )}
-          <BeforeAfterSlider 
-              // Using distinct placeholder images to simulate before/after
-              // Ideally these would be the same dimensions.
-              beforeImage="/project-4.webp"
-              afterImage="/project-3.webp"
-              altText="Reform Project"
-            />
-          <h2 className="text-2xl font-light text-teal-600 md:text-4xl mt-4">
-            <i>"What a fantastic team, thank you Mallorca Gardens"</i>
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-800">
-            <b>John Dow</b> - Mallorca Resident
-          </p>
+          
+          {/* Testimonial Display with Fade Transition */}
+          {WebsiteSettings.content.testimonials.projects && (
+            <div className="relative min-h-[400px]">
+              {WebsiteSettings.content.testimonials.projects.map((project, projectIndex) => (
+                <div
+                  key={projectIndex}
+                  className={`max-w-6xl mx-auto transition-opacity duration-700 ease-in-out ${
+                    projectIndex === currentTestimonialIndex
+                      ? 'opacity-100 relative'
+                      : 'opacity-0 absolute inset-0 pointer-events-none'
+                  }`}
+                >
+                  <div className='p-4 border border-teal-500 rounded-lg'>
+                    {project.testimonial.image === 'gallery' && project.testimonial.imageGroup && (
+                      <div>
+                        {project.testimonial.imageGroup.type === 'slider' && (
+                          <div>
+                            <BeforeAfterSlider 
+                              beforeImage={project.testimonial.imageGroup.images[0].url}
+                              afterImage={project.testimonial.imageGroup.images[1].url}
+                              altText="Testimonial Image"
+                              className='w-full lg:w-full'
+                            />
+                          </div>
+                        )}
+                        {project.testimonial.imageGroup.type === 'gallery' && (
+                          <div className="mx-auto columns-2 gap-0">
+                            {project.testimonial.imageGroup.images?.map((imageItem: ProjectImage, imageIndex: number) => (
+                              <div
+                                key={imageItem.id || imageIndex}
+                                className="break-inside-avoid cursor-pointer overflow-hidden"
+                              >
+                                <img
+                                  src={imageItem.url}
+                                  alt={imageItem.alt || 'Testimonial image'}
+                                  className="w-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {project.testimonial.image === 'featured' && (
+                      <div className="items-center">
+                        <img
+                          src={project.coverImage}
+                          alt='Testimonial Image'
+                          className="m-auto object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <h2 className="text-2xl font-light text-teal-600 md:text-4xl mt-4">
+                      <i>"{project.testimonial.text}"</i>
+                    </h2>
+                    <p className="mx-auto mt-4 max-w-2xl text-lg text-teal-800">
+                      <b>{project.testimonial.name}</b> - {project.testimonial.occupation}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="grid grid-cols-2 gap-4 max-w-6xl mx-auto">
+            <button 
+              onClick={handlePreviousTestimonial}
+              className="p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600 transition-colors"
+            >
+              <ArrowLeft size={16}/>Previous
+            </button>
+            <button 
+              onClick={handleNextTestimonial}
+              className="p-2 flex items-center gap-2 justify-center bg-teal-800 text-teal-200 hover:bg-teal-600 transition-colors"
+            >
+              Next<ArrowRight size={16}/>
+            </button>
+          </div>
+
+          {/* Indicator dots */}
+          {WebsiteSettings.content.testimonials.projects && (
+            <div className="flex justify-center gap-2 mt-4">
+              {WebsiteSettings.content.testimonials.projects.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonialIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentTestimonialIndex 
+                      ? 'bg-teal-600 w-8' 
+                      : 'bg-teal-300 hover:bg-teal-400'
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

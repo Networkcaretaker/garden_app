@@ -38,7 +38,7 @@ export default function AddCategory({ isOpen, onClose, onAdded }: AddCategoryPro
         categories: [...settings.categories, normalizedCategory]
       };
 
-      await api.put('/settings/projects', updatedSettings);
+      await api.put('/admin/settings/projects', updatedSettings);
       return normalizedCategory;
     },
     onSuccess: (category) => {

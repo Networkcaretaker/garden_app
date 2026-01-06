@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Loader2, Save, AlertCircle, CheckCircle, Webhook, ChevronDown, Clock } from 'lucide-react';
 import { api } from '../../services/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { WebsiteSettings, SocialLinks, Project, CallToAction } from '@garden/shared';
+import type { WebsiteSettings, SocialLinks, Project, CallToAction, Facebook } from '@garden/shared';
 import UnsavedChanges from '../../components/popup/UnsavedChanges';
 import { GeneralSettings } from '../../components/settings/website/general';
 import { HeroSettings } from '../../components/settings/website/hero';
@@ -26,6 +26,8 @@ const defaultSettings: WebsiteSettings = {
   logo: { id: '', url: '', storagePath: '' },
   social: {
     facebook: '',
+    facebookPage: '',
+    facebookGroup: '',
     instagram: '',
     linkedin: '',
     whatsapp: '',
@@ -40,8 +42,8 @@ const defaultSettings: WebsiteSettings = {
     services: { title: '', text: '', cards: [] },
     location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     gallery: { title: '', text: '', projects: [] },
-    testimonials: { title: '', text: '', clients: [] },
-    footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
+    testimonials: { title: '', text: '', projects: [] },
+    footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' }, showFacebook: false, facebook: { buttonText:'', linkPage: 'user'} },
   },
 };
 
@@ -166,6 +168,11 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
   const handleFooterCtaChange = (field: keyof CallToAction, value: string) => {
     const currentCta = settings.content.footer.cta || { text: '', buttonText: '', buttonVariant: 'none' };
     handleContentChange('footer', 'cta', { ...currentCta, [field]: value });
+  };
+
+  const handleFooterFbChange = (field: keyof Facebook, value: string) => {
+    const currentFb = settings.content.footer.facebook || { buttonText: '', linkPage: 'user' };
+    handleContentChange('footer', 'facebook', { ...currentFb, [field]: value });
   };
 
   const handleContentChange = (section: keyof WebsiteSettings['content'], field: string, value: unknown) => {
@@ -402,6 +409,7 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             onToggle={() => toggleSection('footer')}
             onContentChange={handleContentChange}
             onCtaChange={handleFooterCtaChange}
+            onFbChange={handleFooterFbChange}
         />
 
         {/* SEO */}

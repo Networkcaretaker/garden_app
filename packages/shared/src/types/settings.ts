@@ -1,13 +1,23 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { Testimonial, ProjectImage } from './project';
 
 export type buttonVariants = 'solid' | 'outline' | 'projects' | 'none';
+export type ctaButtonVariants = 'whatsapp' | 'projects';
+export type fbLinks = 'user' | 'page' | 'group';
 
 export interface SocialLinks {
   facebook: string;
+  facebookPage: string;
+  facebookGroup: string;
   instagram: string;
   linkedin: string;
   whatsapp: string;
   whatsappMessage: string;
+}
+
+export interface Facebook {
+  buttonText: string;
+  linkPage: fbLinks;
 }
 
 export interface CallToAction {
@@ -19,7 +29,7 @@ export interface CallToAction {
 export interface WebsiteImage {
   id: string;
   url: string;
-  storagePath: string; // store the internal path for deletion
+  storagePath: string;
   caption?: string;
   alt?: string;
   width?: number;
@@ -77,19 +87,37 @@ export interface GalleryContent {
   projects: string[];
 }
 
-export interface TestimonialClients {
-  project: string;
-  name: string;
-  occupation: string;
-  text: string;
-  imageType: string;
-  images: WebsiteImage[];
-}
-
 export interface TestimonialContent {
   title: string;
   text: string;
-  clients: TestimonialClients[];
+  projects?: string[];
+}
+
+// New type for the frontend published data
+export interface PublishedTestimonialContent {
+  title: string;
+  text: string;
+  projects?: PublishedTestimonialProject[]; // For frontend - stores full project objects
+}
+
+export interface PublishedTestimonial {
+  name: string;
+  occupation: string;
+  text: string;
+  image: 'featured' | 'gallery';
+  imageGroup?: {
+    id: string;
+    type: 'gallery' | 'slider';
+    name: string;
+    description: string;
+    order: number;
+    images: ProjectImage[];
+  };
+}
+export interface PublishedTestimonialProject {
+  id: string;
+  coverImage: string;
+  testimonial: PublishedTestimonial; // Use PublishedTestimonial, not Testimonial
 }
 
 export interface FootorContent {
@@ -97,6 +125,8 @@ export interface FootorContent {
   text: string;
   showCTA: boolean;
   cta: CallToAction;
+  showFacebook: boolean;
+  facebook: Facebook;
 }
 
 export interface WebsiteContent {
@@ -123,6 +153,13 @@ export interface WebsiteSettings {
   updatedAt: Timestamp;
   publishedAt?: Timestamp;
   projectUpdatedAt?: Timestamp;
+}
+
+// Add a new type for published/frontend data
+export interface PublishedWebsiteSettings extends Omit<WebsiteSettings, 'content'> {
+  content: Omit<WebsiteContent, 'testimonials'> & {
+    testimonials: PublishedTestimonialContent;
+  };
 }
 
 export interface ProjectSettings {

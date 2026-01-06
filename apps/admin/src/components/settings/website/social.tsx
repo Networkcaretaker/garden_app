@@ -27,13 +27,33 @@ export function SocialSettings({ settings, expanded, onToggle, onChange }: Socia
       <div className={`px-6 pb-6 ${expanded ? 'block' : 'hidden'}`}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Facebook ID</label>
             <input
-              type="url"
+              type="text"
               value={settings.social?.facebook || ''}
               onChange={(e) => onChange('facebook', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-              placeholder="https://facebook.com/..."
+              placeholder="Facebook User ID"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
+            <input
+              type="text"
+              value={settings.social?.facebookPage || ''}
+              onChange={(e) => onChange('facebookPage', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Facebook Page ID"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Facebook Group ID</label>
+            <input
+              type="text"
+              value={settings.social?.facebookGroup || ''}
+              onChange={(e) => onChange('facebookGroup', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Facebook Group ID"
             />
           </div>
           <div>

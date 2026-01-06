@@ -44,7 +44,7 @@ export function SeoSettings({ settings, expanded, onToggle, onChange }: SeoSetti
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
             <textarea
-              rows={2}
+              rows={5}
               value={settings.excerpt || ''}
               onChange={(e) => onChange('excerpt', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
@@ -73,7 +73,11 @@ export function SeoSettings({ settings, expanded, onToggle, onChange }: SeoSetti
             <div className="space-y-2">
               {settings.seo?.map((t, i) => (
                 <div key={i} className="flex justify-between items-center p-2 bg-gray-50 border border-gray-200 rounded-md">
-                  <span className="text-sm text-gray-700">{t}</span>
+                  <span className="text-sm text-gray-700">
+                    <div className="flex gap-2 items-center"><Plus className="h-4 w-4 bg-teal-600 rounded-full text-white" />
+                      {t}
+                    </div>
+                  </span>
                   <button type="button" onClick={() => removeKeyword(i)} className="text-gray-400 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
                   </button>
