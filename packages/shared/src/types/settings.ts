@@ -128,6 +128,16 @@ export interface FootorContent {
   showFacebook: boolean;
   facebook: Facebook;
 }
+export interface FaqQuestions {
+  question: string;
+  answer: string;
+}
+
+export interface FaqContent {
+  title: string;
+  text: string;
+  faq: FaqQuestions[];
+}
 
 export interface WebsiteContent {
   hero: HeroContent;
@@ -137,6 +147,7 @@ export interface WebsiteContent {
   location: LocationContent;
   gallery: GalleryContent;
   testimonials: TestimonialContent;
+  faq: FaqContent;
   footer: FootorContent;
 }
 

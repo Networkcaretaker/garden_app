@@ -54,6 +54,16 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
     setPopupWarningMessage(null); // Clear any popup warning on successful add
   };
 
+  const toggleSelectAll = () => {
+  if (selectedImageIds.length === availableImages.length) {
+    // If all are selected, clear the selection
+    setSelectedImageIds([]);
+  } else {
+    // Otherwise, select all available image IDs
+    setSelectedImageIds(availableImages.map(img => img.id));
+  }
+};
+
   if (!isOpen) return null;
 
   return (
@@ -95,7 +105,7 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
                   alt={img.alt || 'Project image'}
                   className="w-full h-full object-cover rounded-lg border border-gray-200"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-100 group-hover:opacity-100 transition-opacity rounded-lg">
                   <input
                     type="checkbox"
                     checked={selectedImageIds.includes(img.id)}
@@ -107,22 +117,41 @@ const AddImagesToGroupPopup: React.FC<AddImagesToGroupPopupProps> = React.memo((
             ))
           )}
         </div>
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-between items-center gap-3">
+        {/* Bottom Left Button */}
+        <button
+          type="button"
+          onClick={toggleSelectAll}
+          className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+        >
+          {selectedImageIds.length === availableImages.length && availableImages.length > 0
+            ? 'Deselect All'
+            : 'Select All'}
+        </button>
+
+        {/* Bottom Right Buttons */}
+        <div className="flex gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleAdd}
-            className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700"
+            disabled={selectedImageIds.length === 0}
+            className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
+              selectedImageIds.length === 0 
+                ? 'bg-teal-300 cursor-not-allowed' 
+                : 'bg-teal-600 hover:bg-teal-700'
+            }`}
           >
-            Add Selected Images
+            Add {selectedImageIds.length > 0 ? `(${selectedImageIds.length})` : ''} Selected
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -407,8 +436,8 @@ export default function ProjectImages({
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
                       placeholder="Image Title"
                     />
-                    <input
-                      type="text"
+                    <textarea
+                      rows={3}
                       value={img.caption || ''}
                       onChange={(e) => handleImageCaptionChange(img.id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:ring-teal-500 focus:border-teal-500"
