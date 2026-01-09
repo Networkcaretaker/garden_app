@@ -507,6 +507,36 @@ export default function Home() {
           )}
         </div>
       </section>
+      <section className="bg-teal-950 py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center space-y-4">
+          {WebsiteSettings.content.faq.title && (
+            <h2 className="text-3xl font-bold text-teal-600 md:text-4xl">
+              {WebsiteSettings.content.faq.title}
+            </h2>
+          )}
+
+          {WebsiteSettings.content.faq.text && (
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-100">
+              {WebsiteSettings.content.faq.text}
+            </p>
+          )}
+
+          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {WebsiteSettings.content.faq.faq
+              .map((faq, index) => (
+              <div key={index} className="rounded-lg p-8">
+                
+                <h3 className="text-xl font-bold text-teal-600">
+                  {faq.question}
+                </h3>
+                <p className="mt-2 text-gray-100">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Footer CTA */}
       <Footer />

@@ -6,11 +6,11 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
   title: 'Mallorca Gardens',
   websiteURL: '',
   tagline: 'Premier Gardening Experts',
-  description: '',
+  description: 'Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialise in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with Mallorca Gardens.',
   excerpt: '',
   logo: {
     id: '',
-    url: '',
+    url: '/Mallorca-Gardens-Logo.png',
     storagePath: ''
   },
   content: {
@@ -21,7 +21,7 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
       description: true,
       showCTA: true,
       cta: {
-        text: '',
+        text: 'Contact us for help and advice',
         buttonText: '',
         buttonVariant: 'none'
       },
@@ -66,6 +66,11 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
       title: '',
       text: '',
       projects: []
+    },
+    faq: {
+      title: '',
+      text: '',
+      faq: []
     },
     footer: {
       title: '',
