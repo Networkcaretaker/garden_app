@@ -19,11 +19,13 @@ export function Header() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* Logo & Brand */}
         <Link to="/" className="group flex items-center gap-3">
-          <img 
-            src={WebsiteSettings.logo.url}
-            alt={`${WebsiteSettings.title} Logo`} 
-            className="h-10 w-10 md:h-12 md:w-12" 
-          />
+          {WebsiteSettings.logo.url && (
+            <img 
+              src={WebsiteSettings.logo.url}
+              alt={`${WebsiteSettings.title} Logo`} 
+              className="h-10 w-10 md:h-12 md:w-12" 
+            />
+          )}
           <span className="text-xl font-bold text-teal-800 transition-colors group-hover:text-teal-700 md:text-2xl">
             {WebsiteSettings.title}
           </span>
@@ -38,13 +40,16 @@ export function Header() {
             message={WebsiteSettings.social.whatsappMessage}
             variant="solid"
           />
-          <FacebookButton
-            action="follow"
-            pageId={WebsiteSettings.social.facebook} 
-            variant="solid"
-            label="follow us on facebook"
-            iconOnly = {true}
-          />
+          {WebsiteSettings.social.facebook && (
+            <FacebookButton
+              action="follow"
+              pageId={WebsiteSettings.social.facebook} 
+              variant="solid"
+              label="follow us on facebook"
+              iconOnly = {true}
+            />
+          )}
+          
         </nav>
 
         {/* Mobile Menu Button */}

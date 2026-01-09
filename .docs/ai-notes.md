@@ -2,14 +2,13 @@
 
 ## Website App
 
-Improve website app initial loading for homepage
+Improve website app initial loading for homepage **DONE**
 Add teal background to description in project
 Optimize cache for project images
 Add Image captions to project images
 Connect website app to google analytics
 Add project gallery hero section to the projects page
-Correct Facebook link in Footer
-Add FAQ section
+Add FAQ section **DONE**
 
 ## Admin App
 Floating save button when settings page is dirty

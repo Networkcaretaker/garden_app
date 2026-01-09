@@ -3,14 +3,14 @@ import type { WebsiteSettings } from '@garden/shared';
 const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
 
 export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
-  title: 'Mallorca Gardens',
+  title: '',
   websiteURL: '',
-  tagline: 'Premier Gardening Experts',
-  description: 'Welcome to Mallorca Gardens, the premier gardening and landscape maintenance team in Mallorca. We specialise in custom and sustainable solutions, enhancing your outdoor spaces with attention to detail and customer satisfaction. Transform your garden into a paradise with Mallorca Gardens.',
+  tagline: '',
+  description: '',
   excerpt: '',
   logo: {
     id: '',
-    url: '/Mallorca-Gardens-Logo.png',
+    url: '',
     storagePath: ''
   },
   content: {
@@ -21,7 +21,7 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
       description: true,
       showCTA: true,
       cta: {
-        text: 'Contact us for help and advice',
+        text: '',
         buttonText: '',
         buttonVariant: 'none'
       },

@@ -28,12 +28,14 @@ export function Footer() {
             label={WebsiteSettings.content.footer.cta.buttonText}
             message={WebsiteSettings.social.whatsappMessage} 
           />
-          <FacebookButton
-            action="follow"
-            pageId={WebsiteSettings.social.facebook} 
-            variant="solid"
-            label={WebsiteSettings.content.footer.facebook?.buttonText}
-          />
+          {WebsiteSettings.social.facebook && (
+            <FacebookButton
+              action="follow"
+              pageId={WebsiteSettings.social.facebook} 
+              variant="solid"
+              label={WebsiteSettings.content.footer.facebook?.buttonText}
+            />
+          )}
         </div>
       </div>
       <div className="container mx-auto px-4 text-xs text-center py-8 text-teal-400">
