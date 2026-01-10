@@ -1,9 +1,9 @@
-export type AdminRole = 'admin' | 'editor';
+export type UserRole = 'admin' | 'editor';
 
-export interface AdminUser {
+export interface UserDetails {
   id: string;
   email: string;
   name: string;
-  role: AdminRole;
+  role: UserRole;
   createdAt: string;
 }

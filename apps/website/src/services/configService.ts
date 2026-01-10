@@ -3,9 +3,9 @@ import type { WebsiteSettings } from '@garden/shared';
 const VITE_WEBSITE_CONFIG_URL = import.meta.env.VITE_WEBSITE_CONFIG_URL;
 
 export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
-  title: 'Mallorca Gardens',
+  title: '',
   websiteURL: '',
-  tagline: 'Premier Gardening Experts',
+  tagline: '',
   description: '',
   excerpt: '',
   logo: {
@@ -66,6 +66,11 @@ export const DEFAULT_WEBSITE_DATA: WebsiteSettings = {
       title: '',
       text: '',
       projects: []
+    },
+    faq: {
+      title: '',
+      text: '',
+      faq: []
     },
     footer: {
       title: '',

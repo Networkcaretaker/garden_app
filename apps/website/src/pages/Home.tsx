@@ -7,39 +7,42 @@ import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/ui/WhatsApp';
 import { getWebsiteConfig, DEFAULT_WEBSITE_DATA } from '../services/configService';
 import type { PublishedWebsiteSettings, Project, ProjectImage } from '@garden/shared';
+import LeafBackground from '../components/LeafBackground';
 
 const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
 export default function Home() {
-  // Initialize with your existing hardcoded values as a fallback
-  const [WebsiteSettings, setWebsiteSettings] = useState<PublishedWebsiteSettings>(DEFAULT_WEBSITE_DATA  as PublishedWebsiteSettings);
+  const [WebsiteSettings, setWebsiteSettings] = useState<PublishedWebsiteSettings>(DEFAULT_WEBSITE_DATA as PublishedWebsiteSettings);
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await getWebsiteConfig();
-      setWebsiteSettings(data as PublishedWebsiteSettings);
-    };
-
-    const fetchProjects = async () => {
       try {
-        const response = await fetch(PROJECTS_URL);
-        if (response.ok) {
-          const data = await response.json();
-          setProjects(data);
+        const [configData, projectsResponse] = await Promise.all([
+          getWebsiteConfig(),
+          fetch(PROJECTS_URL)
+        ]);
+
+        setWebsiteSettings(configData as PublishedWebsiteSettings);
+        
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          setProjects(projectsData);
         }
       } catch (error) {
-        console.error('Failed to fetch projects:', error);
+        console.error('Failed to load data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadData();
-    fetchProjects();
   }, []);
 
-  // Filter hero projects based on the IDs in WebsiteSettings using useMemo
   const heroProjects = useMemo(() => {
     if (projects.length > 0 && WebsiteSettings.content.hero.projects) {
       return projects.filter(project => 
@@ -49,7 +52,34 @@ export default function Home() {
     return [];
   }, [projects, WebsiteSettings.content.hero.projects]);
 
-  // Rotate through hero project images every 5 seconds
+  // Preload hero images
+  useEffect(() => {
+    if (heroProjects.length === 0) {
+      setHeroImagesLoaded(true);
+      return;
+    }
+
+    let loadedCount = 0;
+    const totalImages = heroProjects.length;
+
+    heroProjects.forEach((project) => {
+      const img = new Image();
+      img.src = project.coverImage;
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          setHeroImagesLoaded(true);
+        }
+      };
+      img.onerror = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          setHeroImagesLoaded(true);
+        }
+      };
+    });
+  }, [heroProjects]);
+
   useEffect(() => {
     if (heroProjects.length === 0) return;
 
@@ -76,9 +106,30 @@ export default function Home() {
     );
   };
 
+  // Show loading screen until data and hero images are ready
+  if (isLoading || !heroImagesLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LeafBackground />
+        <div className="text-center space-y-4">
+          <img 
+            src="/logo.png" 
+            alt=""
+            className="mx-auto h-24 w-24 object-contain animate-pulse"
+          />
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+          <p className="text-teal-800 text-3xl font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="bg-white text-gray-800">
-
       {/* Hero Section */}
       <section className="relative flex h-[100vh] min-h-[600px] items-center justify-center text-center text-white overflow-hidden">
         {/* Background images with crossfade effect */}
@@ -101,8 +152,7 @@ export default function Home() {
           />
         )}
         <div className="absolute inset-0 bg-black bg-opacity-60" />
-        <div className="relative z-10 p-4 space-y-4">
-
+        <div className="relative z-10 p-4 space-y-4 animate-fade-in">
           {WebsiteSettings.content.hero.logo && (
             <img src={`${WebsiteSettings.logo.url}`} className="mx-auto mb-4 h-[150px]" />
           )}
@@ -159,7 +209,6 @@ export default function Home() {
       {/* About Section */}
       <section className="bg-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-
           {WebsiteSettings.content.about.title && (
           <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
             {WebsiteSettings.content.about.title}
@@ -177,7 +226,7 @@ export default function Home() {
       {/* About CTA Section */}
       <section className="relative flex h-[80vh] min-h-[600px] items-center justify-center text-center text-white">
         <img
-          src="/aj00.jpg"
+          src="/about.jpg"
           alt={`Meet the team`}
           className="absolute z-0 h-full w-full object-cover"
         />
@@ -254,7 +303,6 @@ export default function Home() {
       {/* Project Showcase Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-
           {WebsiteSettings.content.gallery.title && (
             <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
               {WebsiteSettings.content.gallery.title}
@@ -313,7 +361,6 @@ export default function Home() {
         <div className="absolute inset-0 bg-black bg-opacity-60" />
         
         <div className="relative z-10 p-4 max-w-2xl">
-
           {WebsiteSettings.content.location.title && (
             <h1 className="text-4xl font-bold text-white md:text-4xl">
               {WebsiteSettings.content.location.title}
@@ -357,7 +404,6 @@ export default function Home() {
       {/* Why Us Section */}
       <section className="bg-teal-100 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          
           {WebsiteSettings.content.benefits.title && (
             <h2 className="text-3xl font-bold text-teal-800 md:text-4xl">
               {WebsiteSettings.content.benefits.title}
@@ -505,6 +551,35 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+      <section className="bg-teal-950 py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center space-y-4">
+          {WebsiteSettings.content.faq.title && (
+            <h2 className="text-3xl font-bold text-teal-600 md:text-4xl">
+              {WebsiteSettings.content.faq.title}
+            </h2>
+          )}
+
+          {WebsiteSettings.content.faq.text && (
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-100">
+              {WebsiteSettings.content.faq.text}
+            </p>
+          )}
+
+          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {WebsiteSettings.content.faq.faq
+              .map((faq, index) => (
+              <div key={index} className="rounded-lg p-8">
+                <h3 className="text-xl font-bold text-teal-600">
+                  {faq.question}
+                </h3>
+                <p className="mt-2 text-gray-100">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

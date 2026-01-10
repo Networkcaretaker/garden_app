@@ -12,6 +12,7 @@ import { BenefitsSettings } from '../../components/settings/website/benefits';
 import { LocationSettings } from '../../components/settings/website/location';
 import { GallerySettings } from '../../components/settings/website/gallery';
 import { TestimonialSettings } from '../../components/settings/website/testimonial';
+import { FaqSettings } from '../../components/settings/website/faq';
 import { FooterSettings } from '../../components/settings/website/footer';
 import { SeoSettings } from '../../components/settings/website/seo';
 import { SocialSettings } from '../../components/settings/website/social';
@@ -43,6 +44,7 @@ const defaultSettings: WebsiteSettings = {
     location: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' } },
     gallery: { title: '', text: '', projects: [] },
     testimonials: { title: '', text: '', projects: [] },
+    faq: { title: '', text: '', faq: [{question: '', answer: ''}] },
     footer: { title: '', text: '', showCTA: false, cta: { text: '', buttonText: '', buttonVariant: 'none' }, showFacebook: false, facebook: { buttonText:'', linkPage: 'user'} },
   },
 };
@@ -402,6 +404,14 @@ function WebsiteConfigForm({ initialData, onDirtyChange }: { initialData: Websit
             onChange={handleContentChange}
         />
 
+        {/* FAQs */}
+        <FaqSettings
+            settings={settings}
+            expanded={expandedSections['faq']}
+            onToggle={() => toggleSection('faq')}
+            onChange={handleContentChange}
+        />
+
         {/* Footer */}
         <FooterSettings
             settings={settings}
@@ -503,6 +513,7 @@ export default function WebsiteConfig({ onDirtyChange }: { onDirtyChange?: (isDi
       },
       gallery: { ...defaultSettings.content.gallery, ...(data.content?.gallery || {}) },
       testimonials: { ...defaultSettings.content.testimonials, ...(data.content?.testimonials || {}) },
+      faq: { ...defaultSettings.content.faq, ...(data.content?.faq || {}) },
       footer: { 
         ...defaultSettings.content.footer, 
         ...(data.content?.footer || {}),

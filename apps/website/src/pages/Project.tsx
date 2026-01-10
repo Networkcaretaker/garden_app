@@ -5,6 +5,7 @@ import type { Project } from '@garden/shared';
 import { BeforeAfterSlider } from '../components/ImageSlider'; // Import the BeforeAfterSlider component
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import LeafBackground from '../components/LeafBackground';
 
 const PROJECTS_URL = import.meta.env.VITE_PROJECTS_URL;
 
@@ -51,7 +52,22 @@ export default function ProjectPage() {
     return (
       <>
         <Header />
-        <div className="text-center py-20">Loading Project...</div>
+        <div className="flex items-center justify-center min-h-screen">
+          <LeafBackground />
+          <div className="text-center space-y-4">
+            <img 
+              src="/logo.png" 
+              alt=""
+              className="mx-auto h-24 w-24 object-contain animate-pulse"
+            />
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-3 h-3 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+            <p className="text-teal-200 text-3xl font-medium">Loading Project...</p>
+          </div>
+        </div>
       </>
     );
   }
@@ -106,7 +122,7 @@ export default function ProjectPage() {
               alt={heroImage.alt || project.title}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/70" />
           </>
         ) : (
           <div className="h-full w-full bg-gray-900" />
@@ -118,13 +134,21 @@ export default function ProjectPage() {
         <Header />
         
         <div className="container mx-auto flex-grow px-4 py-12">
-          <div className="mb-16 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-teal-200 drop-shadow-lg md:text-6xl">{project.title}</h1>
-            <p className="text-xl text-white/90 drop-shadow-md">{project.location}</p>
+          <div className="text-center">
+            <h1 className="mb-4 text-4xl font-bold text-teal-400 drop-shadow-lg md:text-6xl">{project.title}</h1>
+            <p className="text-xl text-white/90 drop-shadow-md mb-6">{project.location}</p>
+            <div>
+              <img
+                src={project.coverImage}
+                alt={project.title}
+                className="w-full object-cover rounded-xl"
+              />
+            </div>
             {project.description && (
-              <p className="whitespace-pre-line border-t border-b my-10 py-6 text-lg font-thin leading-relaxed text-white/90 italic">{project.description}</p>
+              <p className="whitespace-pre-line bg-teal-800/40 border-t border-b my-12 py-6 text-lg font-thin leading-relaxed text-white/90 italic">{project.description}</p>
             )}
           </div>
+          
 
           {/* Gallery from image url */}
           {/*
@@ -151,14 +175,14 @@ export default function ProjectPage() {
 
           {/* Image Groups */}
           {project.imageGroups && project.imageGroups.length > 0 && (
-            <div className="mx-auto max-w-6xl mt-12">
+            <div className="mx-auto">
               {project.imageGroups.map((group, groupIndex) => (
-                <div key={groupIndex} className="mb-12 text-center">
+                <div key={groupIndex} className="mb-6 text-center">
                   {group.name === 'Featured' ? '' : (
-                    <div>
-                      <h2 className="text-3xl font-bold text-white drop-shadow-lg mb-4">{group.name}</h2>
+                    <div className="bg-teal-800/40 py-4 border-t border-b mb-12">
+                      <h2 className="text-3xl font-bold text-white drop-shadow-lg">{group.name}</h2>
                       {group.description && (
-                        <p className="text-lg text-white/80 mb-8">{group.description}</p>
+                        <p className="text-lg text-white/80 italic">{group.description}</p>
                       )}
                     </div>
                   )}
@@ -227,6 +251,7 @@ export default function ProjectPage() {
           {/* Testimonial */}
           {project.hasTestimonial && (
             <div className="my-16 text-center bg-teal-800/40 border-t border-b py-6">
+              <p className="text-xl pb-2">⭐⭐⭐⭐⭐</p>
               <p className="whitespace-pre-line text-2xl font-thin leading-relaxed text-white italic">
                 "{project.testimonial?.text}"
               </p>
