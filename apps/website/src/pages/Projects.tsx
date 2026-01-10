@@ -40,7 +40,7 @@ export default function ProjectsPage() {
           <LeafBackground />
           <div className="text-center space-y-4">
             <img 
-              src="/logo.png" 
+              src="/aj-logo.png" 
               alt=""
               className="mx-auto h-24 w-24 object-contain animate-pulse"
             />
