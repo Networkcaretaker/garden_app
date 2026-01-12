@@ -122,7 +122,7 @@ export default function ProjectPage() {
               alt={heroImage.alt || project.title}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/70" />
+            <div className="absolute inset-0 bg-teal-950/70" />
           </>
         ) : (
           <div className="h-full w-full bg-gray-900" />

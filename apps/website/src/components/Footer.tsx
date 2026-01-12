@@ -14,6 +14,13 @@ export function Footer() {
   return (
     <footer className="bg-teal-800 pt-16 text-white">
       <div className="container mx-auto px-4 text-center">
+        {WebsiteSettings.logo.url && (
+          <img 
+            src={WebsiteSettings.logo.url}
+            alt={`${WebsiteSettings.title} Logo`} 
+            className="h-24 w-24 md:h-24 md:w-24 mx-auto mb-6" 
+          />
+        )}
         <h2 className="text-3xl font-bold">{WebsiteSettings.content.footer.title}</h2>
         <p className="mt-4 text-lg text-teal-200 mb-4">
           {WebsiteSettings.content.footer.text}

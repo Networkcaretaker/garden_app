@@ -71,7 +71,7 @@ export default function ProjectsPage() {
       <LeafBackground />
       <Header />
       <main className="container mx-auto flex-grow px-4 py-12">
-        <h1 className="mb-2 text-center text-4xl font-bold text-teal-400">Our Projects</h1>
+        <h1 className="mb-2 text-center text-4xl font-bold text-teal-200">Project Portfolio</h1>
         <p className="mb-12 text-center text-lg text-gray-50">A showcase of our recent work across Mallorca.</p>
 
         {projects.length === 0 ? (
@@ -79,10 +79,10 @@ export default function ProjectsPage() {
             <p className="text-gray-50">No projects are currently available. Please check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {projects.map((project) => (
-              <Link to={`/projects/${project.id}`} key={project.id} className="group block">
-                <div className="aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden shadow-sm">
+              <Link to={`/projects/${project.id}`} key={project.id} className="group block border rounded-lg border-teal-500 bg-teal-800/50 hover:bg-teal-600/50">
+                <div className="aspect-[4/3] bg-gray-50 rounded-t-lg overflow-hidden shadow-sm">
                   {project.images && project.images.length > 0 ? (
                     <img
                       src={project.images[0].url}
@@ -95,8 +95,8 @@ export default function ProjectsPage() {
                     </div>
                   )}
                 </div>
-                <div className="mt-4">
-                  <h3 className="text-xl font-semibold text-teal-400 group-hover:text-teal-200 transition-colors">
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-teal-200 group-hover:text-teal-100 transition-colors">
                     {project.title}
                   </h3>
                   <p className="text-gray-50 mt-1">{project.location}</p>
